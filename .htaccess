@@ -1,0 +1,20 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+       Options -MultiViews
+   </IfModule>
+   Options +FollowSymlinks
+   RewriteEngine On
+
+    # Redirect HTTP to HTTPS and non-www to www
+    RewriteCond %{HTTPS} off [OR]
+    #RewriteCond %{HTTP_HOST} ^sothikpath\.com$ [NC]
+    #RewriteRule ^(.*)$ https://www.sothikpath.com/$1 [R=301,L]
+
+   # Handle Front Controller...
+   RewriteCond %{REQUEST_FILENAME} !-d
+   RewriteCond %{REQUEST_FILENAME} !-f
+   RewriteRule ^ index.php [L]
+
+   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+   
+</IfModule>
