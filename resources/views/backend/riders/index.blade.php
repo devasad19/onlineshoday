@@ -25,7 +25,7 @@
         <div class="bg-white shadow rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center mb-8">
             <div>
                 <h2 class="text-2xl font-bold text-green-700">স্বাগতম, {{ $rider->name ?? 'রাইডার' }} 👋</h2>
-                <p class="text-gray-600 mt-1">আজকের জন্য আপনার কার্যক্রম নিচে দেখুন</p>
+                <p class="text-gray-600 mt-1">আপনার কার্যক্রম নিচে দেখুন</p>
             </div>
 
             <div class="flex items-center gap-4 mt-4 md:mt-0">
@@ -41,28 +41,39 @@
             </div>
         </div>
 
-        <!-- Rider Stats Section -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-            <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-                <h3 class="text-gray-500 text-sm mb-2">✅ সম্পন্ন ডেলিভারি</h3>
-                <p class="text-3xl font-bold text-green-600">{{ $rider->total_delivered ?? 0 }}</p>
-            </div>
+         
+                <!-- Rider Stats Section -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
 
-            <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-                <h3 class="text-gray-500 text-sm mb-2">⏱️ সময়মতো ডেলিভারি</h3>
-                <p class="text-3xl font-bold text-blue-600">{{ $rider->on_time_delivery ?? 0 }}</p>
-            </div>
+                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 class="text-gray-500 text-sm mb-2">✅ সম্পন্ন ডেলিভারি</h3>
+                        <p class="text-3xl font-bold text-green-600">
+                            {{ $totalDelivered }}
+                        </p>
+                    </div>
 
-            <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-                <h3 class="text-gray-500 text-sm mb-2">📦 চলমান অর্ডার</h3>
-                <p class="text-3xl font-bold text-yellow-600">{{ $rider->pending_orders ?? 0 }}</p>
-            </div>
+                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 class="text-gray-500 text-sm mb-2">⏱️ সময়মতো ডেলিভারি</h3>
+                        <p class="text-3xl font-bold text-blue-600">
+                            {{ $onTimeDelivery }}
+                        </p>
+                    </div>
 
-            <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-                <h3 class="text-gray-500 text-sm mb-2">❌ বাতিল ডেলিভারি</h3>
-                <p class="text-3xl font-bold text-red-600">{{ $rider->cancel_delivery ?? 0 }}</p>
-            </div>
-        </div>
+                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 class="text-gray-500 text-sm mb-2">📦 চলমান অর্ডার</h3>
+                        <p class="text-3xl font-bold text-yellow-600">
+                            {{ $pendingOrders }}
+                        </p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+                        <h3 class="text-gray-500 text-sm mb-2">❌ বাতিল ডেলিভারি</h3>
+                        <p class="text-3xl font-bold text-red-600">
+                            {{ $cancelDelivery }}
+                        </p>
+                    </div>
+
+                </div>
 
         <!-- Quick Actions -->
         <div class="bg-white p-6 rounded-2xl shadow mb-10">

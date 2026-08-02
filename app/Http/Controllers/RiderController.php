@@ -16,20 +16,56 @@ use App\Models\RiderProduct;
 use Illuminate\Support\Facades\Hash;
 use Auth;
 use Carbon\Carbon;
+use App\Models\RiderDelivery;
+ 
 
 class RiderController extends Controller
 {
+
     public function riderDashboard()
     {
-        $data['rider'] = auth()->user()->rider; // or session-based
-        $data['recentOrders'] = Order::where('rider_id', $rider->id ?? 1)
+        $rider = auth()->user()->rider;
+        $user_id = auth()->user()->id;
+
+        $data['rider'] = $rider;
+ 
+        // Rider Recent Orders
+        $data['recentOrders'] = Order::where('rider_id', $user_id)
             ->latest()
             ->take(5)
-            ->get() ?? [];
+            ->get();
+ 
+        // Pending Orders (যেগুলো Rider নিতে পারবে)
+        $data['orders'] = Order::where('status', 'pending')
+            ->latest()
+            ->get();
 
-        
-        $data['orders'] = Order::where('status', 'pending')->orderBy('created_at', 'desc')->get();    
-    
+        // Dashboard Stats
+        $data['totalDelivered'] = RiderDelivery::where('rider_id', $user_id)
+            ->where('status', 'delivered')
+            ->count();
+
+        $data['onTimeDelivery'] = RiderDelivery::where('rider_id', $user_id)
+            ->where('delivery_status', 'on_time')
+            ->count();
+
+        $data['pendingOrders'] = Order::where('rider_id', $user_id)
+            ->whereIn('status', ['accepted', 'rider_modified_accepted'])
+            ->count();
+
+        $data['cancelDelivery'] = RiderDelivery::where('rider_id', $user_id)
+            ->where('status', 'cancelled')
+            ->count();
+
+        $data['lateDelivery'] = RiderDelivery::where('rider_id', $user_id)
+            ->where('delivery_status', 'late')
+            ->count();
+
+        $data['totalLateMinutes'] = RiderDelivery::where('rider_id', $user_id)
+            ->sum('late_time');
+
+
+            
         return view('backend.riders.index', $data);
     }
 
@@ -180,22 +216,33 @@ public function productdestroy($id)
             return response()->json(['success' => false, 'message' => 'অর্ডার পাওয়া যায়নি বা ইতিমধ্যে সম্পন্ন হয়েছে।'], 404);
         }
 
-        $order->status = 'delivered';
-        $order->delivered_at = Carbon::now('Asia/Dhaka'); // ✅ লোকাল টাইমে now()
+    
 
-        // ✅ Compare now() vs delivery_at
-        if ($order->delivery_at) {
-            $now = Carbon::now('Asia/Dhaka');
-            if ($order->delivery_at > $now) {
-                $order->delivered_status = 'on_time';
-            } else {
-                $order->delivered_status = 'late';
+        $order->status='delivered';
+        $order->delivered_at=Carbon::now('Asia/Dhaka');
+        $lateTime=0;
+
+        if($order->delivery_at){
+            $now=Carbon::now('Asia/Dhaka');
+            if($now->lessThanOrEqualTo($order->delivery_at)){
+                $order->delivered_status='on_time';
+            }else{
+                $order->delivered_status='late';
+                $lateTime=$order->delivery_at->diffInMinutes($now);
             }
-        } else {
-            $order->delivered_status = null;
         }
 
         $order->save();
+
+        RiderDelivery::create([
+            'rider_id'=>$order->rider_id,
+            'order_id'=>$order->id,
+            'status'=>'delivered',
+            'delivery_status'=>$order->delivered_status,
+            'late_time'=>$lateTime,
+            'delivered_at'=>$order->delivered_at
+        ]);
+
 
 
         return response()->json([
@@ -208,16 +255,85 @@ public function productdestroy($id)
 
 
     // ✅ Show Order Board Page
-    public function riderOrders()
-    {
-        // rider er accepted orders দেখানো হবে
-        $orders = Order::where('rider_id', auth()->id())
-            ->whereIn('status', ['accepted', 'rider_modified_accepted', 'delivered'])
-            ->orderBy('created_at', 'desc')
-            ->get();
- 
-        return view('backend.riders.rider_orders', compact('orders'));
+public function riderOrders(Request $request)
+{
+    $orders = Order::with([
+        'user',
+        'items.product',
+        'custom_products',
+        'rider'
+    ])
+    ->where('rider_id', auth()->id())
+    ->whereIn('status', [
+        'accepted',
+        'rider_modified_accepted',
+        'delivered'
+    ]);
+
+    // Date
+
+    if($request->date_filter=="today"){
+
+        $orders->whereDate('created_at', today());
+
     }
+    elseif($request->date_filter=="yesterday"){
+
+        $orders->whereDate('created_at', today()->subDay());
+
+    }
+    elseif(
+        $request->date_filter=="range" &&
+        $request->from_date &&
+        $request->to_date
+    ){
+
+        $orders->whereBetween('created_at',[
+            $request->from_date.' 00:00:00',
+            $request->to_date.' 23:59:59'
+        ]);
+
+    }
+
+    // Status
+
+    if($request->filled('status')){
+
+        $orders->where('status',$request->status);
+
+    }
+
+    // Search
+
+    if($request->filled('search')){
+
+        $search = $request->search;
+
+        $orders->whereHas('user',function($q) use($search){
+
+            $q->where('name','like',"%{$search}%")
+              ->orWhere('phone','like',"%{$search}%");
+
+        });
+
+    }
+
+$orders = $orders
+    ->orderByRaw("
+        CASE
+            WHEN status IN ('accepted','rider_modified_accepted') THEN 0
+            ELSE 1
+        END
+    ")
+    ->orderByDesc('accepted_at')
+    ->orderByDesc('created_at')
+    ->get();
+
+    return view(
+        'backend.riders.rider_orders',
+        compact('orders')
+    );
+}
    
  
 public function pendingOrders()
@@ -256,6 +372,7 @@ public function acceptOrder(Request $request)
     // $order->total_amount = $request->total_amount;
     $order->delivery_time = $request->delivery_time;
     $order->delivery_at = $delivery_at;
+    $order->accepted_at = now();
     $order->save();
 
     // 🧾 Update rider_price for each item

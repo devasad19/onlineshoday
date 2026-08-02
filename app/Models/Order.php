@@ -26,9 +26,12 @@ class Order extends Model
 
 // app/Models/Order.php
 
-    protected $casts = [
-        'delivered_at' => 'datetime',
-    ];
+protected $casts = [
+    'delivery_at' => 'datetime',
+    'delivered_at' => 'datetime',
+];
+
+ 
 
      public function order()
     {

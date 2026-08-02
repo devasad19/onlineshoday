@@ -29,7 +29,8 @@ return new class extends Migration
             $table->timestamp('delivery_time')->nullable();
             $table->timestamp('delivery_at')->nullable();
             $table->timestamp('delivered_at')->nullable();
-
+            $table->timestamp('accepted_at')->nullable();
+ 
             // ✅ Rider Performance Tracking
             $table->string('delivered_status')->default(false);
             $table->string('notes')->nullable();

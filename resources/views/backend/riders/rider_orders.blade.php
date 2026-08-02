@@ -16,28 +16,109 @@
             <h2 class="text-2xl font-bold text-green-700 mb-6">📦 লাইভ অর্ডার বোর্ড</h2>
 
             <!-- Filter -->
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-                <div>
-                    <label for="dateFilter" class="text-gray-600 font-semibold mr-2">Filter by:</label>
-                    <select id="dateFilter" class="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-400 outline-none">
-                        <option value="today">Today</option>
-                        <option value="yesterday">Yesterday</option>
-                        <option value="last7">Last 7 Days</option>
-                        <option value="last15">Last 15 Days</option>
-                        <option value="1month">1 Month</option>
-                    </select>
-                </div>
+             <!-- Filter -->
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
 
-                <div>
-                    <label for="sortBy" class="text-gray-600 font-semibold mr-2">Sort by:</label>
-                    <select id="sortBy" class="border px-3 py-2 rounded-lg focus:ring-2 focus:ring-green-400 outline-none">
-                        <option value="total_delivered_desc">Total Delivered (High → Low)</option>
-                        <option value="total_delivered_asc">Total Delivered (Low → High)</option>
-                        <option value="pending_orders_desc">Pending Orders (High → Low)</option>
-                        <option value="pending_orders_asc">Pending Orders (Low → High)</option>
-                    </select>
-                </div>
-            </div>
+<form method="GET" action="{{ route('rider.orders') }}">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+
+        <div class="flex items-center gap-2">
+
+            <label class="font-semibold">তারিখ:</label>
+
+            <select name="date_filter"
+                    onchange="this.form.submit()"
+                    class="border rounded-lg px-3 py-2">
+
+                <option value="today"
+                    {{ request('date_filter')=='today'?'selected':'' }}>
+                    Today
+                </option>
+
+                <option value="yesterday"
+                    {{ request('date_filter')=='yesterday'?'selected':'' }}>
+                    Yesterday
+                </option>
+
+                <option value="range"
+                    {{ request('date_filter')=='range'?'selected':'' }}>
+                    Date Range
+                </option>
+
+                <option value="all"
+                    {{ request('date_filter','all')=='all'?'selected':'' }}>
+                    All Orders
+                </option>
+
+            </select>
+
+            <input type="date"
+                   name="from_date"
+                   value="{{ request('from_date') }}"
+                   onchange="this.form.submit()"
+                   class="border rounded-lg px-3 py-2 {{ request('date_filter')=='range' ? '' : 'hidden' }}">
+
+            <span class="{{ request('date_filter')=='range' ? '' : 'hidden' }}">-</span>
+
+            <input type="date"
+                   name="to_date"
+                   value="{{ request('to_date') }}"
+                   onchange="this.form.submit()"
+                   class="border rounded-lg px-3 py-2 {{ request('date_filter')=='range' ? '' : 'hidden' }}">
+
+        </div>
+
+        <div>
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Customer Name, Phone"
+                class="border rounded-lg px-3 py-2 w-64">
+
+        </div>
+
+        <div>
+
+            <select
+                name="status"
+                onchange="this.form.submit()"
+                class="border rounded-lg px-3 py-2">
+
+                <option value="">All</option>
+
+                <option value="accepted"
+                    {{ request('status')=='accepted'?'selected':'' }}>
+                    Accepted
+                </option>
+
+                <option value="rider_modified_accepted"
+                    {{ request('status')=='rider_modified_accepted'?'selected':'' }}>
+                    Modified
+                </option>
+
+                <option value="delivered"
+                    {{ request('status')=='delivered'?'selected':'' }}>
+                    Delivered
+                </option>
+
+            </select>
+
+        </div>
+
+        <button
+            class="bg-green-600 text-white px-5 py-2 rounded-lg">
+
+            Search
+
+        </button>
+
+    </div>
+</form>
+ 
+
+</div>
  
             <!-- Orders Table -->
             <div class="overflow-x-auto">
