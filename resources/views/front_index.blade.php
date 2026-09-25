@@ -195,6 +195,10 @@
           </svg>
           📲 অ্যান্ড্রয়েড অ্যাপ ডাউনলোড করুন
         </a>
+        <button id="installApp"
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg ">
+          📲 অ্যাপ ইন্সটল করুন
+      </button>
       </div>
     </div>
 
@@ -209,6 +213,51 @@
   </div>
 </section>
 
+
+
+@endsection
+
+@section('scripts')
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+}
+</script>
+
+<script>
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+
+    e.preventDefault();
+
+    deferredPrompt = e;
+
+    document
+        .getElementById('installApp')
+        .classList.remove('hidden');
+
+});
+
+document
+.getElementById('installApp')
+.addEventListener('click', async () => {
+
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+
+    await deferredPrompt.userChoice;
+
+    deferredPrompt = null;
+
+    document
+        .getElementById('installApp')
+        .classList.add('hidden');
+
+});
+</script>
 
 
 @endsection

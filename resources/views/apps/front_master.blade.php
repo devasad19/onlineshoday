@@ -8,6 +8,16 @@
  
   @yield('styles')
 
+<link rel="manifest" href="{{ asset('manifest.json') }}">
+
+<meta name="theme-color" content="#16a34a">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -850,6 +860,10 @@ function decreaseQty(btn) {
   }
 }
 
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('{{ asset('sw.js') }}');
+}
 </script>
 
 
