@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eBazar.com - আপনার বাজার এখন অনলাইনে</title>
+  <title>Online Shoday.com - আপনার বাজার এখন অনলাইনে</title>
       <meta name="csrf-token" content="{{ csrf_token() }}">
  
   @yield('styles')
@@ -17,6 +17,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+      <!-- Favicon -->
+<link rel="icon" type="image/png" href="public/favicon//favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="public/favicon//favicon.svg" />
+<link rel="shortcut icon" href="public/favicon//favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="public/favicon//apple-touch-icon.png" />
+<link rel="manifest" href="public/favicon//site.webmanifest" />
 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -486,7 +493,7 @@
 
   <!-- 🌱 Footer -->
   <footer class="bg-gray-900 text-gray-300 text-center py-6">
-    <p>© ২০২৫ eBazar.com | আপনার বাজার, আপনার ঘরে 🏡</p>
+    <p>© ২০২৫ Online Shoday.com | আপনার বাজার, আপনার ঘরে 🏡</p>
     <p>
       <a href="{{ route('terms-and-conditions') }}" class="text-sm text-green-400 hover:text-green-300">টার্মস অ্যান্ড কন্ডিশন</a> ||
       <a href="{{ route('privacy-policy') }}" class="text-sm text-green-400 hover:text-green-300">প্রাইভেসি পলিসি</a>

@@ -8,7 +8,7 @@
 
 <section class="bg-white rounded-2xl  space-y-6" aria-labelledby="privacy-heading">
 <h1 id="privacy-heading" class="text-3xl font-extrabold text-gray-800">প্রাইভেসি পলিসি</h1>
-<p class="text-gray-600">eBazar.com গ্রাহকের ব্যক্তিগত তথ্য সংরক্ষণ ও সুরক্ষার ক্ষেত্রে প্রতিশ্রুতিবদ্ধ। এই পলিসি বিস্তারিতভাবে ব্যাখ্যা করে আমরা কোন তথ্য সংগ্রহ করি, কিভাবে ব্যবহার করি এবং আপনার অধিকার কী কী।</p>
+<p class="text-gray-600">Online Shoday.com গ্রাহকের ব্যক্তিগত তথ্য সংরক্ষণ ও সুরক্ষার ক্ষেত্রে প্রতিশ্রুতিবদ্ধ। এই পলিসি বিস্তারিতভাবে ব্যাখ্যা করে আমরা কোন তথ্য সংগ্রহ করি, কিভাবে ব্যবহার করি এবং আপনার অধিকার কী কী।</p>
 
 
 <h2 class="text-2xl font-semibold mt-6">১. তথ্য সংগ্রহ</h2>
@@ -52,7 +52,7 @@
 <p class="text-gray-600">আমরা সময়ের সঙ্গে আমাদের প্রাইভেসি পলিসি পরিবর্তন করতে পারি। কোন পরিবর্তন হলে ওয়েবসাইটে প্রকাশিত হালনাগাদ তারিখ অনুযায়ী তা কার্যকর হবে।</p>
 
 
-<div class="mt-6 text-sm text-gray-500">প্রশ্ন বা অভিযোগের জন্য আমাদের সাথে যোগাযোগ করুন: <a href="mailto:support@ebazar.com" class="text-green-600 hover:underline">support@ebazar.com</a> অথবা হেল্পলাইন: <a href="tel:01700000000" class="text-green-600 hover:underline">০১৭-০০০ ০০০০০</a></div>
+<div class="mt-6 text-sm text-gray-500">প্রশ্ন বা অভিযোগের জন্য আমাদের সাথে যোগাযোগ করুন: <a href="mailto:support@Online Shoday.com" class="text-green-600 hover:underline">support@Online Shoday.com</a> অথবা হেল্পলাইন: <a href="tel:01700000000" class="text-green-600 hover:underline">০১৭-০০০ ০০০০০</a></div>
 </section>
 
     

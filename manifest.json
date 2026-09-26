@@ -1,7 +1,7 @@
 {
     "name":"OnlineShoday",
     "short_name":"OnlineShoday",
-    "start_url":"http://localhost/ebazar/",
+    "start_url":"http://localhost/OnlineShoday/",
     "scope":"/",
     "display":"standalone",
     "background_color":"#ffffff",

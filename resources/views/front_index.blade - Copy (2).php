@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eBazar.com - আপনার বাজার এখন অনলাইনে</title>
+  <title>Online Shoday.com - আপনার বাজার এখন অনলাইনে</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -12,7 +12,7 @@
   <header class="bg-white shadow-md sticky top-0 z-50">
     <div class="max-w-7xl mx-auto flex justify-between items-center px-4 py-3">
       <h1 class="text-3xl font-bold text-green-600">
-        eBazar<span class="text-gray-800">.com</span>
+        Online Shoday<span class="text-gray-800">.com</span>
       </h1>
 
       <nav class="hidden md:flex space-x-6 text-sm font-medium">
@@ -37,7 +37,7 @@
           আপনার স্থানীয় বাজার <br class="hidden md:block"/> এখন ঘরে বসেই 🛒
         </h2>
         <p class="text-gray-700 mb-6 text-lg">
-          সবজি, মাছ, ফল, মাংস বা ইলেকট্রনিকস — যা চান, অর্ডার করুন eBazar থেকে। 
+          সবজি, মাছ, ফল, মাংস বা ইলেকট্রনিকস — যা চান, অর্ডার করুন Online Shoday থেকে। 
           বাজারে না গিয়ে ঘরেই ডেলিভারি পান।
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
@@ -50,7 +50,7 @@
 
       <!-- Image -->
       <div class="md:w-1/2 flex justify-center">
-        <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="eBazar illustration" class="w-72 md:w-96 drop-shadow-lg">
+        <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="Online Shoday illustration" class="w-72 md:w-96 drop-shadow-lg">
       </div>
     </div>
   </section>
@@ -145,7 +145,7 @@
 
   <!-- 🌱 Footer -->
   <footer class="bg-gray-900 text-gray-300 text-center py-6">
-    <p>© ২০২৫ eBazar.com | আপনার বাজার, আপনার ঘরে 🏡</p>
+    <p>© ২০২৫ Online Shoday.com | আপনার বাজার, আপনার ঘরে 🏡</p>
   </footer>
 
 </body>

@@ -57,7 +57,7 @@
 
             <h2 class="text-2xl font-bold text-green-600">
 
-                eBazar Dashboard
+                Online Shoday Dashboard
 
             </h2>
 

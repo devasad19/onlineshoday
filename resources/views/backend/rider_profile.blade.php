@@ -3,7 +3,7 @@
 @section('content')
 <div class="flex min-h-screen bg-gray-50">
     <!-- Sidebar -->
-    @include('backend.patrials.admin_aside')
+     
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col p-6">

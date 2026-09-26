@@ -8,7 +8,7 @@
 <!-- Terms and Conditions -->
 <section class="bg-white rounded-2xl " aria-labelledby="terms-heading">
 <h2 id="terms-heading" class="text-3xl font-extrabold text-gray-800">টার্মস অ্যান্ড কন্ডিশনস</h2>
-<p class="mt-2 text-gray-600">এই টার্মস অ্যান্ড কন্ডিশনসটি eBazar.com ব্যবহার করার সময় আপনার অধিকার এবং দায়িত্বগুলি বিস্তারিতভাবে ব্যাখ্যা করে। অনুগ্রহ করে মনোযোগ দিয়ে পড়ুন।</p>
+<p class="mt-2 text-gray-600">এই টার্মস অ্যান্ড কন্ডিশনসটি Online Shoday.com ব্যবহার করার সময় আপনার অধিকার এবং দায়িত্বগুলি বিস্তারিতভাবে ব্যাখ্যা করে। অনুগ্রহ করে মনোযোগ দিয়ে পড়ুন।</p>
 
 
 <div class="mt-6 space-y-4">

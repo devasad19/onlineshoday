@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eBazar - Dashboard</title>
+  <title>Online Shoday - Dashboard</title>
       <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
@@ -115,7 +115,7 @@
 
   <!-- 🌱 Footer -->
   <footer class="bg-gray-900 text-gray-300 text-center py-4 mt-auto">
-    <p>© ২০২৫ eBazar.com | আপনার বাজার, আপনার ঘরে 🏡</p>
+    <p>© ২০২৫ Online Shoday.com | আপনার বাজার, আপনার ঘরে 🏡</p>
   </footer>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

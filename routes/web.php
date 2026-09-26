@@ -4,8 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RiderController;
-use App\Http\Controllers\BazarController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\BazarController;
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\Dashboard\UserDashboardController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
@@ -112,6 +113,7 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
     Route::post('/bazars/areas/delete', [BazarController::class, 'bazarAreadestroy'])->name('admin.bazar.areas.delete');
  
 
+    Route::get('/package-management', [PackageController::class, 'index'])->name('admin.package_management');
 
 
     Route::get('/products', [ProductController::class, 'index'])->name('manage_products');

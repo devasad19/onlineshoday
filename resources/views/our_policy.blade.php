@@ -26,7 +26,7 @@
                     <div class="bg-white border mb-4 sm:mb-5 p-3 sm:p-4 rounded-lg shadow-sm">
                         <h4 class="font-semibold text-base sm:text-lg">১. আমাদের সেবা সম্পর্কে</h4>
                         <p class="mt-2 text-sm text-gray-600">
-                            eBazar.com-এ আপনি অনলাইনে পণ্যের তালিকা (শপিং লিস্ট) পাঠালে আমাদের রাইডার/পার্টনার আপনার নিকটস্থ বাজার থেকে তা সংগ্রহ করে নির্ধারিত ঠিকানায় পৌঁছে দেবে।
+                            Online Shoday.com-এ আপনি অনলাইনে পণ্যের তালিকা (শপিং লিস্ট) পাঠালে আমাদের রাইডার/পার্টনার আপনার নিকটস্থ বাজার থেকে তা সংগ্রহ করে নির্ধারিত ঠিকানায় পৌঁছে দেবে।
                             আমরা বিশ্বাসযোগ্য দোকান ও সরবরাহকারীর সাথে কাজ করি এবং পণ্যের মান ও সততা নিশ্চিত করার চেষ্টা করি।
                         </p>
                     </div>
@@ -78,7 +78,7 @@
                         </p>
                         <div class="mt-3 text-sm">
                             <p><strong>হেল্পলাইন:</strong> <a href="tel:01700000000" class="text-green-600 hover:underline">০১৭ - ০০০ ০০০০০</a></p>
-                            <p><strong>ইমেইল:</strong> <a href="mailto:support@ebazar.com" class="text-green-600 hover:underline">support@ebazar.com</a></p>
+                            <p><strong>ইমেইল:</strong> <a href="mailto:support@Online Shoday.com" class="text-green-600 hover:underline">support@Online Shoday.com</a></p>
                         </div>
                     </div>
 
@@ -91,7 +91,7 @@
                 <div class="bg-white border border-green-100 p-3 sm:p-4 rounded-lg">
                     <h4 class="font-semibold text-base sm:text-lg">৭. দায়-জবাব (Disclaimer)</h4>
                     <p class="text-sm text-gray-700 mt-1">
-                        eBazar.com নিজে কোনো পণ্য উৎপাদন বা সরবরাহকারীর দায়ভার ধারণ করে না; আমরা কেবল আপনার হয়ে বাজার থেকে পণ্য সংগ্রহ করে সরবরাহ করি।
+                        Online Shoday.com নিজে কোনো পণ্য উৎপাদন বা সরবরাহকারীর দায়ভার ধারণ করে না; আমরা কেবল আপনার হয়ে বাজার থেকে পণ্য সংগ্রহ করে সরবরাহ করি।
                         বাজারের দাম, পণ্যের মান বা বিক্রেতার প্রদত্ত ভুল তথ্যের জন্য চূড়ান্তভাবে বিক্রেতা বা বাজার দায়ী; তারপরও গ্রাহকের সন্তুষ্টি নিশ্চিত করতে আমরা সর্বাত্মক প্রচেষ্টা চালিয়ে যাব।
                     </p>
                 </div>

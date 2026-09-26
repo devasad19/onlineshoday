@@ -11,7 +11,7 @@
         আপনার স্থানীয় বাজার <br class="hidden md:block"/> এখন ঘরে বসেই 🛒
       </h2>
       <p class="text-gray-700 mb-6 text-base sm:text-lg">
-        সবজি, মাছ, ফল, মাংস বা ইলেকট্রনিকস — যা চান, অর্ডার করুন eBazar থেকে। 
+        সবজি, মাছ, ফল, মাংস বা ইলেকট্রনিকস — যা চান, অর্ডার করুন Online Shoday থেকে। 
         বাজারে না গিয়ে ঘরেই ডেলিভারি পান।
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
@@ -25,8 +25,8 @@
 
     <!-- Image -->
     <div class="md:w-1/2 flex justify-center">
-      <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" 
-           alt="eBazar illustration" 
+      <img src="{{ url('public/default/small_logo.png') }}" 
+           alt="Online Shoday illustration" 
            class="w-60 sm:w-72 md:w-96 drop-shadow-lg">
     </div>
   </div>
@@ -183,7 +183,7 @@
       <h3 class="text-2xl sm:text-3xl font-bold text-green-800 mb-4">📱 আমাদের অ্যান্ড্রয়েড অ্যাপ ডাউনলোড করুন</h3>
       <p class="text-gray-700 leading-relaxed mb-6 text-sm sm:text-base">
         আরও দ্রুত ও সহজভাবে পণ্য অর্ডার করতে এখনই আমাদের অফিশিয়াল 
-        <span class="font-semibold text-green-700">"eBazar.com"</span> অ্যান্ড্রয়েড অ্যাপটি ডাউনলোড করুন।  
+        <span class="font-semibold text-green-700">"Online Shoday.com"</span> অ্যান্ড্রয়েড অ্যাপটি ডাউনলোড করুন।  
         ঘরে বসে কেনাকাটা করুন, অর্ডার ট্র্যাক করুন, আর পান এক্সক্লুসিভ অফার ও ছাড়!
       </p>
 

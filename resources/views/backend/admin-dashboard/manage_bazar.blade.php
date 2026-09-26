@@ -52,7 +52,7 @@
                             </td>
                             <td class="py-3 px-4 text-right">
                                 <button onclick="openEditModal('{{ $bazar->id }}', '{{ $bazar->name }}', '{{ $bazar->status }}')" class="text-blue-600 hover:text-blue-800 font-semibold text-sm">✏️ Edit</button>
-                                <button onclick="deleteBazar({{ $bazar->id }})" class="text-red-600 hover:text-red-800 font-semibold text-sm ml-3">🗑️ Delete</button>
+                                <button onclick="deletOnline Shoday({{ $bazar->id }})" class="text-red-600 hover:text-red-800 font-semibold text-sm ml-3">🗑️ Delete</button>
                                 <button onclick="openAreaModal('{{ $bazar->id }}', '{{ $bazar->name }}')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow text-sm ml-3">➕ নতুন এলাকা</button>
                             </td>
                         </tr>
@@ -413,7 +413,7 @@ $('#editForm').on('submit', function(e) {
 });
 
 /* 🔹 Delete বাজার */
-function deleteBazar(id) {
+function deletOnline Shoday(id) {
     if (!confirm('আপনি কি নিশ্চিত এই বাজারটি মুছে ফেলতে চান?')) return;
 
     $.ajax({

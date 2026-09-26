@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>eBazar.com - আপনার স্থানীয় বাজার এখন অনলাইনে</title>
+  <title>Online Shoday.com - আপনার স্থানীয় বাজার এখন অনলাইনে</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -11,7 +11,7 @@
   <!-- 🌟 হেডার / ন্যাভবার -->
   <header class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto flex justify-between items-center px-4 py-3">
-      <h1 class="text-2xl font-bold text-green-600">eBazar<span class="text-gray-800">.com</span></h1>
+      <h1 class="text-2xl font-bold text-green-600">Online Shoday<span class="text-gray-800">.com</span></h1>
       <nav class="space-x-4 text-sm font-semibold">
         <a href="#" class="hover:text-green-600">হোম</a>
         <a href="#" class="hover:text-green-600">বাজার</a>
@@ -120,7 +120,7 @@
 
   <!-- ⚙️ ফুটার -->
   <footer class="bg-gray-900 text-gray-300 text-center py-6">
-    <p>© ২০২৫ eBazar.com | আপনার বাজার, আপনার ঘরে</p>
+    <p>© ২০২৫ Online Shoday.com | আপনার বাজার, আপনার ঘরে</p>
   </footer>
 
 </body>

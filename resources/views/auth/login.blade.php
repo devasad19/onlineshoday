@@ -8,7 +8,7 @@
     <!-- Logo -->
     <div class="text-center">
       <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="Logo" class="w-16 mx-auto mb-3">
-      <h2 class="text-3xl font-extrabold text-green-700">eBazar Login</h2>
+      <h2 class="text-3xl font-extrabold text-green-700">Online Shoday Login</h2>
       <p class="text-gray-500 text-sm mt-1">আপনার একাউন্টে লগইন করুন</p>
     </div>
 

@@ -124,6 +124,13 @@
                 <span>পণ্যের তালিকা</span>
             </a>
 
+            <a href="{{ route('admin.package_management') }}" 
+               class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+               {{ request()->routeIs('admin.package_management') ? 'bg-green-100 font-semibold text-green-700' : 'hover:bg-green-100' }}">
+                <i class="fa-solid fa-clipboard-list w-5 text-green-600"></i>
+                <span>প্যাকেজ ম্যানেজমেন্ট</span>
+            </a>
+
             <a href="{{ route('admin.all_orders') }}" 
                class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                {{ request()->routeIs('admin.all_orders') ? 'bg-green-100 font-semibold text-green-700' : 'hover:bg-green-100' }}">
