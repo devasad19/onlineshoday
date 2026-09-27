@@ -35,6 +35,11 @@ use App\Http\Controllers\Auth\LoginController;
     Route::get('product/{id}', [HomeController::class, 'frontdProductDetails'])->name('home.product.details');
     Route::post('/contact/submit', [HomeController::class, 'contactUsStore'])->name('contact.submit');
 
+
+    Route::get('/package/details/{id}', [PackageController::class, 'packageDetails'])->name('home.package.details');
+
+
+
 // routes/web.php
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::post('/barazid/clear/add', [CartController::class, 'clearAndAdd'])->name('bazarid.clear.add');
@@ -114,6 +119,15 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
  
 
     Route::get('/package-management', [PackageController::class, 'index'])->name('admin.package_management');
+    Route::get('/create-package', [PackageController::class, 'createPkg'])->name('admin.package_create');
+    Route::post('/store-package', [PackageController::class, 'storePkg'])->name('admin.pakcage.store');
+    Route::post('/package/update', [PackageController::class, 'updatePkg'])
+    ->name('admin.package.update');
+    Route::post('/store-package-items', [PackageController::class, 'getPkgItems'])->name('admin.package.items');
+    Route::post('/package/items/store', [PackageController::class, 'storePackageItem'])
+    ->name('admin.package.items.store');
+
+
 
 
     Route::get('/products', [ProductController::class, 'index'])->name('manage_products');

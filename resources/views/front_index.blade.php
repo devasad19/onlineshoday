@@ -113,6 +113,332 @@
   </div>
 </section>
 
+ <!-- 🛍️ Package Section -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 pb-14 sm:pb-16">
+
+    <!-- ================= HEADER ================= -->
+    <div class="flex flex-col sm:flex-row justify-between items-center
+                mb-6 sm:mb-8 gap-3">
+
+        <h3 class="text-xl sm:text-2xl font-bold text-green-700
+                   text-center sm:text-left">
+
+            <span class="text-green-600 mr-1">🛒</span>
+            কম্বো প্যাক — প্রয়োজনীয় পণ্য, সাশ্রয়ী প্যাকেজে
+
+        </h3>
+
+        <div class="flex items-center gap-2
+                    bg-green-50
+                    text-green-700
+                    px-4 py-2
+                    rounded-full
+                    text-sm
+                    font-medium">
+
+            <span class="text-base">🌿</span>
+
+            <span>সুস্থ থাকুন, ভালো থাকুন</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= PACKAGE GRID ================= -->
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
+                gap-5 sm:gap-6">
+
+        @forelse($packages as $package)
+
+@php
+    $oldPrice =  $package->price;
+
+    // Admin থেকে দেওয়া discount percentage
+    $discountPercent = $package->discount;
+
+    // Discount বাদ দেওয়ার পরের selling price
+    $discountPrice = (int) ($oldPrice - ($oldPrice * $discountPercent / 100));
+@endphp
+ 
+
+            <!-- ================= CARD ================= -->
+
+            <div class="bg-white
+                        rounded-2xl
+                        border border-gray-100
+                        overflow-hidden
+                        shadow-sm
+                        hover:shadow-xl
+                        transition-all duration-300
+                        group">
+
+
+                <!-- ================= IMAGE ================= -->
+
+                <div class="relative overflow-hidden">
+
+                    <img src="{{ url('uploads/packages/'.$package->image) }}"
+                         alt="{{ $package->name }}"
+                         class="w-full
+                                h-52 sm:h-56
+                                object-cover
+                                group-hover:scale-105
+                                transition-transform
+                                duration-500">
+
+
+                    <!-- DISCOUNT BADGE -->
+
+@if($discountPercent > 0)
+
+    <div class="absolute top-3 left-3
+                bg-red-500 text-white
+                px-3.5 py-1.5
+                rounded-full
+                shadow-md
+                text-sm font-bold">
+
+        🏷️ {{ bnNum($discountPercent) }}% ছাড়
+
+    </div>
+
+@endif
+
+
+                    <!-- FAVORITE -->
+
+                    <button type="button"
+                            class="absolute top-3 right-3
+                                   w-10 h-10
+                                   rounded-full
+                                   bg-white
+                                   shadow-md
+                                   flex items-center justify-center
+                                   hover:scale-110
+                                   transition">
+
+                        <span class="text-xl text-gray-500
+                                     hover:text-red-500">
+                            ♡
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!-- ================= CARD CONTENT ================= -->
+
+                <div class="p-4 sm:p-5">
+
+
+                    <!-- PACKAGE NAME -->
+
+                    <a href="{{ route('home.package.details', $package->id) }}"
+                       class="block
+                              text-lg sm:text-xl
+                              font-bold
+                              text-gray-800
+                              hover:text-green-700
+                              transition">
+
+                        {{ $package->name }}
+
+                    </a>
+
+
+                    <!-- ================= DESCRIPTION ================= -->
+
+                    @if($package->description)
+
+                        <p class="mt-2
+                                  text-sm
+                                  text-gray-500
+                                  leading-6
+                                  min-h-[72px]">
+
+                            {{ \Illuminate\Support\Str::words(
+                                $package->description,
+                                20,
+                                '...'
+                            ) }}
+
+                        </p>
+
+                    @else
+
+                        <div class="min-h-[72px]"></div>
+
+                    @endif
+
+
+                    <!-- ================= PRODUCT COUNT ================= -->
+
+                    <div class="flex items-center gap-2 mt-3">
+
+                        <!-- Manual Icon -->
+                        <span class="w-8 h-8
+                                     rounded-full
+                                     bg-green-50
+                                     flex items-center justify-center
+                                     text-green-600
+                                     text-lg">
+
+                            📦
+
+                        </span>
+
+
+                        <span class="text-sm
+                                     text-gray-600
+                                     font-medium">
+
+                            {{ bnNum(count($package->package_items)) }}
+                            টি পণ্য একসাথে
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- ================= PRICE ================= -->
+
+<div class="flex items-center gap-2 mt-3">
+
+    {{-- Discount Price --}}
+    <span class="text-2xl sm:text-3xl
+                 font-bold
+                 text-green-700">
+
+        ৳{{ bnNum($discountPrice) }}.০০
+
+    </span>
+
+
+    {{-- Old Price --}}
+    @if($discountPercent > 0)
+
+        <span class="text-sm sm:text-base
+                     text-gray-400
+                     line-through">
+
+            ৳{{ bnNum($oldPrice) }}.০০
+
+        </span>
+
+    @endif
+
+</div>
+
+
+                    <!-- ================= BUTTONS ================= -->
+
+                    <div class="flex items-center
+                                gap-2
+                                mt-4">
+
+
+                        <!-- ADD TO CART -->
+<button type="button"
+        class="addToCartBtn
+               flex-1
+               bg-green-600
+               hover:bg-green-700
+               text-white
+               font-semibold
+               text-sm
+               py-2.5
+               px-3
+               rounded-xl
+               shadow-sm
+               transition
+               flex
+               items-center
+               justify-center
+               gap-2"
+
+        data-id="{{ $package->id }}"
+        data-name="{{ $package->name }}"
+        data-price="{{ $discountPrice }}"
+        data-image="{{ url('uploads/packages/'.$package->image) }}">
+
+    <span class="text-lg leading-none">🛒</span>
+
+    <span>প্যাকেজ যোগ করুন</span>
+
+</button>
+
+
+                        <!-- DETAILS -->
+
+                        <a href="{{ route('home.package.details', $package->id) }}"
+
+                           class="border
+                                  border-green-600
+                                  text-green-700
+                                  hover:bg-green-600
+                                  hover:text-white
+                                  font-semibold
+                                  text-sm
+                                  py-2.5
+                                  px-3
+                                  rounded-xl
+                                  transition
+                                  flex
+                                  items-center
+                                  justify-center
+                                  gap-1.5">
+
+
+                            <!-- Manual Eye Icon -->
+
+                            <span class="text-base">
+                                👁
+                            </span>
+
+                            <span>
+                                বিস্তারিত
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        @empty
+
+            <!-- EMPTY -->
+
+            <div class="col-span-full
+                        text-center
+                        text-gray-500
+                        py-12">
+
+                <div class="text-4xl mb-3">
+                    📦
+                </div>
+
+                <p>
+                    কোনো প্যাকেজ পাওয়া যায়নি।
+                </p>
+
+            </div>
+
+        @endforelse
+
+    </div>
+
+</section>
+
+
+
+
 <!-- 🚴‍♂️ Rider Section -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
   <div class="flex flex-col sm:flex-row justify-between items-center mb-6 text-center sm:text-left gap-2">

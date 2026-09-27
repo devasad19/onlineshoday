@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Session;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Package;
 use App\Models\Bazar;
 use App\Models\CartItem;
 use App\Models\Contact;
@@ -69,6 +70,11 @@ class HomeController extends Controller
                                     ->with(['category'])
                                     ->latest()
                                     ->take(12)
+                                    ->get();
+
+        $data['packages'] = Package::where('status', 'active')
+                                    ->latest()
+                                    ->take(6)
                                     ->get();
 
         // Session::flush();

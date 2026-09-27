@@ -8,4 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 class PackageItem extends Model
 {
     use HasFactory;
+
+    
+protected $fillable = [
+    'package_id',
+    'product_id',
+    'unit',
+    'quantity',
+    'price',
+    'status',
+];
+
+
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+
+
 }

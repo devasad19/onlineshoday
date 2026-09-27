@@ -16,11 +16,11 @@ return new class extends Migration
             $table->foreignId('package_id')
                 ->constrained('packages')
                 ->cascadeOnDelete();
-
-            $table->string('name');
-            $table->string('image')->nullable();
-            $table->decimal('price', 10, 2)->default(0);
-            $table->string('unit');
+            $table->foreignId('product_id')
+                ->constrained('products')
+                ->cascadeOnDelete();
+             
+            $table->string('status');
             $table->decimal('quantity', 10, 2)->default(1);
             $table->timestamps();
         });

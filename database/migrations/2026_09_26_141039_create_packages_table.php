@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2)->default(0);
             $table->decimal('discount', 10, 2)->default(0);
             $table->unsignedInteger('availability')->default(0);
-            $table->boolean('status')->default(1);
+            $table->string('status');
             $table->timestamps();
         });
     }
