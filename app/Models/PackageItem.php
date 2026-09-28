@@ -10,14 +10,14 @@ class PackageItem extends Model
     use HasFactory;
 
     
-protected $fillable = [
-    'package_id',
-    'product_id',
-    'unit',
-    'quantity',
-    'price',
-    'status',
-];
+    protected $fillable = [
+        'package_id',
+        'product_id',
+        'unit',
+        'quantity',
+        'price',
+        'status',
+    ];
 
 
     public function package()

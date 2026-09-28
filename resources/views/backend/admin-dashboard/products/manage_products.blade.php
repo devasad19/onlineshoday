@@ -14,10 +14,16 @@
         <section class="bg-white p-2 md:p-6 rounded-2xl shadow m-2 md:m-6 w-full min-w-0 overflow-hidden">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold text-green-700">🛍️ পণ্য ব্যবস্থাপনা</h2>
-                <a href="{{ route('admin.product.create') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-                        data-modal-target="addProductModal">
-                    ➕ নতুন পণ্য যোগ করুন
+                <a href="{{ route('admin.ecom_product.create') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                        >
+                    ➕ ই-কমার্স পণ্য
             </a>
+
+                <a href="{{ route('admin.product.create') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                        >
+                    ➕ নিত্যপ্রয়োজনীয় পণ্য
+            </a>
+
             </div>
 
             <div class="bg-white p-4 rounded-xl shadow mb-4">
@@ -81,7 +87,7 @@
 
         <!-- 🔘 Add/Edit Modal Placeholder -->
 <!-- 🧩 Add/Edit Product Modal -->
-<div id="addProductModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<!-- <div id="addProductModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white w-full max-w-lg rounded-2xl shadow-lg p-6 relative">
       <h2 class="text-xl font-bold text-green-700 mb-4">🛒 নতুন পণ্য যোগ করুন</h2>
 
@@ -115,7 +121,7 @@
           </div>
       </form>
   </div>
-</div>
+</div> -->
 
 
 <!-- view product details  -->
@@ -187,10 +193,6 @@
 
 @section('scripts')
 <script>
-    function openEditModal(id) {
-        document.getElementById('addProductModal').classList.remove('hidden');
-        // এখানে আপনি AJAX দিয়ে প্রোডাক্ট ডাটা লোড করতে পারেন
-    }
 
     function confirmDelete(id) {
         if (confirm('আপনি কি নিশ্চিতভাবে এই পণ্যটি মুছে ফেলতে চান?')) {

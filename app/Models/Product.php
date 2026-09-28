@@ -18,13 +18,15 @@ class Product extends Model
         'image',
         'description',
         'available',
+        'ecom',
+        'discount',
         'status',
     ];
 
 
-protected $casts = [
-    'price_updated_at' => 'datetime',
-];
+    protected $casts = [
+        'price_updated_at' => 'datetime',
+    ];
 
 
 

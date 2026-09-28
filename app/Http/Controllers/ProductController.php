@@ -22,7 +22,6 @@ class ProductController extends Controller
  
         $request->validate([
             'name'        => 'required|string|max:255',
-            'category_id' => 'required|integer',
             'price'       => 'required|numeric|min:0',
             'unit'        => 'required|string|max:50',
             'status'      => 'required|string',
@@ -36,10 +35,13 @@ class ProductController extends Controller
 
         Product::create([
             'name'        => $request->name,
+            'bazar_id' => $request->bazar_id,
             'category_id' => $request->category_id,
             'price'       => $request->price,
             'unit'        => $request->unit,
             'status'      => $request->status,
+            'ecom'      => $request->ecom ?? 0,
+            'discount' => $request->discount?? 0,
             'description' => $request->description,
             'image'       => $imagePath,
         ]);

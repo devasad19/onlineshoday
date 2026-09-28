@@ -68,6 +68,7 @@ class HomeController extends Controller
 
         $data['products'] = Product::where('status', 'active')
                                     ->with(['category'])
+                                    ->where('ecom', 0)
                                     ->latest()
                                     ->take(12)
                                     ->get();
@@ -75,6 +76,13 @@ class HomeController extends Controller
         $data['packages'] = Package::where('status', 'active')
                                     ->latest()
                                     ->take(6)
+                                    ->get();
+
+        $data['ecommece_products'] = Product::where('status', 'active')
+                                    ->with(['category'])
+                                    ->where('ecom', 1)
+                                    ->latest()
+                                    ->take(12)
                                     ->get();
 
         // Session::flush();
@@ -180,6 +188,36 @@ public function frontdProductDetails($id)
 
  
     return view('details', $data);
+}
+
+public function frontdEcommerceProductDetails($id)
+{
+    $data['product'] = Product::with(['category', 'bazar'])->findOrFail($id);
+
+    // ধরুন orders টেবিলে rider_id আছে
+    $data['recentOrders'] = Order::where('rider_id', $id)
+                        ->latest()
+                        ->take(5)
+                        ->get();
+
+            
+        $data['othersProducts'] = Product::where('ecom', 0)
+            ->where('id', '!=', $data['product']->id)
+            ->where('status', 'active')
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+ 
+
+    // সম্পর্কিত পণ্য (same bazar এর)
+    $data['relatedProducts'] = Product::where(['bazar_id' => $data['product']->bazar_id, 'category_id' => $data['product']->category_id])
+                        ->where('id', '!=', $data['product']->id)
+                        ->where('ecom', 1)
+                        ->take(4)
+                        ->get();
+
+ 
+    return view('ecom_details', $data);
 }
 
 public function riderProfile($id)

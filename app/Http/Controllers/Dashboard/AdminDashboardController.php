@@ -65,6 +65,14 @@ class AdminDashboardController extends Controller
         return view('backend.admin-dashboard.products.add_products', $data);
     }
 
+    public function ecommerceCreateProducts(){
+        $data['categories'] = Category::orderBy('id', 'desc')->get();
+        $data['riders'] = Rider::orderBy('id', 'desc')->get();
+        $data['bazars'] = Bazar::where('status', 'Active')->get();
+
+        return view('backend.admin-dashboard.products.add_ecom_product', $data);
+    }
+
     public function adminAllOrders(){
 
         $data['orders'] = [];

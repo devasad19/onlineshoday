@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('image')->nullable();
             $table->text('description')->nullable();
+            $table->integer('ecom')->default(0);
             $table->timestamps();
 
             // Optional foreign key (if category table exists)

@@ -33,6 +33,7 @@ use App\Http\Controllers\Auth\LoginController;
     Route::get('terms-and-conditions', [HomeController::class, 'termsAndConditions'])->name('terms-and-conditions');
     Route::get('/products/filter', [HomeController::class, 'filterProducts'])->name('products.filter');
     Route::get('product/{id}', [HomeController::class, 'frontdProductDetails'])->name('home.product.details');
+    Route::get('ecommerce-product/{id}', [HomeController::class, 'frontdEcommerceProductDetails'])->name('home.ecom_product.details');
     Route::post('/contact/submit', [HomeController::class, 'contactUsStore'])->name('contact.submit');
 
 
@@ -93,7 +94,8 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
 
     Route::get('dashboard/manage_products', [AdminDashboardController::class, 'adminManageProducts'])->name('admin.manage_products');
     Route::get('dashboard/create-product', [AdminDashboardController::class, 'adminManageCreateProducts'])->name('admin.product.create');
-    Route::post('dashboard/store-product', [AdminDashboardController::class, 'adminStoreProducts'])->name('admin.products.store');
+    Route::get('dashboard/ecommerce-product-create', [AdminDashboardController::class, 'ecommerceCreateProducts'])->name('admin.ecom_product.create');
+    // Route::post('dashboard/store-product', [AdminDashboardController::class, 'adminStoreProducts'])->name('admin.products.store');
     Route::get('dashboard/all_orders', [AdminDashboardController::class, 'adminAllOrders'])->name('admin.all_orders');
     Route::get('dashboard/rider_list', [AdminDashboardController::class, 'adminRiderList'])->name('admin.rider_list');
     Route::get('dashboard/customer_list', [AdminDashboardController::class, 'adminCustomerList'])->name('admin.customer_list');

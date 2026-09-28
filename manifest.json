@@ -1,12 +1,12 @@
 {
-    "name":"OnlineShoday",
-    "short_name":"OnlineShoday",
-    "start_url":"http://localhost/OnlineShoday/",
-    "scope":"/",
-    "display":"standalone",
-    "background_color":"#ffffff",
-    "theme_color":"#16a34a",
-    "orientation":"portrait",
+    "name": "Online Shoday",
+    "short_name": "Online Shoday",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#16a34a",
+    "orientation": "portrait",
         "icons":[
         {
         "src":"images/icon-32.png",
