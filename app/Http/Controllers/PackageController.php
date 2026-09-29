@@ -30,6 +30,14 @@ class PackageController extends Controller
         return view('backend.admin-dashboard.packages.create_pkg');
     }
 
+    public function packageAll()
+    {        
+        $data['packages'] = Package::with('package_items')
+            ->latest()->get();
+
+        return view('packages.packages', $data);
+    }
+
    public function packageDetails($id)
     {
          
@@ -64,7 +72,7 @@ class PackageController extends Controller
             ->get();
 
 
-        return view('package_details', compact(
+        return view('packages.package_details', compact(
             'packages',
             'package',
             'relatedPackages',
@@ -73,6 +81,18 @@ class PackageController extends Controller
             'discountPrice'
         ));
     }
+
+    // ✅ Store Product
+    public function packagePointsDetails(Request $request){
+
+
+        return view('packages.package_points_details');
+
+    }
+
+
+
+
 
     // ✅ Store Product
     public function storePkg(Request $request)

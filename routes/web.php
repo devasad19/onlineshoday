@@ -37,7 +37,9 @@ use App\Http\Controllers\Auth\LoginController;
     Route::post('/contact/submit', [HomeController::class, 'contactUsStore'])->name('contact.submit');
 
 
+    Route::get('/package/all', [PackageController::class, 'packageAll'])->name('home.package.all');
     Route::get('/package/details/{id}', [PackageController::class, 'packageDetails'])->name('home.package.details');
+    Route::get('/package/package-points-details', [PackageController::class, 'packagePointsDetails'])->name('home.package_points.details');
 
 
 
@@ -106,6 +108,14 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
     Route::get('dashboard/rider/slug', [AdminDashboardController::class, 'riderProfile'])->name('admin.rider.profile');
     
     Route::get('live/orders', [AdminDashboardController::class, 'adminLiveOrders'])->name('admin.orders.live');
+
+
+    Route::get('/orders/{order}/print', [AdminDashboardController::class, 'printInvoice'])
+        ->name('admin.order.print');
+
+    Route::post('/orders/bulk-print', [AdminDashboardController::class, 'bulkPrint'])
+        ->name('admin.orders.bulkPrint');
+
 
     // ========================= backend =================
     Route::get('dashboard/manage-bazar', [BazarController::class, 'adminManageBazar'])->name('admin.manage_bazar');

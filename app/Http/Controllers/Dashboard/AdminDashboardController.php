@@ -306,13 +306,43 @@ if($request->filled('search')){
 
     public function adminSettings(){
  
-
-
- 
         return view('backend.admin-dashboard.admin_settings');
     }
 
 
+
+public function printInvoice(Order $order)
+{
+    $order->load([
+        'user',
+        'rider',
+        'items.product',
+        'custom_products',
+    ]);
+
+    return view('backend.orders.print', compact('order'));
+}
+
+
+public function bulkPrint(Request $request)
+{
+    $request->validate([
+        'order_ids' => 'required|array|min:1',
+        'order_ids.*' => 'integer|exists:orders,id',
+    ]);
+
+    $orders = Order::whereIn('id', $request->order_ids)
+        ->with([
+            'user',
+            'rider',
+            'items.product',
+            'custom_products',
+        ])
+        ->orderByDesc('id')
+        ->get();
+
+    return view('backend.orders.print-bulk', compact('orders'));
+}
 
 
 

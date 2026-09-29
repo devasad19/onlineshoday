@@ -4,7 +4,7 @@
 @section('content')
 <div class="flex min-h-screen bg-gray-50">
     <!-- 🟢 Sidebar -->
-    @include('backend.patrials.rider_aside')
+    <!-- @include('backend.patrials.rider_aside') -->
  
     <!-- 🟡 Main Content Area -->
     <div class="flex-1 flex flex-col p-4">

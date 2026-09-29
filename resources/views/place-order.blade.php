@@ -10,7 +10,7 @@
 
     <!-- ✅ Cart Items -->
     <div class="bg-white rounded-2xl shadow p-2 md:p-6 mb-6">
-      <h3 class="text-xl font-semibold text-gray-700 mb-4">আপনার পণ্যসমূহ</h3>
+      <h3 class="text-xl font-semibold text-gray-700 mb-4">আপনার ব্যাগের পণ্যসমূহ</h3>
 
       <div class="space-y-4">
         @foreach($cartItems as $cart)

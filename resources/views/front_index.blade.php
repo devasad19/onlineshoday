@@ -253,11 +253,11 @@
 
         <span>🌿 প্রয়োজনীয় পণ্য</span>
 
-        <span>•</span>
+        <span></span>
 
         <span>🚚 ঘরে ডেলিভারি</span>
 
-        <span>•</span>
+        <span></span>
 
         <span>🤝 বিশ্বস্ত সেবা</span>
 
@@ -298,7 +298,7 @@
 <section class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
   <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100">
     <h3 class="text-xl font-bold mb-4 text-green-700 flex items-center gap-2 justify-center md:justify-start">
-      🔎 পণ্য ফিল্টার করুন
+      🔎 পণ্য বাছাই করুন
     </h3>
 
     <form action="{{ route('products.filter') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
@@ -320,7 +320,7 @@
              class="border px-3 py-2 rounded-lg w-full focus:ring-2 focus:ring-green-400 text-sm">
 
       <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm sm:col-span-2 md:col-span-1">
-        ফিল্টার প্রয়োগ করুন
+        বাছাই করুন
       </button>
     </form>
   </div>
@@ -329,7 +329,7 @@
 <!-- 🛍️ Product Section -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-14 sm:pb-16">
   <div class="flex flex-col sm:flex-row justify-between items-center mb-6 text-center sm:text-left gap-2">
-    <h3 class="text-2xl font-bold text-green-700">🛒 পণ্যসমূহের তালিকা</h3>
+    <h3 class="text-2xl font-bold text-green-700">🛒 নিত্যপ্রয়োজনীয় পণ্যসমূহ</h3>
     <a href="{{ route('products.filter') }}" class="text-sm text-green-600 hover:underline">সব পণ্য দেখুন →</a>
   </div>
 
@@ -339,9 +339,9 @@
         <img src="{{ url('uploads/products/'.$product->image) }}" 
              alt="{{ $product->name }}" 
              class="rounded-lg w-full h-44 object-cover group-hover:scale-105 transition duration-300">
-        <button class="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:text-red-500">
+        <!-- <button class="absolute top-3 right-3 bg-white p-2 rounded-full shadow hover:text-red-500">
           ❤️
-        </button>
+        </button> -->
         <div class="mt-4">
            <a href="{{ route('home.product.details', $product->id) }}"  class="font-bold text-sm sm:text-lg">{{ $product->name }}</a>
           <p class="text-green-600 text-lg font-semibold">৳{{ bnNum($product->price) }} / {{ $product->unit }}</p>
@@ -398,8 +398,9 @@
                     font-medium">
 
             <span class="text-base">🌿</span>
-
-            <span>সুস্থ থাকুন, ভালো থাকুন</span>
+    <a href="{{ route('home.package.all') }}" class="text-sm text-green-600 hover:underline">
+            <span>সব কম্বো প্যাক</span>
+            </a>
         </div>
     </div>
 
@@ -468,7 +469,7 @@
 
                     <!-- FAVORITE -->
 
-                    <button type="button"
+                    <!-- <button type="button"
                             class="absolute top-3 right-3
                                    w-10 h-10
                                    rounded-full
@@ -483,7 +484,7 @@
                             ♡
                         </span>
 
-                    </button>
+                    </button> -->
 
                 </div>
 
@@ -694,155 +695,379 @@
     </div>
 
 </section>
-
-
-<!-- 🛒 Home Banner -->
+ <!-- 🎁 Combo Points Banner -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 pt-3 sm:pt-5 pb-6">
 
     <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl
                 bg-gradient-to-r from-green-700 via-green-600 to-emerald-500
                 shadow-md">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 items-center">
+        <!-- 65% LEFT + 35% RIGHT -->
+        <div class="grid grid-cols-1 md:grid-cols-[65%_35%] items-center">
 
-            <!-- Left Content -->
-            <div class="px-6 py-8 sm:px-10 sm:py-12 lg:px-14 lg:py-14
+
+            <!-- ================================================= -->
+            <!-- LEFT SIDE - 65% -->
+            <!-- ================================================= -->
+            <div class="px-5 py-7
+                        sm:px-8 sm:py-9
+                        lg:px-10 lg:py-10
                         text-white">
 
+                <!-- Badge -->
                 <div class="inline-flex items-center gap-2
-                            bg-white/15 backdrop-blur-sm
-                            px-3 py-1.5 rounded-full
-                            text-xs sm:text-sm mb-4">
-                    🛍️ আপনার প্রয়োজন, আমাদের দায়িত্ব
+                            bg-white/15
+                            backdrop-blur-sm
+                            border border-white/20
+                            px-3 py-1.5
+                            rounded-full
+                            text-[10px] sm:text-xs
+                            mb-3">
+
+                    🎁 কম্বো প্যাক • পয়েন্ট • ফ্রি বাজার
+
                 </div>
 
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl
-                           font-bold leading-tight">
-                    বাজারের প্রয়োজনীয় পণ্য
-                    <br>
+
+                <!-- ================= HEADING ================= -->
+                <h1 class="text-xl sm:text-2xl lg:text-3xl
+                           font-extrabold
+                           leading-tight">
+
+                    নিজে কিনুন,
                     <span class="text-yellow-300">
-                        এখন ঘরে বসেই অর্ডার করুন
+                        অন্যকেও কিনতে সাহায্য করুন
                     </span>
+
+                    <br>
+
+                    <span>
+                        দু’ভাবেই পয়েন্ট সংগ্রহ করুন
+                    </span>
+
                 </h1>
 
-                <p class="text-sm sm:text-base text-green-50
-                          leading-6 mt-4 max-w-xl">
-                    নিত্যপ্রয়োজনীয় পণ্য থেকে শুরু করে
-                    আপনার দরকারি বিভিন্ন পণ্য—সহজে অর্ডার করুন,
-                    আমরা আপনার ঠিকানায় পৌঁছে দেব।
-                </p>
 
-                <div class="flex flex-wrap gap-2.5 mt-6">
+                <!-- ================================================= -->
+                <!-- 3 BENEFITS -->
+                <!-- ================================================= -->
+                <div class="grid grid-cols-3
+                            gap-1.5 sm:gap-2.5
+                            mt-5">
 
-                    <a href="{{ route('products.filter') }}"
+
+                    <!-- ================= BENEFIT 1 ================= -->
+                    <div class="rounded-xl
+                                border border-white/30
+                                bg-white/10
+                                hover:bg-white/15
+                                p-2 sm:p-2.5
+                                transition">
+
+                        <div class="flex items-center
+                                    gap-1.5 sm:gap-2">
+
+                            <!-- Icon -->
+                            <div class="w-8 h-8
+                                        sm:w-9 sm:h-9
+                                        rounded-lg
+                                        bg-white
+                                        text-green-700
+                                        flex items-center justify-center
+                                        text-base sm:text-lg
+                                        flex-shrink-0">
+
+                                🛒
+
+                            </div>
+
+                            <!-- Text -->
+                            <div class="min-w-0">
+
+                                <div class="font-bold
+                                            text-[10px]
+                                            sm:text-xs
+                                            lg:text-sm
+                                            leading-tight
+                                            whitespace-nowrap">
+
+                                    নিজে সাশ্রয়ী কম্বো কিনুন
+
+                                </div>
+
+                                <div class="text-[8px]
+                                            sm:text-[10px]
+                                            text-green-100
+                                            mt-0.5
+                                            whitespace-nowrap">
+
+                                    পয়েন্ট পান
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= BENEFIT 2 ================= -->
+                    <div class="rounded-xl
+                                border border-white/30
+                                bg-white/10
+                                hover:bg-white/15
+                                p-2 sm:p-2.5
+                                transition">
+
+                        <div class="flex items-center
+                                    gap-1.5 sm:gap-2">
+
+                            <!-- Icon -->
+                            <div class="w-8 h-8
+                                        sm:w-9 sm:h-9
+                                        rounded-lg
+                                        bg-yellow-300
+                                        text-green-800
+                                        flex items-center justify-center
+                                        text-base sm:text-lg
+                                        flex-shrink-0">
+
+                                🎁
+
+                            </div>
+
+                            <!-- Text -->
+                            <div class="min-w-0">
+
+                                <div class="font-bold
+                                            text-[10px]
+                                            sm:text-xs
+                                            lg:text-sm
+                                            leading-tight
+                                            whitespace-nowrap">
+
+                                    অন্যকে সাহায্য করুন কিনতে
+
+                                </div>
+
+                                <div class="text-[8px]
+                                            sm:text-[10px]
+                                            text-green-100
+                                            mt-0.5
+                                            whitespace-nowrap">
+
+                                    রেফারেল পয়েন্ট পান
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= BENEFIT 3 ================= -->
+                    <div class="rounded-xl
+                                border border-white/30
+                                bg-white/10
+                                hover:bg-white/15
+                                p-2 sm:p-2.5
+                                transition">
+
+                        <div class="flex items-center
+                                    gap-1.5 sm:gap-2">
+
+                            <!-- Icon -->
+                            <div class="w-8 h-8
+                                        sm:w-9 sm:h-9
+                                        rounded-lg
+                                        bg-green-100
+                                        text-green-800
+                                        flex items-center justify-center
+                                        text-base sm:text-lg
+                                        flex-shrink-0">
+
+                                ⭐
+
+                            </div>
+
+                            <!-- Text -->
+                            <div class="min-w-0">
+
+                                <div class="font-bold
+                                            text-[10px]
+                                            sm:text-xs
+                                            lg:text-sm
+                                            leading-tight
+                                            whitespace-nowrap">
+
+                                    পয়েন্ট দিয়ে বাজার
+
+                                </div>
+
+                                <div class="text-[8px]
+                                            sm:text-[10px]
+                                            text-green-100
+                                            mt-0.5
+                                            whitespace-nowrap">
+
+                                    টাকা ছাড়াই বাজার করুন
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- 3 SMALL POINTS -->
+                <!-- ================================================= -->
+                <div class="flex items-center
+                            gap-x-1.5
+                            sm:gap-x-2.5
+                            lg:gap-x-3
+                            mt-3
+                            text-[8px]
+                            sm:text-[10px]
+                            lg:text-xs
+                            text-green-50
+                            whitespace-nowrap">
+
+                    <span class="flex items-center gap-0.5">
+                        <span class="text-yellow-300">✓</span>
+                        সহজে পয়েন্ট সংগ্রহ
+                    </span>
+
+                    <span class="flex items-center gap-0.5">
+                        <span class="text-yellow-300">✓</span>
+                        নিজের কেনাকাটায় পয়েন্ট
+                    </span>
+
+                    <span class="flex items-center gap-0.5">
+                        <span class="text-yellow-300">✓</span>
+                        অন্যের অর্ডারেও রিওয়ার্ড
+                    </span>
+
+                </div>
+
+
+                <!-- ================================================= -->
+                <!-- BUTTONS -->
+                <!-- ================================================= -->
+                <div class="flex flex-wrap
+                            gap-2.5
+                            mt-5">
+
+                    <!-- Combo -->
+                    <a href="{{ route('home.package.all') }}"
                        class="inline-flex items-center justify-center
-                              bg-white text-green-700
+                              bg-white
+                              text-green-700
                               hover:bg-green-50
-                              font-semibold text-sm
-                              px-5 py-2.5 rounded-xl
-                              shadow-sm transition">
-                        🛒 পণ্য দেখুন
+                              font-bold
+                              text-xs sm:text-sm
+                              px-4 sm:px-5
+                              py-2.5
+                              rounded-xl
+                              shadow-sm
+                              transition
+                              hover:-translate-y-0.5">
+
+                        🛒 কম্বো প্যাক দেখুন
+
                     </a>
 
-                    <a href="#packages"
+
+                    <!-- Details -->
+                    <a href="{{ route('home.package_points.details') }}"
                        class="inline-flex items-center justify-center
-                              bg-white/10 hover:bg-white/20
-                              border border-white/30
-                              text-white
-                              font-semibold text-sm
-                              px-5 py-2.5 rounded-xl
-                              transition">
-                        📦 কম্বো প্যাক
+                              bg-yellow-400
+                              hover:bg-yellow-300
+                              text-green-900
+                              font-bold
+                              text-xs sm:text-sm
+                              px-4 sm:px-5
+                              py-2.5
+                              rounded-xl
+                              shadow-sm
+                              transition
+                              hover:-translate-y-0.5">
+
+                        ⭐ বিস্তারিত জানুন
+
                     </a>
 
                 </div>
 
-                <div class="flex flex-wrap items-center gap-x-5 gap-y-2
-                            mt-6 text-xs sm:text-sm text-green-50">
-
-                    <span>✓ সহজ অর্ডার</span>
-                    <span>✓ ঘরে ডেলিভারি</span>
-                    <span>✓ প্রয়োজনীয় পণ্য</span>
-
-                </div>
             </div>
 
-            <!-- Right Visual -->
-            <div class="relative hidden md:flex items-center justify-center
-                        min-h-[300px] lg:min-h-[360px]">
 
-                <!-- Decorative circles -->
-                <div class="absolute w-64 h-64 lg:w-80 lg:h-80
-                            bg-white/10 rounded-full"></div>
+            <!-- ================================================= -->
+            <!-- RIGHT SIDE - 35% -->
+            <!-- ================================================= -->
+            <div class="relative
+                        flex items-center justify-center
+                        min-h-[300px]
+                        sm:min-h-[340px]
+                        md:min-h-[380px]
+                        lg:min-h-[420px]
+                        px-1 sm:px-2
+                        overflow-visible">
 
-                <div class="absolute w-48 h-48 lg:w-60 lg:h-60
-                            bg-white/10 rounded-full"></div>
 
-                <!-- Product visual -->
+                <!-- Soft Circle -->
+                <div class="absolute
+                            w-56 h-56
+                            sm:w-72 sm:h-72
+                            md:w-80 md:h-80
+                            lg:w-[360px] lg:h-[360px]
+                            bg-white/10
+                            rounded-full">
+                </div>
+
+
+                <!-- ================= LARGE IMAGE ================= -->
                 <div class="relative z-10
-                            bg-white rounded-3xl
-                            shadow-2xl p-5 lg:p-6
-                            w-60 lg:w-72">
+                            w-[115%]
+                            sm:w-[125%]
+                            md:w-[145%]
+                            lg:w-[160%]
+                            xl:w-[170%]
+                            max-w-none
+                            scale-110
+                            sm:scale-125
+                            md:scale-135
+                            lg:scale-145">
 
-                    <div class="grid grid-cols-3 gap-3">
-
-                        <div class="bg-green-50 rounded-2xl p-4 text-center">
-                            <div class="text-4xl">🥦</div>
-                            <div class="text-xs text-gray-600 mt-1">
-                                সবজি
-                            </div>
-                        </div>
-
-                        <div class="bg-orange-50 rounded-2xl p-4 text-center">
-                            <div class="text-4xl">🍚</div>
-                            <div class="text-xs text-gray-600 mt-1">
-                                চাল
-                            </div>
-                        </div>
-
-                        <div class="bg-yellow-50 rounded-2xl p-4 text-center">
-                            <div class="text-4xl">🥚</div>
-                            <div class="text-xs text-gray-600 mt-1">
-                                ডিম
-                            </div>
-                        </div>
-
-                        <div class="bg-red-50 rounded-2xl p-4 text-center">
-                            <div class="text-4xl">🍎</div>
-                            <div class="text-xs text-gray-600 mt-1">
-                                ফল
-                            </div>
-                        </div>
-
-                        <div class="bg-amber-50 rounded-2xl p-4 text-center">
-                            <div class="text-4xl">🍯</div>
-                            <div class="text-xs text-gray-600 mt-1">
-                                মধু
-                            </div>
-                        </div>
-
-                        <div class="bg-blue-50 rounded-2xl p-4 text-center">
-                            <div class="text-4xl">🧴</div>
-                            <div class="text-xs text-gray-600 mt-1">
-                                প্রয়োজনীয়
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="mt-4 bg-green-600 text-white
-                                rounded-xl py-2.5 text-center
-                                text-sm font-semibold">
-                        🏠 আপনার ঠিকানায় ডেলিভারি
-                    </div>
+                    <img src="{{ url('public/default/combo/home_banner.png') }}"
+                         alt="Online Shoday Combo Pack"
+                         class="w-full h-auto
+                                max-w-none
+                                object-contain
+                                drop-shadow-2xl
+                                transition duration-500
+                                hover:scale-105">
 
                 </div>
+
             </div>
 
         </div>
+
     </div>
 
 </section>
+
+ 
+
+
 
 <!-- 🚴‍♂️ Rider Section -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
@@ -905,353 +1130,7 @@
   </div>
 </section>
 
-
-<!-- 🎁 Combo Pack Reward Banner -->
-<section class="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-7">
-
-    <div class="relative overflow-hidden
-                rounded-2xl sm:rounded-3xl
-                bg-gradient-to-r from-green-50 via-white to-orange-50
-                border border-green-100
-                shadow-sm">
-
-        <!-- Decorative Background -->
-        <div class="absolute -top-20 -right-20
-                    w-56 h-56 sm:w-72 sm:h-72
-                    bg-green-100/60 rounded-full">
-        </div>
-
-        <div class="absolute -bottom-24 -left-16
-                    w-52 h-52 sm:w-72 sm:h-72
-                    bg-orange-100/50 rounded-full">
-        </div>
-
-
-        <div class="relative grid grid-cols-1 lg:grid-cols-2
-                    items-center">
-
-
-            <!-- ================= LEFT CONTENT ================= -->
-            <div class="px-5 py-8
-                        sm:px-8 sm:py-10
-                        lg:px-12 lg:py-12">
-
-                <!-- Badge -->
-                <div class="inline-flex items-center gap-2
-                            bg-green-100
-                            border border-green-200
-                            text-green-700
-                            px-3 py-1.5
-                            rounded-full
-                            text-xs sm:text-sm
-                            font-semibold">
-
-                    🎁 Online Shoday Combo Pack
-
-                </div>
-
-
-                <!-- Heading -->
-                <h2 class="mt-4
-                           text-2xl sm:text-3xl lg:text-4xl
-                           font-extrabold
-                           text-gray-800
-                           leading-tight">
-
-                    কম্বো প্যাক কিনুন,
-
-                    <span class="text-green-700">
-                        সাশ্রয়ীভাবে
-                    </span>
-
-                    প্রয়োজন মেটান
-
-                </h2>
-
-
-                <p class="mt-3
-                          text-sm sm:text-base
-                          text-gray-600
-                          leading-6 sm:leading-7
-                          max-w-xl">
-
-                    প্রয়োজনীয় পণ্য একসাথে নিন।
-                    নিজের জন্য কিনলে যেমন সাশ্রয় ও সুবিধা,
-                    তেমনি অন্যকে কিনতে সহায়তা করলেও
-                    পেতে পারেন পয়েন্ট ও রিওয়ার্ড।
-
-                </p>
-
-
-                <!-- ================= TWO HIGHLIGHTS ================= -->
-
-                <div class="grid grid-cols-1 sm:grid-cols-2
-                            gap-3 mt-5">
-
-
-                    <!-- 01. নিজের জন্য -->
-                    <div class="bg-green-50
-                                border border-green-100
-                                rounded-2xl
-                                p-4">
-
-                        <div class="flex items-start gap-3">
-
-                            <div class="w-11 h-11
-                                        flex-shrink-0
-                                        rounded-xl
-                                        bg-green-600
-                                        text-white
-                                        flex items-center
-                                        justify-center
-                                        text-xl">
-
-                                🛒
-
-                            </div>
-
-
-                            <div>
-
-                                <h3 class="font-bold
-                                           text-green-800
-                                           text-sm sm:text-base">
-
-                                    নিজে কিনলে
-
-                                </h3>
-
-                                <p class="text-xs sm:text-sm
-                                          text-gray-600
-                                          mt-1
-                                          leading-5">
-
-                                    সাশ্রয়ীভাবে প্রয়োজনীয়
-                                    পণ্য কিনুন এবং
-                                    পয়েন্ট সংগ্রহ করুন।
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        <div class="mt-3
-                                    inline-flex items-center
-                                    gap-1.5
-                                    text-xs font-semibold
-                                    text-green-700">
-
-                            ✓ সাশ্রয়ী
-                            <span></span>
-                            ✓ সহজ
-                            <span></span>
-                            ✓ পয়েন্ট
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- 02. অন্যকে কিনতে দিলে -->
-                    <div class="bg-orange-50
-                                border border-orange-100
-                                rounded-2xl
-                                p-4">
-
-                        <div class="flex items-start gap-3">
-
-                            <div class="w-11 h-11
-                                        flex-shrink-0
-                                        rounded-xl
-                                        bg-orange-500
-                                        text-white
-                                        flex items-center
-                                        justify-center
-                                        text-xl">
-
-                                🎁
-
-                            </div>
-
-
-                            <div>
-
-                                <h3 class="font-bold
-                                           text-orange-800
-                                           text-sm sm:text-base">
-
-                                    অন্যকে কিনতে দিলে
-
-                                </h3>
-
-                                <p class="text-xs sm:text-sm
-                                          text-gray-600
-                                          mt-1
-                                          leading-5">
-
-                                    আপনার মাধ্যমে অন্য কেউ
-                                    কম্বো প্যাক কিনলে
-                                    পেতে পারেন Rewards
-                                    বা Points।
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                        <div class="mt-3
-                                    inline-flex items-center
-                                    gap-1.5
-                                    text-xs font-semibold
-                                    text-orange-700">
-
-                            ✓ শেয়ার করুন
-                            <span></span>
-                            ✓ পয়েন্ট
-                            <span></span>
-                            ✓ রিওয়ার্ড
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Small Benefits -->
-                <div class="flex flex-wrap
-                            items-center
-                            gap-x-4 gap-y-2
-                            mt-5
-                            text-xs sm:text-sm
-                            text-gray-600">
-
-                    <span class="flex items-center gap-1.5">
-                        <span class="text-green-600">✓</span>
-                        প্রয়োজনীয় পণ্য
-                    </span>
-
-                    <span class="flex items-center gap-1.5">
-                        <span class="text-green-600">✓</span>
-                        সাশ্রয়ী প্যাকেজ
-                    </span>
-
-                    <span class="flex items-center gap-1.5">
-                        <span class="text-orange-500">🎁</span>
-                        পয়েন্ট ও রিওয়ার্ড
-                    </span>
-
-                </div>
-
-
-                <!-- Buttons -->
-                <div class="flex flex-wrap gap-3 mt-6">
-
-                    <!-- Details -->
-                    <a href="{{ route('home.package.details', $featuredPackage->id ?? 1) }}"
-                       class="inline-flex items-center
-                              justify-center gap-2
-                              bg-green-600
-                              hover:bg-green-700
-                              text-white
-                              font-semibold
-                              text-sm
-                              px-5 py-2.5
-                              rounded-xl
-                              shadow-sm
-                              transition
-                              hover:-translate-y-0.5">
-
-                        📦
-                        <span>বিস্তারিত দেখুন</span>
-                        <span>→</span>
-
-                    </a>
-
-
-                    <!-- All Packages -->
-                    <a href="#packages"
-                       class="inline-flex items-center
-                              justify-center gap-2
-                              bg-white
-                              hover:bg-orange-50
-                              text-orange-700
-                              border border-orange-200
-                              font-semibold
-                              text-sm
-                              px-5 py-2.5
-                              rounded-xl
-                              transition">
-
-                        🎁
-                        <span>সব কম্বো প্যাক</span>
-
-                    </a>
-
-                </div>
-
-
-                <!-- Note -->
-                <p class="mt-3
-                          text-[10px] sm:text-xs
-                          text-gray-400">
-
-                    * পয়েন্ট ও রিওয়ার্ড প্রযোজ্য নিয়ম ও শর্ত অনুযায়ী।
-
-                </p>
-
-            </div>
-
-
-
-            <!-- ================= RIGHT IMAGE ================= -->
-            <div class="relative
-                        flex items-center
-                        justify-center
-                        px-5 pb-7
-                        sm:px-8 sm:pb-9
-                        lg:px-6 lg:py-8">
-
-                <!-- Background Glow -->
-                <div class="absolute
-                            w-56 h-56
-                            sm:w-72 sm:h-72
-                            lg:w-80 lg:h-80
-                            bg-green-100
-                            rounded-full
-                            blur-2xl
-                            opacity-70">
-                </div>
-
-
-                <!-- Combo Image -->
-                <div class="relative z-10
-                            w-full
-                            max-w-md">
-
-                    <img src="{{ url('public/default/combo/short.png') }}"
-                         alt="Online Shoday Combo Pack Rewards"
-                         class="w-full h-auto
-                                object-contain
-                                drop-shadow-xl
-                                hover:scale-[1.02]
-                                transition duration-500">
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-
+  
 <!-- 🛍️ Product Section -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 pb-14 sm:pb-16">
 
@@ -1511,12 +1390,12 @@
 
       <!-- Download Button -->
       <div class="flex justify-center md:justify-start">
-        <a href="#" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition transform hover:scale-105">
+        <!-- <a href="#" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition transform hover:scale-105">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C6.477 2 2 6.485 2 12.017 2 17.522 6.477 22 12 22s10-4.478 10-9.983C22 6.485 17.523 2 12 2zm0 18.193a8.2 8.2 0 1 1 0-16.386 8.2 8.2 0 0 1 0 16.386zM11 7h2v6h-2zm0 8h2v2h-2z"/>
           </svg>
           📲 অ্যান্ড্রয়েড অ্যাপ ডাউনলোড করুন
-        </a>
+        </a> -->
         <button id="installApp"
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg ">
           📲 অ্যাপ ইন্সটল করুন

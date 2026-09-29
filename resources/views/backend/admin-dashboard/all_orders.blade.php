@@ -10,7 +10,22 @@
 
         <!-- Content -->
         <section class="bg-white p-2 md:p-6 rounded-2xl shadow mx-2 my-2 md:mx-6 md:my-6">
-            <h2 class="text-2xl font-bold text-green-700 mb-6">📦 সব অর্ডার (লাইভ)</h2>
+<div class="flex items-center justify-between mb-6">
+
+    <h2 class="text-2xl font-bold text-green-700">
+        📦 সব অর্ডার (লাইভ)
+    </h2>
+
+    <button
+        type="button"
+        id="bulkPrintBtn"
+        disabled
+        class="bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold px-4 py-2 rounded-lg shadow transition">
+        🖨 Print All
+        <span id="selectedCount" class="ml-1">(0)</span>
+    </button>
+
+</div>
 
             <!-- Filter -->
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
@@ -87,34 +102,74 @@
  
 
 
+// Selected order IDs
+let selectedOrders = new Set();
+
+
+function updatePrintButton() {
+
+    const count = selectedOrders.size;
+
+    $("#selectedCount").text(`(${count})`);
+
+    $("#bulkPrintBtn").prop("disabled", count === 0);
+}
+
+
 function loadOrders(){
 
     $.ajax({
         url:"{{ route('admin.orders.live') }}",
         type:"GET",
         data:{
-
             date_filter:$("#dateFilter").val(),
-
             from_date:$("#fromDate").val(),
-
             to_date:$("#toDate").val(),
-
             status:$("#sortBy").val(),
-
             search:$("#searchText").val()
-
         },
 
         success:function(data){
 
             $("#orderBoard").empty();
 
-            data.orders.forEach(order=>{
+            // বর্তমানে পাওয়া order ID
+            const currentOrderIds = new Set(
+                data.orders.map(order => String(order.id))
+            );
 
-                $("#orderBoard").append(renderOrderCard(order));
+            // যেসব selected order বর্তমানে list-এ নেই সেগুলো remove
+            selectedOrders.forEach(id => {
+
+                if (!currentOrderIds.has(String(id))) {
+                    selectedOrders.delete(id);
+                }
 
             });
+
+
+            data.orders.forEach(order => {
+
+                $("#orderBoard").append(
+                    renderOrderCard(order)
+                );
+
+            });
+
+
+            // Re-check selected orders after AJAX refresh
+            $(".order-checkbox").each(function(){
+
+                const id = String($(this).data("id"));
+
+                if(selectedOrders.has(id)) {
+                    $(this).prop("checked", true);
+                }
+
+            });
+
+
+            updatePrintButton();
 
         }
 
@@ -122,7 +177,80 @@ function loadOrders(){
 
 }
 
+// ==========================================
+// Order Checkbox Selection
+// ==========================================
+
+$(document).on("change", ".order-checkbox", function(){
+
+    const id = String($(this).data("id"));
+
+    if($(this).is(":checked")){
+
+        selectedOrders.add(id);
+
+    }else{
+
+        selectedOrders.delete(id);
+
+    }
+
+    updatePrintButton();
+
+});
+
+
 loadOrders();
+
+
+// ==========================================
+// Bulk Print
+// ==========================================
+
+$("#bulkPrintBtn").on("click", function(){
+
+    if(selectedOrders.size === 0){
+        return;
+    }
+
+    const form = $("<form>", {
+        method: "POST",
+        action: "{{ route('admin.orders.bulkPrint') }}",
+        target: "_blank"
+    });
+
+    form.append(
+        $("<input>", {
+            type: "hidden",
+            name: "_token",
+            value: "{{ csrf_token() }}"
+        })
+    );
+
+
+    selectedOrders.forEach(function(id){
+
+        form.append(
+            $("<input>", {
+                type: "hidden",
+                name: "order_ids[]",
+                value: id
+            })
+        );
+
+    });
+
+
+    $("body").append(form);
+
+    form.submit();
+
+    form.remove();
+
+});
+
+
+
 
 setInterval(loadOrders,5000);
 
@@ -271,31 +399,100 @@ let totalText = totalTextParts.join(' + ') || '-';
     }
 
     return `
-        <div class="relative bg-white p-5 mt-3 rounded-2xl shadow-md hover:shadow-lg border order-item w-full mb-1" data-id="${order.id}">
-            {{-- 🔹 Order ID badge (top-left) --}}
-    <span class="absolute -top-3 left-5 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow">
-        অর্ডার আইডি: # ${order.id }
-    </span>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <h4 class="text-lg font-semibold text-green-700">${order.user?.name ?? 'অজানা ক্রেতা'}</h4>
-                                    <p class="text-sm text-gray-600">পিতার নামঃ ${order.user?.father_name ?? '-'}</p>
-                    <p>📞 ${order.user?.phone ?? '-'}</p>
-                </div>
-                <div>
-                    <p><strong>পণ্যঃ</strong> ${order.items?.length ?? 0} টি</p>
-                    <p><strong>মোটঃ</strong> ৳${order.total_amount}</p>
-                                    <p><strong>ঠিকানাঃ</strong> ${order.delivery_address ?? '-'}</p>
-                </div>
-                <div class="text-right">
-                    <p><strong>অর্ডার সময়ঃ</strong> ${new Date(order.created_at).toLocaleString('bn-BD')}</p>
-                    ${buttonHTML}
-                </div>
-            </div>
-            <p class="text-sm text-red-500 my-3"><strong>মোট পরিমাণঃ</strong> ${totalText}</p>
-            ${deliveryInfo}
+    <div
+        class="relative bg-white p-5 pt-8 pl-14 mt-3 rounded-2xl shadow-md hover:shadow-lg border order-item w-full mb-1"
+        data-id="${order.id}"
+    >
+
+        <!-- Checkbox -->
+        <div class="absolute top-5 left-4 z-20 flex items-center justify-center">
+            <input
+                type="checkbox"
+                class="order-checkbox !w-5 !h-5 text-green-600 border-gray-400 rounded cursor-pointer"
+                data-id="${order.id}"
+                ${selectedOrders.has(String(order.id)) ? 'checked' : ''}
+            >
         </div>
-    `;
+
+
+        <!-- Order ID badge -->
+        <span class="absolute -top-3 left-12 bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-10">
+            অর্ডার আইডি: #${order.id}
+        </span>
+
+
+        <!-- Single Print -->
+        <a
+            href="{{ url('/admin/orders') }}/${order.id}/print"
+            target="_blank"
+            class="absolute -top-3 right-5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-10"
+        >
+            🖨 Invoice Print
+        </a>
+
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div>
+
+                <h4 class="text-lg font-semibold text-green-700">
+                    ${order.user?.name ?? 'অজানা ক্রেতা'}
+                </h4>
+
+                <p class="text-sm text-gray-600">
+                    পিতার নামঃ ${order.user?.father_name ?? '-'}
+                </p>
+
+                <p>
+                    📞 ${order.user?.phone ?? '-'}
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <p>
+                    <strong>পণ্যঃ</strong>
+                    ${order.items?.length ?? 0} টি
+                </p>
+
+                <p>
+                    <strong>মোটঃ</strong>
+                    ৳${order.total_amount}
+                </p>
+
+                <p>
+                    <strong>ঠিকানাঃ</strong>
+                    ${order.delivery_address ?? '-'}
+                </p>
+
+            </div>
+
+
+            <div class="text-right">
+
+                <p>
+                    <strong>অর্ডার সময়ঃ</strong>
+                    ${new Date(order.created_at).toLocaleString('bn-BD')}
+                </p>
+
+                ${buttonHTML}
+
+            </div>
+
+        </div>
+
+
+        <p class="text-sm text-red-500 my-3">
+            <strong>মোট পরিমাণঃ</strong>
+            ${totalText}
+        </p>
+
+        ${deliveryInfo}
+
+    </div>
+`;
 }
 
 
