@@ -18,11 +18,15 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('rider_id')->nullable();
 
+            $table->unsignedBigInteger('package_id')->nullable();
+            $table->unsignedBigInteger('referral_customer_id')->nullable();
+
             // ✅ Order Basic Info
             $table->string('order_code')->unique();
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->string('payment_method')->nullable(); // cash, bkash, card etc.
             $table->string('delivery_address')->nullable();
+            $table->integer('delivery_charge')->nullable();
 
             // ✅ Delivery & Status
             $table->enum('status', ['pending', 'accepted', 'delivered', 'cancelled'])->default('pending');
@@ -38,6 +42,8 @@ return new class extends Migration
             $table->timestamps();
 
             // ✅ Foreign Keys (Optional)
+            $table->foreign('referral_customer_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('package_id')->references('id')->on('packages')->onDelete('set null');
             $table->foreign('rider_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });

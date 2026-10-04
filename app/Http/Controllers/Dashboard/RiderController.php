@@ -1,6 +1,6 @@
 <?php
 // app/Http/Controllers/Admin/RiderController.php
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -15,6 +15,7 @@ use App\Models\CustomProduct;
 use App\Models\RiderProduct;
 use Illuminate\Support\Facades\Hash;
 use Auth;
+use DB;
 use Carbon\Carbon;
 use App\Models\RiderDelivery;
  
@@ -258,11 +259,13 @@ public function productdestroy($id)
 public function riderOrders(Request $request)
 {
     $orders = Order::with([
-        'user',
-        'items.product',
+    'user',
+    'customer',
+    'items.product',
+    'package.items.product',
         'custom_products',
         'rider'
-    ])
+])
     ->where('rider_id', auth()->id())
     ->whereIn('status', [
         'accepted',
@@ -338,7 +341,14 @@ $orders = $orders
  
 public function pendingOrders()
 {
-    $orders = Order::with(['user', 'custom_products', 'items.product'])->where('status', 'pending')->latest()->get();
+   
+    $orders = Order::with([
+    'user',
+    'custom_products',
+    'customer',
+    'items.product',
+    'package.items.product',
+])->where('status', 'pending')->latest()->get();
 
     // প্রতিটা product image কে full URL বানানো
     $orders->each(function ($order) {
@@ -352,44 +362,284 @@ public function pendingOrders()
     return response()->json(['orders' => $orders]);
 }
 
-
-public function acceptOrder(Request $request)
+ public function acceptOrder(Request $request)
 {
-   
-    $order = Order::findOrFail($request->id);
+    $order = Order::with([
+        'items',
+        'package.items.product',
+    ])->findOrFail($request->id);
 
-    if ($order->total_amount < $request->total_amount) {
-        $status = 'rider_modified_accepted';
-    } else {
-        $status = 'accepted';
+    /*
+    |--------------------------------------------------------------------------
+    | Only these orders can be accepted
+    |--------------------------------------------------------------------------
+    */
+
+    if (!in_array($order->status, [
+        'pending',
+        'rider_modified_accepted',
+    ])) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'এই অর্ডারটি এখন গ্রহণ করা যাবে না। বর্তমান status: ' . $order->status
+        ], 400);
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery Time
+    |--------------------------------------------------------------------------
+    */
+
+    $request->validate([
+        'delivery_time' => 'required|integer|min:1',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Current Rider
+        |--------------------------------------------------------------------------
+        */
+
+        $riderId = auth()->id();
+
+        if (!$riderId) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Rider login পাওয়া যায়নি। আবার login করুন।'
+            ], 401);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PACKAGE ORDER
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $order->type === 'package' ||
+            !empty($order->package_id)
+        ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Assign Rider
+            |--------------------------------------------------------------------------
+            */
+
+            $order->rider_id = $riderId;
+
+            /*
+            |--------------------------------------------------------------------------
+            | IMPORTANT:
+            | Accept করার সময় status অবশ্যই accepted হবে
+            |--------------------------------------------------------------------------
+            */
+
+            $order->status = 'accepted';
+
+            $order->delivery_time = $request->delivery_time;
+
+            $order->save();
+
+
+            DB::commit();
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'প্যাকেজ অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
+
+                'order' => [
+                    'id' => $order->id,
+                    'rider_id' => $order->rider_id,
+                    'total_amount' => (float) $order->total_amount,
+                    'status' => $order->status,
+                    'delivery_time' => $order->delivery_time,
+                ]
+            ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | NORMAL ORDER
+        |--------------------------------------------------------------------------
+        */
+
+        $payload = $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|integer',
+            'items.*.price' => 'required|numeric|min:0',
+        ]);
+
+
+        $total = 0;
+
+
+        foreach ($payload['items'] as $data) {
+
+            $item = $order->items
+                ->where('id', $data['id'])
+                ->first();
+
+
+            if (!$item) {
+                continue;
+            }
+
+
+            $newPrice = (float) $data['price'];
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Rider Price
+            |--------------------------------------------------------------------------
+            */
+
+            if ($newPrice > (float) $item->price) {
+
+                $item->rider_price = $newPrice;
+
+                $item->save();
+            }
+
+
+            $finalPrice = (float) (
+                $item->rider_price ??
+                $item->price
+            );
+
+
+            $total +=
+                $finalPrice *
+                (float) $item->quantity;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Normal Order
+        |--------------------------------------------------------------------------
+        */
+
+        $order->rider_id = $riderId;
+
+        $order->total_amount = $total;
+
+        /*
+        |--------------------------------------------------------------------------
+        | IMPORTANT:
+        | Rider accept করলে accepted হবে
+        |--------------------------------------------------------------------------
+        */
+
+        $order->status = 'accepted';
+
+        $order->delivery_time = $request->delivery_time;
+
+        $order->save();
+
+
+        DB::commit();
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
+
+            'order' => [
+                'id' => $order->id,
+                'rider_id' => $order->rider_id,
+                'total_amount' => (float) $order->total_amount,
+                'status' => $order->status,
+                'delivery_time' => $order->delivery_time,
+            ]
+        ]);
+
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+        \Log::error('Rider accept order error', [
+            'order_id' => $request->id,
+            'rider_id' => auth()->id(),
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => $e->getFile(),
+        ]);
+
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error: ' . $e->getMessage(),
+        ], 500);
+    }
+}
  
-    // ⚡ Add delivery_time (in minutes) to current time
-    $delivery_at = Carbon::now('Asia/Dhaka')->addMinutes($request->delivery_time);
 
-    $order->status = $status;
-    $order->rider_id = Auth::id();
-    // $order->total_amount = $request->total_amount;
-    $order->delivery_time = $request->delivery_time;
-    $order->delivery_at = $delivery_at;
-    $order->accepted_at = now();
-    $order->save();
 
-    // 🧾 Update rider_price for each item
-    foreach ($request->items as $item) {
-        OrderItem::where('id', $item['id'])
-            ->update(['rider_price' => $item['price']]);
-    }
+public function pending()
+{
+    $rider = auth()->user()->rider;
+
+    $orders = Order::with([
+        'user',
+        'customer',
+
+        // Normal order
+        'items.product',
+
+        // Package order
+        'package.items.product',
+    ])
+    ->where(function ($query) use ($rider) {
+
+        $query->whereNull('type')
+              ->orWhere('type', '!=', 'package');
+
+    })
+    ->orWhere(function ($query) use ($rider) {
+
+        $query->where('type', 'package');
+
+    })
+    ->whereIn('status', [
+        'pending',
+        'rider_modified_accepted',
+    ])
+    ->latest()
+    ->get();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | যদি rider_id দিয়ে pending order assign করা হয়
+    |--------------------------------------------------------------------------
+    |
+    | আপনার existing rider filtering condition থাকলে
+    | সেটি অবশ্যই এখানে রাখবেন।
+    |
+    */
+
 
     return response()->json([
         'success' => true,
-        'message' => 'Order accepted successfully!',
-        'delivery_at' => $delivery_at->format('Y-m-d H:i:s')
+        'orders' => $orders,
     ]);
 }
-
-
-
 
 
 

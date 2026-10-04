@@ -166,5 +166,74 @@
 
   @yield('scripts')
 
+
+  
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const toast = document.getElementById('toast-notification');
+            const progress = document.getElementById('toast-progress');
+
+            if (!toast) return;
+
+
+            // একটু delay দিয়ে toast দেখানো
+            setTimeout(function () {
+
+                toast.classList.remove(
+                    'opacity-0',
+                    'translate-x-full',
+                    'pointer-events-none'
+                );
+
+                toast.classList.add(
+                    'opacity-100',
+                    'translate-x-0'
+                );
+
+            }, 100);
+
+
+            // Progress bar animation
+            if (progress) {
+
+                setTimeout(function () {
+
+                    progress.style.transition = 'transform 4.5s linear';
+                    progress.style.transform = 'scaleX(0)';
+
+                }, 150);
+
+            }
+
+
+            // 5 second পরে automatically close
+            setTimeout(function () {
+                closeToast();
+            }, 5000);
+
+        });
+
+
+        function closeToast() {
+
+            const toast = document.getElementById('toast-notification');
+
+            if (!toast) return;
+
+            toast.classList.remove(
+                'opacity-100',
+                'translate-x-0'
+            );
+
+            toast.classList.add(
+                'opacity-0',
+                'translate-x-full',
+                'pointer-events-none'
+            );
+        }
+    </script>
+
+
 </body>
 </html>

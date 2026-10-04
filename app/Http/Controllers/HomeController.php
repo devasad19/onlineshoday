@@ -10,10 +10,12 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Package;
 use App\Models\Bazar;
+use App\Models\User;
 use App\Models\CartItem;
 use App\Models\Contact;
 use App\Models\RiderProduct;
 use Auth;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -285,6 +287,94 @@ public function homePlaceOrder()
 
             return back()->with('success', '✅ আপনার বার্তা সফলভাবে পাঠানো হয়েছে! আমরা শীঘ্রই যোগাযোগ করব।');
         }
+
+ 
+
+public function createCustomer(Request $request)
+{
+    $data['bazars'] = Bazar::where('status', 'Active')->get();
+
+    // যে package থেকে customer registration শুরু হয়েছে
+    $data['package_id'] = $request->package_id;
+
+    return view('auth.new_customer_register', $data);
+}
+    /**
+     * Store user data from registration form.
+     */
+    public function storeNewCustomer(Request $request)
+    {
+        $data = $request->validate([
+            'name'          => 'required|string|max:100',
+            'father_name'   => 'required|string|max:100',
+            'phone'         => 'required|string|unique:users,phone',
+            'father_phone'  => 'required|string',
+            'address'       => 'nullable|string',
+            'photo'         => 'nullable|image|max:2048',
+            'bazar_id'      => 'required|exists:bazars,id',
+            'password'      => 'required',
+        ]);
+
+        // Generate unique 6 digit customer ID
+        do {
+            $customerId = str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+        } while (User::where('customer_id', $customerId)->exists());
+
+
+        // Upload photo if given
+        $photoPath = null;
+
+        if ($request->hasFile('photo')) {
+            $photoPath = fileUpload(
+                $request->file('photo'),
+                'uploads/users'
+            );
+        }
+        // =====================================================
+        // Save package ID temporarily
+        // =====================================================
+
+        session([
+            'new_customer_package_id' => $request->package_id,
+        ]);
+
+
+        // Create user
+        User::create([
+            'customer_id'   => $customerId,
+            'name'          => $data['name'],
+            'father_name'   => $data['father_name'],
+            'phone'         => $data['phone'],
+            'father_phone'  => $data['father_phone'],
+            'address'       => $data['address'] ?? null,
+            'photo'         => $photoPath,
+            'bazar_id'      => $data['bazar_id'],
+            'status'      => 'active',
+            'password'      => Hash::make($data['password']),
+        ]);
+
+            return redirect()
+            ->route('show.new_customer.info', [
+                'customer' => $customerId
+            ])
+            ->with('success', 'নিবন্ধন সফল হয়েছে! আপনার Customer ID: ' . $customerId);
+    }
+
+    public function showNewCustomerInfo($customer_id)
+    {
+        $packageId = session('new_customer_package_id');
+        $customer = User::where('customer_id', $customer_id)->first();
+
+        return view('auth.new_customer_info', compact(
+            'customer',
+            'packageId'
+        ));
+    }
+
+
+
+
+
 
 
 

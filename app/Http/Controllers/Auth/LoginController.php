@@ -71,11 +71,11 @@ public function login(Request $request)
 
         switch ($user->role->name ?? '') {
             case 'rider':
-                return redirect('rider/dashboard');
+                return redirect()->intended(route('rider.dashboard'));
             case 'user':
-                return redirect('user/dashboard');
+                return redirect()->intended(route('user.dashboard'));
             case 'admin':
-                return redirect('admin/dashboard');
+                return redirect()->intended(route('admin.dashboard'));
             default:
                 return redirect('/');
         }

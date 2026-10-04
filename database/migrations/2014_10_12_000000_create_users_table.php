@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('father_phone')->nullable();
             $table->string('address')->nullable();
             $table->string('photo')->nullable();
+            $table->integer('customer_id')->unique();
+            $table->unsignedInteger('points')->default(0);
 
             // Relations
          

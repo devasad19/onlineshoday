@@ -27,5 +27,11 @@ class Package extends Model
         return $this->hasMany(PackageItem::class);
     }
 
+public function items()
+{
+    return $this->hasMany(PackageItem::class);
+}
+
+
 
 }

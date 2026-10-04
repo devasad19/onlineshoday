@@ -159,6 +159,12 @@
                 <span>স্টাফ তালিকা</span>
             </a>
 
+            <a href="{{ route('admin.delivery_charge_rules.index') }}" 
+               class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+               {{ request()->routeIs('admin.settings') ? 'bg-green-100 font-semibold text-green-700' : 'hover:bg-green-100' }}">
+                <i class="fa-solid fa-gear w-5 text-green-600"></i>
+                <span>ডেলিভারি চার্জ সেটিংস</span>
+            </a>
             <a href="{{ route('admin.settings') }}" 
                class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                {{ request()->routeIs('admin.settings') ? 'bg-green-100 font-semibold text-green-700' : 'hover:bg-green-100' }}">

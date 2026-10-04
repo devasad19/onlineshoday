@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RiderController;
+
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BazarController;
 use App\Http\Controllers\PackageController;
@@ -12,6 +12,8 @@ use App\Http\Controllers\Dashboard\UserDashboardController;
 use App\Http\Controllers\Dashboard\AdminDashboardController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Dashboard\DeliveryChargeRuleController;
+use App\Http\Controllers\Dashboard\RiderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +42,7 @@ use App\Http\Controllers\Auth\LoginController;
     Route::get('/package/all', [PackageController::class, 'packageAll'])->name('home.package.all');
     Route::get('/package/details/{id}', [PackageController::class, 'packageDetails'])->name('home.package.details');
     Route::get('/package/package-points-details', [PackageController::class, 'packagePointsDetails'])->name('home.package_points.details');
+ 
 
 
 
@@ -79,6 +82,13 @@ Route::prefix('rider')->middleware(['auth','role:rider'])->group(function () {
 
 Route::get('/register-user', [RegisterController::class, 'create'])->name('user.register');
 Route::post('/register-user', [RegisterController::class, 'store'])->name('user.register.store');
+Route::get('/register-new-customer/{package_id}', [HomeController::class, 'createCustomer'])->name('new.customer.register');
+Route::post('/store-new-customer', [HomeController::class, 'storeNewCustomer'])->name('store.new.customer');
+Route::get('/new-customer-info/{customer_id}',
+    [HomeController::class, 'showNewCustomerInfo']
+)->name('show.new_customer.info');
+
+
 
 Route::get('rider/{id}', [HomeController::class, 'riderProfile'])->name('riders.show');
 
@@ -115,6 +125,16 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
 
     Route::post('/orders/bulk-print', [AdminDashboardController::class, 'bulkPrint'])
         ->name('admin.orders.bulkPrint');
+
+Route::post('/orders/{order}/custom-price-update', [AdminDashboardController::class, 'updateCustomPrices'])
+    ->name('admin.orders.customPriceUpdate');
+
+
+    Route::post(
+    '/admin/orders/set-delivery-charge',
+    [AdminDashboardController::class, 'setDeliveryCharge']
+)->name('admin.orders.setDeliveryCharge');
+
 
 
     // ========================= backend =================
@@ -161,6 +181,31 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
     ->name('admin.products.update');
     Route::get('products/{product}/view', [ProductController::class, 'productView'])
     ->name('admin.products.view');
+
+
+// delivery-charge-rules
+    Route::get('/delivery-charge-rules',
+        [DeliveryChargeRuleController::class, 'index']
+    )->name('admin.delivery_charge_rules.index');
+
+    Route::post('/delivery-charge-rules',
+        [DeliveryChargeRuleController::class, 'store']
+    )->name('admin.delivery_charge_rules.store');
+
+    Route::put('/delivery-charge-rules/{deliveryChargeRule}',
+        [DeliveryChargeRuleController::class, 'update']
+    )->name('admin.delivery_charge_rules.update');
+
+    Route::delete('/delivery-charge-rules/{deliveryChargeRule}',
+        [DeliveryChargeRuleController::class, 'destroy']
+    )->name('admin.delivery_charge_rules.destroy');
+
+    Route::patch('/delivery-charge-rules/{deliveryChargeRule}/toggle',
+        [DeliveryChargeRuleController::class, 'toggleStatus']
+    )->name('admin.delivery_charge_rules.toggle');
+
+
+
 });
 
 
@@ -171,9 +216,21 @@ Route::prefix('user')->middleware(['auth','role:user'])->group(function () {
     Route::get('dashboard/my-cart', [UserDashboardController::class, 'myCart'])->name('user.my_cart');
     Route::get('dashboard/settings', [UserDashboardController::class, 'mySettings'])->name('user.settings');
 
-    Route::get('order/ajax/details', [UserDashboardController::class, 'details'])->name('rider.order.details');
-    Route::post('order/accept', [UserDashboardController::class, 'accept'])->name('rider.order.accept');
-    Route::post('order/cancell', [UserDashboardController::class, 'orderCancell'])->name('rider.order.cancell');
+    Route::get('order/ajax/details', [UserDashboardController::class, 'details'])->name('user.order.details');
+    Route::post('order/accept', [UserDashboardController::class, 'accept'])->name('user.order.accept');
+    Route::post('order/cancell', [UserDashboardController::class, 'orderCancell'])->name('user.order.cancell');
+
+
+
+
+    // package sell 
+    Route::get('/packages/{package}/purchase', [PackageController::class, 'purchase'])
+        ->name('packages.purchase');
+
+    Route::post('/packages/{package}/purchase', [PackageController::class, 'storePurchase'])
+        ->name('packages.purchase.store');
+
+
 });
 
 

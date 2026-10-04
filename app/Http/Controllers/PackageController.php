@@ -10,7 +10,10 @@ use App\Models\Rider;
 use App\Models\Order;
 use App\Models\Package;
 use App\Models\PackageItem;
-
+use App\Models\User;
+use App\Models\OrderItem;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class PackageController extends Controller
 {
@@ -215,6 +218,256 @@ public function storePackageItem(Request $request)
 
 
 
+   /**
+     * Package purchase page
+     */
+    public function purchase(Package $package)
+    {
+        
+        // Package active কিনা
+        
+        // Package items
+        $package->load([
+            'items.product'
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Referral Customers
+        |--------------------------------------------------------------------------
+        |
+        | এখানে আপনার referral relationship অনুযায়ী query পরিবর্তন করতে হতে পারে।
+        | আপাতত logged-in customer যাদের refer করেছে তাদের customer_id দিয়ে ধরা হচ্ছে।
+        |
+        */
+
+        $referralCustomers = User::where('status', 'active')
+            ->orderBy('name')
+            ->get();
+
+        return view('frontend.packages.purchase', compact(
+            'package',
+            'referralCustomers'
+        ));
+    }
+
+
+    public function storePurchase(Request $request, Package $package)
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Validation
+    |--------------------------------------------------------------------------
+    */
+
+    $request->validate([
+        'customer_id' => [
+            'required',
+            'integer',
+            'exists:users,id',
+        ],
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logged-in purchaser
+    |--------------------------------------------------------------------------
+    */
+
+    $purchaser = auth()->user();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Selected customer
+    |--------------------------------------------------------------------------
+    */
+
+    $customer = User::findOrFail($request->customer_id);
+
+    if($customer->referrer_id == null){
+        $customer->referrer_id = $purchaser->id;
+        $customer->update();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security:
+    | অন্য Customer হলে অবশ্যই purchaser-এর direct referral হতে হবে
+    |--------------------------------------------------------------------------
+    */
+ 
+
+    if ($customer->id != $purchaser->id) {
+
+    if ( $customer->referrer_id !== $purchaser->id) {
+
+        return back()
+            ->with('error', 'এই Customer আপনার Referral Customer নন।')
+            ->withInput();
+    }
+}
+ 
+ 
+    /*
+    |--------------------------------------------------------------------------
+    | Package price calculation
+    |--------------------------------------------------------------------------
+    */
+
+    $packagePrice = (float) $package->price;
+
+    $discountPercent = (float) ($package->discount ?? 0);
+
+    $discountAmount =
+        ($packagePrice * $discountPercent) / 100;
+
+    $finalAmount =
+        $packagePrice - $discountAmount;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Safety
+    |--------------------------------------------------------------------------
+    */
+
+    if ($finalAmount < 0) {
+        $finalAmount = 0;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Order Code
+    |--------------------------------------------------------------------------
+    */
+
+    do {
+
+        $orderCode =
+            'PKG-' .
+            now()->format('ymd') .
+            '-' .
+            strtoupper(Str::random(6));
+
+    } while (
+        Order::where('order_code', $orderCode)->exists()
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery Address
+    |--------------------------------------------------------------------------
+    */
+
+    $deliveryAddress =
+        $customer->address ?: 'ঠিকানা দেওয়া হয়নি';
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Order
+    |--------------------------------------------------------------------------
+    */
+
+    $order = DB::transaction(function () use (
+        $purchaser,
+        $customer,
+        $package,
+        $finalAmount,
+        $deliveryAddress,
+        $orderCode
+    ) {
+
+        return Order::create([
+
+            /*
+            | যিনি package কিনছেন
+            */
+            'user_id' => $purchaser->id,
+
+            /*
+            | যার জন্য package
+            */
+            'customer_id' => $customer->id,
+
+            /*
+            | Package
+            */
+            'package_id' => $package->id,
+
+            /*
+            | Final discounted amount
+            */
+            'total_amount' => $finalAmount,
+
+            /*
+            | Package order-এর জন্য এখন delivery charge 0
+            */
+            'delivery_charge' => 0,
+
+            'delivery_charge_details' => null,
+
+            /*
+            | COD
+            */
+            'payment_method' => 'Cash On Delivery',
+
+            /*
+            | Recipient address
+            */
+            'delivery_address' => $deliveryAddress,
+
+            /*
+            | Initial status
+            */
+            'type' => 'package',
+            'status' => 'pending',
+
+            /*
+            | আপনার existing fields
+            */
+            'order_code' => $orderCode,
+
+            'rider_id' => null,
+
+            'delivery_time' => null,
+
+            'delivered_at' => null,
+
+            'delivery_at' => null,
+
+            'delivered_status' => 'pending',
+
+            'notes' => 'Package Order',
+
+        ]);
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Redirect
+    |--------------------------------------------------------------------------
+    */
+ if ($customer->id != $purchaser->id) {
+
+    return redirect()
+        ->route('packages.purchase', ['package' => $package->id])
+        ->with('success', 'অন্য Customer-এর জন্য Package Order সফল হয়েছে।');
+}
+
+    return redirect()
+        ->route('user.my_orders')
+        ->with(
+            'success',
+            'প্যাকেজ অর্ডার সফল হয়েছে। Order Code: ' . $order->order_code
+        );
+}
 
     
 }

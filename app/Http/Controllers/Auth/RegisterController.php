@@ -32,9 +32,12 @@ class RegisterController extends Controller
     public function create()
     { 
 
-        $bazars = Bazar::where('status', 'Active')->get();
-        return view('auth.register', compact('bazars'));
+        $data['bazars'] = Bazar::where('status', 'Active')->get();
+       
+        return view('auth.register', $data);
     }
+
+
 
     /**
      * Store user data from registration form.
@@ -52,24 +55,45 @@ class RegisterController extends Controller
             'password'      => 'required',
         ]);
 
-        // ✅ Upload photo if given
+        // Generate unique 6 digit customer ID
+        do {
+            $customerId = str_pad(random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+        } while (User::where('customer_id', $customerId)->exists());
+
+
+        // Upload photo if given
+        $photoPath = null;
+
         if ($request->hasFile('photo')) {
-            $photoPath = fileUpload($request->file('photo'), 'uploads/users');
+            $photoPath = fileUpload(
+                $request->file('photo'),
+                'uploads/users'
+            );
         }
 
-        // ✅ Create user record
+
+        // Create user
         User::create([
-            'role_id'          => $data['role_id'],
+            'customer_id'   => $customerId,
             'name'          => $data['name'],
             'father_name'   => $data['father_name'],
             'phone'         => $data['phone'],
             'father_phone'  => $data['father_phone'],
             'address'       => $data['address'] ?? null,
-            'photo'         => $data['photo'] ?? null,
+            'photo'         => $photoPath,
             'bazar_id'      => $data['bazar_id'],
-            'password'      => Hash::make($data['password']), 
+            'status'      => 'active',
+            'password'      => Hash::make($data['password']),
         ]);
 
-        return redirect()->route('login')->with('success', '✅ নিবন্ধন সফল হয়েছে!');
+        return redirect()
+            ->route('login')
+            ->with('success', '✅ নিবন্ধন সফল হয়েছে! আপনার Customer ID: ' . $customerId);
     }
+
+
+
+
+
+
 }

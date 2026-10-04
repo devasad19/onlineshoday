@@ -175,27 +175,7 @@
     }
 </script>
   
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const alertBox = document.getElementById('alert-message');
-    if (alertBox) {
-        // Fade in
-        setTimeout(() => {
-            alertBox.classList.remove('opacity-0', 'translate-y-[-20px]');
-            alertBox.classList.add('opacity-100', 'translate-y-0');
-        }, 100);
 
-        // Fade out after 3 seconds
-        setTimeout(() => {
-            alertBox.classList.remove('opacity-100', 'translate-y-0');
-            alertBox.classList.add('opacity-0', 'translate-y-[-20px]');
-        }, 3000);
-
-        // Remove from DOM after fade out
-        setTimeout(() => alertBox.remove(), 3500);
-    }
-});
-</script>
  
 <script>
     document.getElementById('togglePassword').addEventListener('click', function() {

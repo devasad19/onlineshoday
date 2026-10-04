@@ -9,6 +9,9 @@ use App\Models\Category;
 use App\Models\Bazar;
 use App\Models\Rider;
 use App\Models\Order;
+use App\Models\DeliveryChargeRule;
+use App\Models\CustomProduct;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
@@ -77,6 +80,11 @@ class AdminDashboardController extends Controller
 
         $data['orders'] = [];
  
+    $data['deliveryChargeRules'] = DeliveryChargeRule::where('status', true)
+        ->orderBy('min_quantity')
+        ->get();
+ 
+
         return view('backend.admin-dashboard.all_orders', $data);
     }
 
@@ -88,6 +96,8 @@ class AdminDashboardController extends Controller
         return response()->json(['orders' => $orders]);
     }
  
+
+
 
 public function adminLiveOrders(Request $request)
 {
@@ -344,9 +354,187 @@ public function bulkPrint(Request $request)
     return view('backend.orders.print-bulk', compact('orders'));
 }
 
+public function updateCustomPrices(Request $request, Order $order)
+{
+    $payload = $request->validate([
+        'custom_products' => 'required|array|min:1',
+        'custom_products.*.id' => 'required|integer',
+        'custom_products.*.price' => 'required|numeric|min:0',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+
+        $customProducts = CustomProduct::where('order_id', $order->id)
+            ->get()
+            ->keyBy('id');
+
+        foreach ($payload['custom_products'] as $item) {
+
+            $custom = $customProducts->get($item['id']);
+
+            if (!$custom) {
+                continue;
+            }
+
+            $custom->price = $item['price'];
+            $custom->save();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Recalculate Order Total
+        |--------------------------------------------------------------------------
+        */
+
+        $normalTotal = $order->items()
+            ->get()
+            ->sum(function ($item) {
+
+                // Rider price থাকলে সেটা ব্যবহার হবে
+                $price = (float) ($item->rider_price ?? 0);
+
+                // Rider price না থাকলে normal price
+                if ($price <= 0) {
+                    $price = (float) ($item->price ?? 0);
+                }
+
+                return $price * (float) $item->quantity;
+            });
 
 
+        $customTotal = CustomProduct::where('order_id', $order->id)
+            ->get()
+            ->sum(function ($item) {
 
+                return (float) $item->price * (float) $item->quantity;
+            });
+
+
+        $grandTotal = $normalTotal + $customTotal;
+
+
+        $order->total_amount = $grandTotal;
+        $order->save();
+
+        DB::commit();
+
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Custom product-এর মূল্য সফলভাবে আপডেট হয়েছে।',
+            'total_amount' => (float) $grandTotal,
+        ]);
+
+    } catch (\Exception $e) {
+
+        DB::rollBack();
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Server error: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+
+public function setDeliveryCharge(Request $request)
+{
+    $request->validate([
+        'order_id' => 'required|exists:orders,id',
+        'delivery_charge' => 'required|numeric|min:0',
+    ]);
+
+
+    $order = Order::findOrFail($request->order_id);
+
+
+    // Custom product price pending?
+    $hasPendingCustomPrice = $order->customProducts()
+        ->where(function ($query) {
+
+            $query->whereNull('price')
+                ->orWhere('price', '<=', 0);
+
+        })
+        ->exists();
+
+
+    if ($hasPendingCustomPrice) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'আগে Custom Product-এর Price সেট করুন।'
+        ], 422);
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery Charge
+    |--------------------------------------------------------------------------
+    */
+
+    $deliveryCharge =
+        (float) $request->delivery_charge;
+
+
+    $order->delivery_charge =
+        $deliveryCharge;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Total Amount
+    |--------------------------------------------------------------------------
+    */
+
+    $productTotal = 0;
+
+
+    foreach ($order->items as $item) {
+
+        $productTotal +=
+            ((float) $item->price *
+             (float) $item->quantity);
+
+    }
+
+
+    $customTotal = 0;
+
+
+    foreach ($order->customProducts as $item) {
+
+        $customTotal +=
+            ((float) $item->price *
+             (float) $item->quantity);
+
+    }
+
+
+    $order->total_amount =
+        $productTotal +
+        $customTotal +
+        $deliveryCharge;
+
+
+    $order->save();
+
+
+    return response()->json([
+
+        'success' => true,
+
+        'delivery_charge' =>
+            $order->delivery_charge,
+
+        'total_amount' =>
+            $order->total_amount,
+
+    ]);
+}
 
 
 

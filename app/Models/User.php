@@ -19,12 +19,14 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'role_id',
+        'customer_id',
         'name',
         'father_name',
         'phone',
         'father_phone',
         'address',
         'photo',
+        'status',
         'bazar_id',
         'password',
     ];
@@ -79,6 +81,9 @@ class User extends Authenticatable
             'product_id'           // Local key on RiderProduct
         );
     }
-
+public function points()
+{
+    return $this->hasMany(Point::class);
+}
 
 }

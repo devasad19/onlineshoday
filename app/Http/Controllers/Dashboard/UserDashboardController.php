@@ -40,14 +40,20 @@ class UserDashboardController extends Controller
 
 
 
-    public function myOrders(){
-         
-
+    public function myOrders()
+    {
         $data['orders'] = Order::where('user_id', auth()->id())
-                ->orderBy('created_at', 'desc')
-                ->with(['user', 'rider', 'custom_products', 'items.product'])
-                ->get();
-
+            ->orderBy('created_at', 'desc')
+            ->with([
+                'user',
+                'customer',
+                'rider',
+                'custom_products',
+                'items.product',
+                'package.items.product',
+            ])
+            ->get();
+ 
 
         return view('backend.user-dashboard.my_orders', $data);
     }
@@ -101,129 +107,324 @@ public function myCart()
     return view('backend.user-dashboard.my_cart', compact('cartItems', 'total', 'user', 'extraProducts'));
 }
 
+ 
+
+public function details(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer',
+    ]);
+
+    $order = Order::with([
+        'user',
+        'items.product'
+    ])->findOrFail($request->id);
 
 
- public function details(Request $request)
-    {
-        $order = Order::with(['user', 'items.product'])->findOrFail($request->id);
+    /*
+    |--------------------------------------------------------------------------
+    | Security
+    |--------------------------------------------------------------------------
+    | User যেন অন্য User-এর order দেখতে না পারে।
+    | আপনার order structure অনুযায়ী user_id = purchaser.
+    |--------------------------------------------------------------------------
+    */
 
-        // Only allow rider to view if pending or assigned appropriately (adjust logic as needed)
-        // if you want to restrict: if($order->status !== 'pending' && $order->rider_id && $order->rider_id !== Auth::id()) abort(403);
+    if ((int) $order->user_id !== (int) Auth::id()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'এই অর্ডার দেখার অনুমতি আপনার নেই।'
+        ], 403);
+    }
 
-        // prepare items to send
-        $items = $order->items->map(function($it) {
-            return [
-                'id' => $it->id,
-                'product_id' => $it->product_id,
-                'product_name' => optional($it->product)->name ?? 'N/A',
-                'product_image' => optional($it->product)->image ? url('uploads/products/' . $it->product->image) : null,
-                'unit' => optional($it->product)->unit ?? '',
-                'qty' => $it->quantity,
-                'price' => (float) $it->price,         // original order price per unit
-                'rider_price' => (float) ($it->rider_price ?? $it->price) // if rider proposed price stored per item
-            ];
-        });
+
+    $items = $order->items->map(function ($item) {
+
+        return [
+            'id' => $item->id,
+
+            'product_id' => $item->product_id,
+
+            'product_name' => optional($item->product)->name ?? 'N/A',
+
+            'product_image' => optional($item->product)->image
+                ? url('uploads/products/' . $item->product->image)
+                : null,
+
+            'unit' => optional($item->product)->unit ?? '',
+
+            'qty' => (float) $item->quantity,
+
+            'price' => (float) $item->price,
+
+            'rider_price' => (float) (
+                $item->rider_price ?? $item->price
+            ),
+        ];
+    });
+
+
+    return response()->json([
+        'success' => true,
+
+        'order' => [
+            'id' => $order->id,
+
+            'order_code' => $order->order_code,
+
+            'total_amount' => (float) $order->total_amount,
+
+            'delivery_address' => $order->delivery_address,
+
+            'status' => $order->status,
+
+            'items' => $items,
+        ]
+    ]);
+}
+
+
+
+public function accept(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer',
+
+        'items' => 'nullable|array',
+
+        'items.*.id' => 'required|integer',
+
+        'items.*.price' => 'required|numeric|min:0',
+    ]);
+
+
+    $order = Order::with('items')
+        ->findOrFail($request->id);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security
+    |--------------------------------------------------------------------------
+    */
+
+    if ((int) $order->user_id !== (int) Auth::id()) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'এই অর্ডার গ্রহণ করার অনুমতি আপনার নেই।'
+        ], 403);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Which status can be accepted?
+    |--------------------------------------------------------------------------
+    |
+    | pending
+    |     -> User accepts normal order
+    |
+    | rider_modified_accepted
+    |     -> Rider changed price, user accepts new price
+    |
+    */
+
+    if (!in_array($order->status, [
+        'pending',
+        'rider_modified_accepted'
+    ])) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'এই অর্ডারটি এখন গ্রহণ করা যাবে না।'
+        ], 400);
+    }
+
+
+    DB::beginTransaction();
+
+    try {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Rider modified price accept
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $order->status === 'rider_modified_accepted'
+            && $request->has('items')
+        ) {
+
+            $total = 0;
+
+
+            foreach ($request->items as $data) {
+
+                $item = $order->items
+                    ->where('id', $data['id'])
+                    ->first();
+
+
+                if (!$item) {
+                    continue;
+                }
+
+
+                $acceptedPrice = (float) $data['price'];
+
+
+                /*
+                | User যে price accept করেছে
+                | সেটাই final price হবে।
+                */
+
+                $item->price = $acceptedPrice;
+
+                $item->rider_price = $acceptedPrice;
+
+                $item->save();
+
+
+                $total += $acceptedPrice * (float) $item->quantity;
+            }
+
+
+            /*
+            | যদি items পাঠানো হয় তাহলে নতুন total।
+            */
+
+            if ($total > 0) {
+                $order->total_amount = $total;
+            }
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Final status
+        |--------------------------------------------------------------------------
+        */
+
+        $order->status = 'accepted';
+
+        $order->save();
+
+
+        DB::commit();
+
 
         return response()->json([
             'success' => true,
+
+            'message' => 'অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
+
             'order' => [
                 'id' => $order->id,
-                'order_code' => $order->order_code,
+
                 'total_amount' => (float) $order->total_amount,
-                'delivery_address' => $order->delivery_address,
+
                 'status' => $order->status,
-                'items' => $items,
             ]
         ]);
+
+
+    } catch (\Throwable $e) {
+
+        DB::rollBack();
+
+
+        return response()->json([
+            'success' => false,
+
+            'message' => 'Server error: ' . $e->getMessage()
+        ], 500);
+    }
+}
+
+
+
+public function orderCancell(Request $request)
+{
+    $request->validate([
+        'id' => 'required|integer',
+    ]);
+
+
+    $order = Order::findOrFail($request->id);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Security
+    |--------------------------------------------------------------------------
+    */
+
+    if ((int) $order->user_id !== (int) Auth::id()) {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'এই অর্ডার বাতিল করার অনুমতি আপনার নেই।'
+        ], 403);
     }
 
-    // POST /rider/order/{id}/accept
-    public function accept(Request $request){
-            
-        $order = Order::with('items')->findOrFail($request->id);
 
-        if(!in_array($order->status, ['rider_modified_accepted', 'acctedped'])){
-            return response()->json(['success'=>false,'message'=>'Cannot accept this order.'], 400);
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | User can cancel only when rider modified price
+    |--------------------------------------------------------------------------
+    */
 
-        $payload = $request->validate([
-            'items' => 'required|array',
-            'items.*.id' => 'required|integer',
-            'items.*.price' => 'required|numeric|min:0',
+    if ($order->status !== 'rider_modified_accepted') {
+
+        return response()->json([
+            'success' => false,
+            'message' => 'এই অর্ডারটি এখন বাতিল করা যাচ্ছে না।'
+        ], 400);
+    }
+
+
+    DB::beginTransaction();
+
+    try {
+
+        $order->status = 'cancelled';
+
+        $order->save();
+
+
+        DB::commit();
+
+
+        return response()->json([
+            'success' => true,
+
+            'message' => 'অর্ডার সফলভাবে বাতিল করা হয়েছে।',
+
+            'order' => [
+                'id' => $order->id,
+
+                'total_amount' => (float) $order->total_amount,
+
+                'status' => $order->status,
+            ]
         ]);
 
-        DB::beginTransaction();
-            try {
-                $total = 0;
 
-                foreach($payload['items'] as $it){
-                    $item = $order->items->where('id', $it['id'])->first();
-            
-                    if(!$item) continue;
- 
-                    // Update only if rider_price > current price
-                    if($it['price'] > $item->price){
-                        $item->price = $item->rider_price;
-                        $item->rider_price = $it['price'];
-                        $item->save();
-                    }
+    } catch (\Throwable $e) {
 
-                    $total += $item->rider_price * $item->quantity;
-                }
+        DB::rollBack();
 
-                $order->total_amount = $total;
-                $order->status = 'accepted';
-                $order->save();
 
-                DB::commit();
+        return response()->json([
+            'success' => false,
 
-                return response()->json([
-                    'success'=>true,
-                    'message'=>'অর্ডার সফলভাবে গ্রহণ করা হয়েছে।',
-                    'order'=>[
-                        'id'=>$order->id,
-                        'total_amount'=>(float)$order->total_amount,
-                        'status'=>$order->status
-                    ]
-                ]);
-
-            } catch(\Exception $e){
-                DB::rollBack();
-                return response()->json(['success'=>false,'message'=>'Server error: '.$e->getMessage()],500);
-            }
+            'message' => 'Server error: ' . $e->getMessage()
+        ], 500);
     }
-
-    // POST /rider/order/{id}/accept
-    public function orderCancell(Request $request){
-        $order = Order::with('items')->findOrFail($request->id);
-
-        if(!in_array($order->status, ['rider_modified_acctedped'])){
-            return response()->json(['success'=>false,'message'=>'অর্ডার বাতিল করা যাচ্ছে না।.'], 400);
-        }
-
-        DB::beginTransaction();
-        try { 
+}
  
-            $order->status = 'cancelled';
-            $order->save();
-
-            DB::commit();
-
-            return response()->json([
-                'success'=>true,
-                'message'=>'অর্ডার সফলভাবে বাতিল করা হয়েছে।',
-                'order'=>[
-                    'id'=>$order->id,
-                    'total_amount'=>(float)$order->total_amount,
-                    'status'=>$order->status
-                ]
-            ]);
-
-        } catch(\Exception $e){
-            DB::rollBack();
-            return response()->json(['success'=>false,'message'=>'Server error: '.$e->getMessage()],500);
-        }
-    }
 
 
 

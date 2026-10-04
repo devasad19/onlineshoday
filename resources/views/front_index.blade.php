@@ -601,8 +601,8 @@
 
 
                         <!-- ADD TO CART -->
-<button type="button"
-        class="addToCartBtn
+<a href="{{ route('packages.purchase', $package->id) }}"
+        class="addToCartBtnPkg
                flex-1
                bg-green-600
                hover:bg-green-700
@@ -617,18 +617,13 @@
                flex
                items-center
                justify-center
-               gap-2"
-
-        data-id="{{ $package->id }}"
-        data-name="{{ $package->name }}"
-        data-price="{{ $discountPrice }}"
-        data-image="{{ url('uploads/packages/'.$package->image) }}">
+               gap-2">
 
     <span class="text-lg leading-none">🛒</span>
 
-    <span>প্যাকেজ যোগ করুন</span>
+    <span>প্যাকেজ কিনুন 2</span>
 
-</button>
+</a>
 
 
                         <!-- DETAILS -->
