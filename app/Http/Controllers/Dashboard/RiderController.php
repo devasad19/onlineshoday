@@ -341,14 +341,13 @@ $orders = $orders
  
 public function pendingOrders()
 {
-   
     $orders = Order::with([
-    'user',
-    'custom_products',
-    'customer',
-    'items.product',
-    'package.items.product',
-])->where('status', 'pending')->latest()->get();
+        'user',
+        'custom_products',
+        'customer',
+        'items.product',
+        'package.items.product',
+    ])->where('status', 'pending')->latest()->get();
 
     // প্রতিটা product image কে full URL বানানো
     $orders->each(function ($order) {

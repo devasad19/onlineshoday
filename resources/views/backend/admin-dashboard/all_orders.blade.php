@@ -519,7 +519,26 @@ $("#dateFilter").change(function(){
 });
  
 
- 
+ function hasPendingCustomProduct(order) {
+
+    return (order.custom_products || []).some(item => {
+
+        const unit = (item.unit || '').trim();
+
+        // if (unit === 'টাকা') {
+
+            const price = parseFloat(item.price) || 0;
+
+            return price <= 0;
+        // }
+
+        // const quantity = parseFloat(item.quantity) || 0;
+
+        // return quantity <= 0;
+    });
+}
+
+
 function renderOrderCard(order) {
 
     // ======================================================
@@ -542,28 +561,14 @@ function renderOrderCard(order) {
     };
 
 
-    // ======================================================
-    // Custom Product Price Status
-    // ======================================================
-    const customProducts = order.custom_products || [];
+const customProducts = order.custom_products || [];
 
-    const hasCustomProducts = customProducts.length > 0;
+const hasPendingCustomPrice =
+    hasPendingCustomProduct(order);
 
-    const hasPendingCustomPrice = customProducts.some(item => {
-        return parseFloat(item.price) <= 0;
-    });
-
-
-    // ======================================================
-    // Delivery Charge Status
-    //
-    // IMPORTANT:
-    // null / undefined = Delivery Charge এখনো সেট হয়নি
-    // 0 = Delivery Charge সেট হয়েছে (Free Delivery হলেও confirmed)
-    // ======================================================
-    const hasDeliveryCharge =
-        order.delivery_charge !== null &&
-        order.delivery_charge !== undefined;
+const hasDeliveryCharge =
+    order.delivery_charge !== null &&
+    order.delivery_charge !== undefined;
 
 
     // ======================================================
@@ -571,65 +576,62 @@ function renderOrderCard(order) {
     // ======================================================
     let priceStatusHTML = '';
 
-    if (hasPendingCustomPrice) {
+if (hasPendingCustomPrice) {
 
-        // 1️⃣ Custom Product Price Pending
-        priceStatusHTML = `
-            <button
-                type="button"
-                onclick="openCustomPriceModal(${order.id})"
-                class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow cursor-pointer"
-            >
-                ⚠ Price Pending
-            </button>
-        `;
+    priceStatusHTML = `
+        <button
+            type="button"
+            onclick="openCustomPriceModal(${order.id})"
+            class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow"
+        >
+            ⚠ Custom Price সেট করুন
+        </button>
+    `;
 
-    } else if (!hasDeliveryCharge) {
+} else if (!hasDeliveryCharge) {
 
-        // 2️⃣ Custom Price Done কিন্তু Delivery Charge সেট হয়নি
-        priceStatusHTML = `
-            <button
-                type="button"
-                onclick="openDeliveryChargeModal(${order.id})"
-                class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow cursor-pointer"
-            >
-                🚚 Set Delivery Charge
-            </button>
-        `;
+    priceStatusHTML = `
+        <button
+            type="button"
+            onclick="openDeliveryChargeModal(${order.id})"
+            class="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow"
+        >
+            🚚 Delivery সেট করুন
+        </button>
+    `;
 
-    } else {
+} else {
 
-        // 3️⃣ সব Complete
-        priceStatusHTML = `
-            <span
-                class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full"
-            >
-                ✓ Price Confirmed
-            </span>
-        `;
-    }
+    priceStatusHTML = `
+        <span
+            class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full"
+        >
+            ✓ Ready to Delivery
+        </span>
+    `;
+}
 
 
     // ======================================================
     // PRINT BUTTON
     // শুধু Custom Price + Delivery Charge দুইটাই Complete হলে
     // ======================================================
-    const canPrint =
-        !hasPendingCustomPrice &&
-        hasDeliveryCharge;
+const canPrint =
+    !hasPendingCustomPrice &&
+    hasDeliveryCharge;
 
 
-    const printButton = canPrint
-        ? `
-            <a
-                href="{{ url('/admin/orders') }}/${order.id}/print"
-                target="_blank"
-                class="absolute -top-3 right-5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-10"
-            >
-                🖨 Invoice Print
-            </a>
-        `
-        : '';
+const printButton = canPrint
+    ? `
+        <a
+            href="{{ url('/admin/orders') }}/${order.id}/print"
+            target="_blank"
+            class="absolute -top-3 right-5 bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-10"
+        >
+            🖨 Invoice Print
+        </a>
+    `
+    : '';
 
 
     // ======================================================
@@ -1354,128 +1356,161 @@ function saveCustomPrices(orderId) {
     });
 }
 
+ function getDeliveryQuantities(order) {
+ 
+const totals = {
+    kg_liter: 0,
+    piece: 0,
+    dozen: 0,
+    packet: 0
+};
 
-function getDeliveryQuantities(order) {
-
-    const totals = {
-        kg_liter: 0,
-        piece: 0,
-        dozen: 0,
-        packet: 0
-    };
-
-    const products = [];
-
-
-    // ==========================================
-    // Normal Products
-    // ==========================================
-
-    (order.items || []).forEach(item => {
-
-        const name =
-            item.product?.name ?? 'অজানা পণ্য';
-
-        const unit =
-            (item.product?.unit || '').trim();
-
-        const qty =
-            parseFloat(item.quantity) || 0;
+const products = [];
 
 
-        products.push({
-            name: name,
-            unit: unit,
-            quantity: qty,
-            custom: false
-        });
+// ==========================================
+// Normal Products
+// ==========================================
+
+(order.items || []).forEach(item => {
+
+    const name =
+        item.product?.name ?? 'অজানা পণ্য';
+
+    const unit =
+        (item.product?.unit || '').trim();
+
+    const qty =
+        parseFloat(item.quantity) || 0;
+
+    const price =
+        parseFloat(item.price) || 0;
 
 
-        if (
-            unit === 'কেজি' ||
-            unit === 'লিটার'
-        ) {
-
-            totals.kg_liter += qty;
-
-        } else if (unit === 'পিস') {
-
-            totals.piece += qty;
-
-        } else if (unit === 'ডজন') {
-
-            totals.dozen += qty;
-
-        } else if (unit === 'প্যাকেট') {
-
-            totals.packet += qty;
-        }
-
+    products.push({
+        name: name,
+        unit: unit,
+        price: price,
+        quantity: qty,
+        custom: false
     });
 
 
-    // ==========================================
-    // Custom Products
-    // ==========================================
+    if (
+        unit === 'কেজি' ||
+        unit === 'লিটার'
+    ) {
 
-    (order.custom_products || []).forEach(item => {
+        totals.kg_liter += qty;
 
-        const name =
-            item.name ?? 'Custom Product';
+    } else if (unit === 'পিস') {
 
-        const unit =
-            (item.unit || '').trim();
+        totals.piece += qty;
 
-        const qty =
-            parseFloat(item.quantity) || 0;
+    } else if (unit === 'ডজন') {
 
+        totals.dozen += qty;
 
-        products.push({
-            name: name,
-            unit: unit,
-            quantity: qty,
-            custom: true
-        });
+    } else if (unit === 'প্যাকেট') {
+
+        totals.packet += qty;
+    }
+
+});
 
 
-        // KG / Liter
-        if (
-            unit === 'কেজি' ||
-            unit === 'লিটার'
-        ) {
+// ==========================================
+// Custom Products
+// ==========================================
 
-            totals.kg_liter += qty;
+(order.custom_products || []).forEach(item => {
 
-        }
+    const name =
+        item.name ?? 'Custom Product';
 
-        // Piece
-        else if (unit === 'পিস') {
+    const unit =
+        (item.unit || '').trim();
 
-            totals.piece += qty;
+    const qty =
+        parseFloat(item.quantity) || 0;
 
-        }
+    const price =
+        parseFloat(item.price) || 0;
 
-        // Dozen
-        else if (unit === 'ডজন') {
 
-            totals.dozen += qty;
-
-        }
-
-        // Packet
-        else if (unit === 'প্যাকেট') {
-
-            totals.packet += qty;
-        }
-
+    products.push({
+        name: name,
+        unit: unit,
+        price: price,
+        quantity: qty,
+        custom: true
     });
 
 
-    return {
-        totals: totals,
-        products: products
-    };
+    // ======================================
+    // টাকা
+    // ======================================
+
+    if (unit === 'টাকা') {
+        return;
+    }
+
+
+    // ======================================
+    // KG / Liter
+    // ======================================
+
+    if (
+        unit === 'কেজি' ||
+        unit === 'লিটার'
+    ) {
+
+        totals.kg_liter += qty;
+
+    }
+
+    // ======================================
+    // Piece
+    // ======================================
+
+    else if (unit === 'পিস') {
+
+        totals.piece += qty;
+
+    }
+
+    // ======================================
+    // Dozen
+    // ======================================
+
+    else if (unit === 'ডজন') {
+
+        totals.dozen += qty;
+
+    }
+
+    // ======================================
+    // Packet
+    // ======================================
+
+    else if (unit === 'প্যাকেট') {
+
+        totals.packet += qty;
+    }
+
+});
+
+
+return {
+    totals: totals,
+    products: products
+};
+ 
+
 }
+
+
+
 
 function closeDeliveryChargeModal() {
 
@@ -1491,203 +1526,242 @@ function closeDeliveryChargeModal() {
 
     modal.dataset.orderId = '';
 }
+
 function openDeliveryChargeModal(orderId) {
 
-    const order =
-        window.liveOrders[orderId];
+ 
+const order =
+    window.liveOrders[orderId];
 
 
-    if (!order) {
+if (!order) {
 
-        alert('অর্ডারের তথ্য পাওয়া যায়নি।');
+    alert('অর্ডারের তথ্য পাওয়া যায়নি।');
 
-        return;
+    return;
+}
+
+
+// ==========================================
+// আগে Custom Product Complete কিনা
+// ==========================================
+
+if (hasPendingCustomProduct(order)) {
+
+    alert('আগে Custom Product Price Set করুন।');
+
+    return;
+}
+
+
+// ==========================================
+// Quantity Calculate
+// ==========================================
+
+const data =
+    getDeliveryQuantities(order);
+
+const totals =
+    data.totals;
+
+const products =
+    data.products;
+
+
+// ==========================================
+// Product List
+// ==========================================
+
+let html = '';
+
+let i = 1;
+
+
+products.forEach(product => {
+
+    let displayValue = '';
+
+    let productName = '';
+
+
+    // ======================================
+    // Custom Product
+    // ======================================
+
+    if (product.custom) {
+
+        productName = `
+            ${product.name}
+
+            <span class="text-xs text-orange-600 ml-1">
+                (Custom)
+            </span>
+
+    ${ product.quantity > 0 ? ` <span class="text-xs text-gray-500 ml-1"> ${product.quantity} ${product.unit} </span> ` : '' }
+        `;
+        displayValue =
+            `${product.price || 0} টাকা`;
+
     }
 
 
-    // ==========================================
-    // আগে Custom Product Price Complete কিনা
-    // ==========================================
+    // ======================================
+    // Normal Product
+    // ======================================
 
-    const hasPendingCustomPrice =
-        (order.custom_products || []).some(item => {
+    else {
 
-            return parseFloat(item.price) <= 0;
-        });
+        productName =
+            `${product.name}`;
 
 
-    if (hasPendingCustomPrice) {
-
-        alert(
-            'আগে Custom Product-এর Price সেট করুন।'
-        );
-
-        return;
+        displayValue =
+            `${product.quantity ?? 0} ${product.unit ?? ''}`;
     }
 
 
-    // ==========================================
-    // Quantity Calculate
-    // ==========================================
+    html += `
+        <div class="px-4 py-3 flex items-center gap-3">
 
-    const data =
-        getDeliveryQuantities(order);
+            <div class="flex-shrink-0">
 
-    const totals =
-        data.totals;
+                <span
+                    class="w-7 h-7 rounded-full bg-gray-100 text-gray-600
+                           flex items-center justify-center text-sm font-bold"
+                >
+                    ${i++}
+                </span>
 
-    const products =
-        data.products;
-
-
-    // ==========================================
-    // Product List
-    // ==========================================
-
-    let html = '';
+            </div>
 
 
-    products.forEach(product => {
+            <div class="flex-1 min-w-0">
 
-        html += `
+                <p class="font-semibold text-gray-700">
+
+                    ${productName}
+
+                </p>
+
+            </div>
+
+
             <div
-                class="px-4 py-3 flex justify-between items-center"
+                class="font-bold text-gray-700 whitespace-nowrap"
             >
-
-                <div>
-
-                    <p class="font-semibold text-gray-700">
-                        ${product.name}
-
-                        ${
-                            product.custom
-                            ? `
-                                <span class="text-xs text-orange-600">
-                                    (Custom)
-                                </span>
-                            `
-                            : ''
-                        }
-
-                    </p>
-
-                </div>
-
-
-                <div class="font-bold text-gray-700">
-
-                    ${product.quantity}
-                    ${product.unit}
-
-                </div>
-
+                ${displayValue}
             </div>
-        `;
-    });
+
+        </div>
+    `;
+});
 
 
-    document.getElementById(
-        'deliveryProductList'
-    ).innerHTML =
+document.getElementById(
+    'deliveryProductList'
+).innerHTML =
 
-        html ||
+    html ||
 
-        `
-            <div class="p-4 text-gray-500">
-                কোনো পণ্য পাওয়া যায়নি।
-            </div>
-        `;
-
-
-    // ==========================================
-    // KG / Liter Auto Charge
-    // ==========================================
-
-    const kgLiterCharge =
-        getKgLiterDeliveryCharge(
-            totals.kg_liter
-        );
+    `
+        <div class="p-4 text-gray-500">
+            কোনো পণ্য পাওয়া যায়নি।
+        </div>
+    `;
 
 
-    console.log(
-        'Total KG/Liter:',
+// ==========================================
+// KG / Liter Auto Charge
+// ==========================================
+
+const kgLiterCharge =
+    getKgLiterDeliveryCharge(
         totals.kg_liter
     );
 
-    console.log(
-        'Auto KG/Liter Charge:',
-        kgLiterCharge
-    );
+
+console.log(
+    'Total KG/Liter:',
+    totals.kg_liter
+);
 
 
-    document.getElementById(
-        'deliveryKgLiterQuantity'
-    ).innerText =
-        `মোট: ${totals.kg_liter} kg / liter`;
+console.log(
+    'Auto KG/Liter Charge:',
+    kgLiterCharge
+);
 
 
-    document.getElementById(
-        'deliveryKgLiterCharge'
-    ).innerText =
-        `৳${kgLiterCharge.toFixed(2)}`;
+document.getElementById(
+    'deliveryKgLiterQuantity'
+).innerText =
+    `মোট: ${totals.kg_liter} kg / liter`;
 
 
-    // ==========================================
-    // Other
-    // ==========================================
-
-    document.getElementById(
-        'deliveryOtherQuantity'
-    ).innerText =
-
-        `পিস: ${totals.piece} | ` +
-        `ডজন: ${totals.dozen} | ` +
-        `প্যাকেট: ${totals.packet}`;
+document.getElementById(
+    'deliveryKgLiterCharge'
+).innerText =
+    `৳${kgLiterCharge.toFixed(2)}`;
 
 
-    // ==========================================
-    // Input Event
-    // ==========================================
+// ==========================================
+// Other
+// ==========================================
 
-    document.getElementById(
-        'deliveryOtherCharge'
-    ).oninput = function () {
+document.getElementById(
+    'deliveryOtherQuantity'
+).innerText =
 
-        calculateDeliveryTotal();
+    `পিস: ${totals.piece} | ` +
+    `ডজন: ${totals.dozen} | ` +
+    `প্যাকেট: ${totals.packet}`;
 
-    };
 
+// ==========================================
+// Input Event
+// ==========================================
 
-    // ==========================================
-    // Calculate Total
-    // ==========================================
+document.getElementById(
+    'deliveryOtherCharge'
+).oninput = function () {
 
     calculateDeliveryTotal();
 
-
-    // ==========================================
-    // Store Order ID
-    // ==========================================
-
-    const modal =
-        document.getElementById(
-            'deliveryChargeModal'
-        );
+};
 
 
-    modal.dataset.orderId =
-        orderId;
+// ==========================================
+// Calculate Total
+// ==========================================
+
+calculateDeliveryTotal();
 
 
-    // ==========================================
-    // Show Modal
-    // ==========================================
+// ==========================================
+// Store Order ID
+// ==========================================
 
-    modal.classList.remove('hidden');
+const modal =
+    document.getElementById(
+        'deliveryChargeModal'
+    );
 
-    modal.classList.add('flex');
-}
+
+modal.dataset.orderId =
+    orderId;
+
+
+// ==========================================
+// Show Modal
+// ==========================================
+
+modal.classList.remove('hidden');
+
+modal.classList.add('flex');
  
+
+}
+
 function getKgLiterDeliveryCharge(quantity) {
  
 
@@ -1873,15 +1947,17 @@ function saveDeliveryCharge() {
 
 
         // Local data update
-        window.liveOrders[orderId].delivery_charge =
-            result.delivery_charge;
+window.liveOrders[orderId].delivery_charge =
+    result.delivery_charge;
 
+closeDeliveryChargeModal();
 
-        closeDeliveryChargeModal();
+loadOrders();
+ 
 
 
         // Order card update
-        refreshOrderCard(orderId);
+        // refreshOrderCard(orderId);
 
 
     })

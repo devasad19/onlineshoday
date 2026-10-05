@@ -449,15 +449,28 @@ public function setDeliveryCharge(Request $request)
     $order = Order::findOrFail($request->order_id);
 
 
-    // Custom product price pending?
-    $hasPendingCustomPrice = $order->customProducts()
-        ->where(function ($query) {
+// Custom product price / quantity pending?
+$hasPendingCustomPrice = $order->customProducts()
+    ->where(function ($query) {
 
-            $query->whereNull('price')
-                ->orWhere('price', '<=', 0);
-
+        $query->where(function ($q) {
+            $q->where('unit', 'টাকা')
+              ->where(function ($q2) {
+                  $q2->whereNull('price')
+                     ->orWhere('price', '<=', 0);
+              });
         })
-        ->exists();
+
+        ->orWhere(function ($q) {
+            $q->where('unit', '!=', 'টাকা')
+              ->where(function ($q2) {
+                  $q2->whereNull('quantity')
+                     ->orWhere('quantity', '<=', 0);
+              });
+        });
+
+    })
+    ->exists();
 
 
     if ($hasPendingCustomPrice) {

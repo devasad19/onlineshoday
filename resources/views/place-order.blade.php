@@ -67,15 +67,25 @@
         @endforeach
       </div>
 
-      <!-- 🧩 Custom Product Section -->
-      <div class="bg-gray-50 rounded-2xl border p-4 mt-5" id="customProductsSection">
-        <h3 class="text-sm sm:text-lg font-semibold text-gray-700 mb-3 flex justify-between">
-          <span>➕ কাস্টম পণ্য যোগ করুন</span>
-          <button type="button" id="addCustomProduct"
-              class="bg-green-600 text-sm md:text-md sm:text-lg text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">+ নতুন পণ্য</button>
-        </h3>
-        <div id="customProductList" class="space-y-3 w-full"></div>
-      </div>
+<!-- 🧩 Custom Product Section -->
+<div class="bg-gray-50 rounded-2xl border p-4 mt-5" id="customProductsSection">
+
+    <h3 class="text-sm sm:text-lg font-semibold text-gray-700 mb-3 flex justify-between">
+
+        <span>➕ কাস্টম পণ্য যোগ করুন</span>
+
+        <button type="button"
+            id="addCustomProduct"
+            class="bg-green-600 text-sm md:text-md sm:text-lg text-white px-3 py-1 rounded-lg hover:bg-green-700 transition">
+            + নতুন পণ্য
+        </button>
+
+    </h3>
+
+    <div id="customProductList" class="space-y-3 w-full"></div>
+
+</div>
+ 
 
       <input type="hidden" id="baseTotal" value="{{ $total }}">
       <input type="hidden" id="customTotal" name="customTotal" value="0">
@@ -257,84 +267,704 @@ if (newAddressCheckbox) {
         });
     });
 }
+ 
+ 
+// ==========================================================
+// 🧩 CUSTOM PRODUCT SYSTEM
+// ==========================================================
 
-// ===========================
-// 🧩 Custom Product Functions
-// ===========================
 
-document.getElementById('addCustomProduct').addEventListener('click', function () {
-    const id = Date.now();
+// ==========================================================
+// 🔢 বাংলা সংখ্যা → English Number
+// ==========================================================
 
-    const productHtml = `
-        <div class="custom-product border p-4 rounded-2xl bg-gray-50 shadow-sm flex flex-col md:flex-row md:items-center md:gap-3 gap-3" data-id="${id}">
-            <input type="text" name="custom_products[${id}][name]" class="cp-name border border-green-300 p-2 rounded-lg w-full focus:ring-2 focus:ring-green-400 outline-none" placeholder="পণ্যের নাম" required>
+function convertBanglaNumber(value) {
 
-            <div class="flex flex-col sm:flex-row w-full gap-3">
-                <input type="number" name="custom_products[${id}][qty]" class="cp-qty border border-green-300 p-2 rounded-lg w-full sm:w-1/3 focus:ring-2 focus:ring-green-400 outline-none"
-                    placeholder="পরিমাণ" step="0.1">
+    if (value === null || value === undefined) {
+        return '';
+    }
 
-                <select name="custom_products[${id}][unit]" class="cp-unit border border-green-300 p-2 rounded-lg w-full sm:w-1/3 focus:ring-2 focus:ring-green-400 outline-none" required>
-                    <option value="কেজি">কেজি</option>
-                    <option value="লিটার">লিটার</option>
-                    <option value="পিস">পিস</option>
-                    <option value="ডজন">ডজন</option>
-                    <option value="টাকা">টাকা</option>
-                </select>
+    const banglaDigits = '০১২৩৪৫৬৭৮৯';
+    const englishDigits = '0123456789';
 
-                <input type="number" name="custom_products[${id}][price]" class="cp-price border border-green-300 p-2 rounded-lg w-full sm:w-1/3 focus:ring-2 focus:ring-green-400 outline-none"
-                    placeholder="মূল্য (৳)">
+    return String(value)
+        .replace(/[০-৯]/g, function (char) {
+
+            const index = banglaDigits.indexOf(char);
+
+            return index !== -1
+                ? englishDigits[index]
+                : char;
+
+        })
+        .replace(/٫/g, '.')
+        .replace(/,/g, '');
+}
+
+
+// ==========================================================
+// 🔢 Get Number Safely
+// ==========================================================
+
+function getNumber(value) {
+
+    value = convertBanglaNumber(value);
+
+    value = String(value)
+        .trim()
+        .replace(/,/g, '');
+
+    if (value === '') {
+        return 0;
+    }
+
+    const number = parseFloat(value);
+
+    return Number.isFinite(number)
+        ? number
+        : 0;
+}
+
+
+// ==========================================================
+// ➕ Add Custom Product
+// ==========================================================
+
+document
+    .getElementById('addCustomProduct')
+    .addEventListener('click', function () {
+
+        const id = Date.now();
+
+        const productHtml = `
+
+            <div
+                class="custom-product border p-4 rounded-2xl bg-gray-50 shadow-sm
+                       flex flex-col md:flex-row md:items-center md:gap-3 gap-3"
+                data-id="${id}"
+            >
+
+                <!-- ==========================================
+                     Product Name
+                =========================================== -->
+
+                <input
+                    type="text"
+                    name="custom_products[${id}][name]"
+                    class="cp-name border border-green-300 p-2 rounded-lg w-full
+                           focus:ring-2 focus:ring-green-400 outline-none"
+                    placeholder="পণ্যের নাম"
+                    required
+                >
+
+
+                <div class="flex flex-col sm:flex-row w-full gap-3">
+
+
+                    <!-- ======================================
+                         Unit
+                    ======================================= -->
+
+                    <div class="w-full sm:w-1/3">
+
+                        <label class="block text-xs text-gray-500 mb-1">
+                            একক
+                        </label>
+
+                        <select
+                            name="custom_products[${id}][unit]"
+                            class="cp-unit border border-green-300 p-2 rounded-lg
+                                   w-full focus:ring-2 focus:ring-green-400 outline-none"
+                            required
+                        >
+
+                            <option value="কেজি">কেজি</option>
+                            <option value="লিটার">লিটার</option>
+                            <option value="পিস">পিস</option>
+                            <option value="ডজন">ডজন</option>
+                            <option value="টাকা">টাকা</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ======================================
+                         Quantity
+                    ======================================= -->
+
+                    <div class="cp-qty-wrapper w-full sm:w-1/2">
+
+                        <label class="cp-value-label block text-xs text-gray-500 mb-1">
+                            পরিমাণ
+                        </label>
+
+                        <input
+                            type="text"
+                            name="custom_products[${id}][qty]"
+                            class="cp-qty bangla-number border border-green-300
+                                   p-2 rounded-lg w-full
+                                   focus:ring-2 focus:ring-green-400 outline-none"
+                            placeholder="পরিমাণ"
+                            inputmode="decimal"
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+
+                    <!-- ======================================
+                         Price
+                    ======================================= -->
+
+                    <div class="cp-price-wrapper w-full sm:w-1/2 hidden">
+
+                        <label class="cp-price-label block text-xs text-gray-500 mb-1">
+                            মূল্য (৳)
+                        </label>
+
+                        <input
+                            type="text"
+                            name="custom_products[${id}][price]"
+                            class="cp-price bangla-number border border-green-300
+                                   p-2 rounded-lg w-full
+                                   focus:ring-2 focus:ring-green-400 outline-none"
+                            placeholder="টাকার পরিমাণ"
+                            inputmode="decimal"
+                            autocomplete="off"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ==========================================
+                     Remove
+                =========================================== -->
+
+                <button
+                    type="button"
+                    class="text-red-500 hover:text-red-700 font-bold
+                           text-2xl self-end md:self-center removeCustom"
+                >
+                    ×
+                </button>
+
             </div>
 
-            <button type="button" class="text-red-500 hover:text-red-700 font-bold text-2xl self-end md:self-center removeCustom">×</button>
-        </div>
-    `;
+        `;
 
-    document.getElementById('customProductList').insertAdjacentHTML('beforeend', productHtml);
-    updateCustomTotal();
-});
 
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('removeCustom')) {
-        e.target.closest('.custom-product').remove();
+        document
+            .getElementById('customProductList')
+            .insertAdjacentHTML(
+                'beforeend',
+                productHtml
+            );
+
+
+        const row = document.querySelector(
+            `.custom-product[data-id="${id}"]`
+        );
+
+
+        const unitSelect =
+            row.querySelector('.cp-unit');
+
+
+        // ==============================================
+        // Unit Change
+        // ==============================================
+
+        unitSelect.addEventListener(
+            'change',
+            function () {
+
+                updateCustomProductField(row);
+
+                updateCustomTotal();
+
+            }
+        );
+
+
+        // Initial state
+        updateCustomProductField(row);
+
         updateCustomTotal();
-    }
-});
 
-document.addEventListener('input', function (e) {
-    if (e.target.closest('.custom-product')) {
-        updateCustomTotal();
-    }
-});
-
-// 🔹 Custom total হিসাব করা
-function updateCustomTotal() {
-    let customTotal = 0;
-
-    document.querySelectorAll('.custom-product').forEach((el) => {
-        const qty = parseFloat(el.querySelector('.cp-qty')?.value || 0);
-        const unit = el.querySelector('.cp-unit')?.value;
-        const price = parseFloat(el.querySelector('.cp-price')?.value || 0);
-
-        if (unit === 'টাকা') {
-            customTotal += price;
-        } else if (qty > 0 && price > 0) {
-            customTotal += qty * price;
-        }
     });
 
-    // Hidden custom total update
-    document.getElementById('customTotal').value = customTotal;
+
+// ==========================================================
+// 🔄 Quantity / Price Field Show Hide
+// ==========================================================
+
+function updateCustomProductField(row) {
+
+    const unit =
+        row.querySelector('.cp-unit').value;
+
+
+    const qtyInput =
+        row.querySelector('.cp-qty');
+
+    const priceInput =
+        row.querySelector('.cp-price');
+
+
+    const qtyWrapper =
+        row.querySelector('.cp-qty-wrapper');
+
+    const priceWrapper =
+        row.querySelector('.cp-price-wrapper');
+
+
+    const valueLabel =
+        row.querySelector('.cp-value-label');
+
+
+
+    // ======================================================
+    // টাকা
+    // ======================================================
+
+    if (unit === 'টাকা') {
+
+        qtyWrapper.classList.add('hidden');
+
+        priceWrapper.classList.remove('hidden');
+
+
+        priceInput.required = true;
+
+        qtyInput.required = false;
+
+
+        priceInput.placeholder =
+            'টাকার পরিমাণ';
+
+
+        // Quantity clear
+        qtyInput.value = '';
+
+    }
+
+
+    // ======================================================
+    // Other Units
+    // ======================================================
+
+    else {
+
+        qtyWrapper.classList.remove('hidden');
+
+        priceWrapper.classList.add('hidden');
+
+
+        qtyInput.required = true;
+
+        priceInput.required = false;
+
+
+        valueLabel.textContent =
+            'পরিমাণ';
+
+
+        qtyInput.placeholder =
+            `পরিমাণ (${unit})`;
+
+
+        // Price clear
+        priceInput.value = '';
+
+    }
+
+}
+
+
+// ==========================================================
+// 🧮 Custom Product Total
+// ==========================================================
+
+function calculateCustomTotal() {
+
+    let total = 0;
+
+
+    document
+        .querySelectorAll('.custom-product')
+        .forEach(function (row) {
+
+            const unit =
+                row.querySelector('.cp-unit')?.value;
+
+
+            const qty =
+                getNumber(
+                    row.querySelector('.cp-qty')?.value
+                );
+
+
+            const price =
+                getNumber(
+                    row.querySelector('.cp-price')?.value
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | টাকা
+            |--------------------------------------------------------------------------
+            | টাকা select করলে price-টাই টাকা
+            |--------------------------------------------------------------------------
+            */
+
+            if (unit === 'টাকা') {
+
+                total += price;
+
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | কেজি / লিটার / পিস / ডজন
+            |--------------------------------------------------------------------------
+            |
+            | এখানে শুধু quantity নেওয়া হচ্ছে।
+            | কারণ এই unit-গুলোর জন্য price field নেই।
+            |
+            |--------------------------------------------------------------------------
+            */
+
+            else {
+
+                // এখানে টাকা যোগ হবে না।
+                // শুধু quantity হিসেবে থাকবে।
+
+            }
+
+        });
+
+
+    return total;
+
+}
+
+
+// ==========================================================
+// 💰 Update Custom Total Display
+// ==========================================================
+
+function updateCustomTotal() {
+
+    const total =
+        calculateCustomTotal();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | customTotal element
+    |--------------------------------------------------------------------------
+    */
+
+    const totalElement =
+        document.getElementById('customTotal');
+
+
+    if (totalElement) {
+
+        const formatted =
+            total.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+
+        /*
+        | যদি input হয়
+        */
+
+        if (
+            totalElement.tagName === 'INPUT' ||
+            totalElement.tagName === 'TEXTAREA'
+        ) {
+
+            totalElement.value = formatted;
+
+        }
+
+
+        /*
+        | যদি div / span / p হয়
+        */
+
+        else {
+
+            totalElement.textContent =
+                formatted;
+
+        }
+
+    }
+
+
+    // Grand Total update
     updateGrandTotal();
+
 }
 
-// 🔹 Base + Custom যোগ করে Grand total দেখানো
+
+// ==========================================================
+// 🧮 Get Base Total
+// ==========================================================
+
+function getBaseTotal() {
+
+    const baseElement =
+        document.getElementById('baseTotal');
+
+
+    if (!baseElement) {
+        return 0;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Input হলে value
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        baseElement.tagName === 'INPUT' ||
+        baseElement.tagName === 'TEXTAREA'
+    ) {
+
+        return getNumber(
+            baseElement.value
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Div / Span হলে textContent
+    |--------------------------------------------------------------------------
+    */
+
+    return getNumber(
+        baseElement.textContent
+    );
+
+}
+
+
+// ==========================================================
+// 🧮 Grand Total
+// ==========================================================
+
 function updateGrandTotal() {
-    const base = parseFloat(document.getElementById('baseTotal').value || 0);
-    const custom = parseFloat(document.getElementById('customTotal').value || 0);
-    const grand = base + custom;
 
-    document.getElementById('cartTotal').innerText = `৳${grand.toFixed(2)}`;
+    /*
+    |--------------------------------------------------------------------------
+    | Base Order Total
+    |--------------------------------------------------------------------------
+    */
+
+    const base =
+        getBaseTotal();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Custom Product Total
+    |--------------------------------------------------------------------------
+    */
+
+    const custom =
+        calculateCustomTotal();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Grand Total
+    |--------------------------------------------------------------------------
+    */
+
+    const grand =
+        base + custom;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Display
+    |--------------------------------------------------------------------------
+    */
+
+    const cartTotal =
+        document.getElementById('cartTotal');
+
+
+    if (cartTotal) {
+
+        cartTotal.textContent =
+            `৳${grand.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            })}`;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Optional hidden/input field
+    |--------------------------------------------------------------------------
+    */
+
+    const grandTotalInput =
+        document.getElementById('grandTotal');
+
+
+    if (grandTotalInput) {
+
+        grandTotalInput.value =
+            grand.toFixed(2);
+
+    }
+
+
+    return grand;
+
 }
+
+
+// ==========================================================
+// ✍️ Input Change
+// ==========================================================
+
+document.addEventListener(
+    'input',
+    function (e) {
+
+        if (
+            e.target.classList.contains('cp-qty') ||
+            e.target.classList.contains('cp-price')
+        ) {
+
+            updateCustomTotal();
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// 🗑 Remove Custom Product
+// ==========================================================
+
+document.addEventListener(
+    'click',
+    function (e) {
+
+        const removeButton =
+            e.target.closest('.removeCustom');
+
+
+        if (!removeButton) {
+            return;
+        }
+
+
+        const row =
+            removeButton.closest('.custom-product');
+
+
+        if (row) {
+
+            row.remove();
+
+            updateCustomTotal();
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// 🔢 Convert Bangla Numbers Before Submit
+// ==========================================================
+
+const customProductForm =
+    document
+        .getElementById('customProductsSection')
+        ?.closest('form');
+
+
+if (customProductForm) {
+
+    customProductForm.addEventListener(
+        'submit',
+        function () {
+
+            document
+                .querySelectorAll('.bangla-number')
+                .forEach(function (input) {
+
+                    input.value =
+                        convertBanglaNumber(
+                            input.value
+                        );
+
+                });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Grand Total English number হিসেবে রাখুন
+            |--------------------------------------------------------------------------
+            */
+
+            const grandTotal =
+                updateGrandTotal();
+
+
+            const grandTotalInput =
+                document.getElementById('grandTotal');
+
+
+            if (grandTotalInput) {
+
+                grandTotalInput.value =
+                    grandTotal.toFixed(2);
+
+            }
+
+        }
+    );
+
+}
+
+
+// ==========================================================
+// 🚀 Initial Calculation
+// ==========================================================
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        updateCustomTotal();
+
+    }
+);
+ 
 
 
 </script>

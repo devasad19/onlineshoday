@@ -269,30 +269,33 @@ public function destroy(Request $request)
     ]);
 }
 
-
 public function saveOrder(Request $request)
 {
- 
-
     if (!auth()->check()) {
         session(['url.intended' => url()->current()]);
         return redirect('/login');
     }
 
- 
-
     $user = Auth::user();
+
     $cartItems = CartItem::where('user_id', $user->id)->get();
 
     if ($cartItems->isEmpty()) {
         return back()->with('error', 'আপনার ব্যাগ খালি।');
     }
 
-    $totalAmount = $cartItems->sum(function($item) {
+    $totalAmount = $cartItems->sum(function ($item) {
         return $item->price * $item->quantity;
     });
- 
-    $total = $totalAmount + $request->customTotal;
+
+    $customTotal = (float) ($request->customTotal ?? 0);
+
+    $total = $totalAmount + $customTotal;
+
+
+    // ==========================================
+    // Create Order
+    // ==========================================
 
     $order = Order::create([
         'user_id' => $user->id,
@@ -300,29 +303,51 @@ public function saveOrder(Request $request)
         'total_amount' => $total,
         'payment_method' => 'Cash On Delivery',
         'delivery_address' => $request->address,
+        'created_at' => now('Asia/Dhaka'),
+        'updated_at' => now('Asia/Dhaka'),
     ]);
 
-    // Save order items
-    foreach($cartItems as $cart) {
+
+    // ==========================================
+    // Save Order Items
+    // ==========================================
+
+    foreach ($cartItems as $cart) {
+
         $order->items()->create([
             'product_id' => $cart->product_id,
             'quantity' => $cart->quantity,
             'price' => $cart->price,
         ]);
     }
- 
-        // ✅ Save custom products
+
+
+    // ==========================================
+    // Save Custom Products
+    // ==========================================
+
     if ($request->filled('custom_products')) {
-        $customProducts = $request->input('custom_products', []);
+
+        $customProducts =
+            $request->input('custom_products', []);
 
         foreach ($customProducts as $product) {
-            // প্রত্যেকটি পণ্যের ডাটা ধরুন
-            $name = $product['name'] ?? null;
-            $qty = $product['qty'] ?? null;
-            $unit = $product['unit'] ?? null;
-            $price = $product['price'] ?? null;
+
+            $name =
+                $product['name'] ?? null;
+
+            $qty =
+                $product['qty'] ?? null;
+
+            $unit =
+                $product['unit'] ?? null;
+
+            $price =
+                $product['price'] ?? null;
+
 
             if ($name && $unit) {
+
                 CustomProduct::create([
                     'user_id' => $user->id,
                     'order_id' => $order->id,
@@ -334,23 +359,33 @@ public function saveOrder(Request $request)
             }
         }
     }
- 
 
-    // Clear cart
+
+    // ==========================================
+    // Clear Cart
+    // ==========================================
+
     CartItem::where('user_id', $user->id)->delete();
 
-    // ✅ Optional: session clear করলেও সমস্যা নেই
-    session()->forget(['cart', 'bazar_id']);
-
-
-    // Redirect with order details
-    return redirect()->route('home.order.done')->with([
-        'success' => 'অর্ডার সফলভাবে সেভ হয়েছে!',
-        'orderId' => $order->order_code,
-        'total' => $total,
-        'address' => $request->address,
-        'phone' => $user->phone,
+    session()->forget([
+        'cart',
+        'bazar_id'
     ]);
+
+
+    // ==========================================
+    // Redirect
+    // ==========================================
+
+    return redirect()
+        ->route('home.order.done')
+        ->with([
+            'success' => 'অর্ডার সফলভাবে সেভ হয়েছে!',
+            'orderId' => $order->order_code,
+            'total' => $total,
+            'address' => $request->address,
+            'phone' => $user->phone,
+        ]);
 }
 
 

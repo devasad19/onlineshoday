@@ -185,72 +185,203 @@
 <!-- =========================================================
      ACCEPT MODAL
 ========================================================= -->
+ <div
+    id="acceptModal"
+    class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center z-50 p-3 sm:p-5"
+>
+ 
+<div
+    class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl relative max-h-[94vh] overflow-hidden flex flex-col"
+>
 
-<div id="acceptModal"
-     class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50 p-4">
+    <!-- Header -->
+    <div
+        class="px-5 py-4 border-b bg-gradient-to-r from-green-50 to-white flex items-center justify-between"
+    >
 
-    <div class="bg-white w-full max-w-2xl rounded-lg p-6 shadow-lg relative max-h-[90vh] overflow-y-auto">
+        <div>
+
+            <h3 class="text-lg sm:text-xl font-bold text-gray-800">
+                🧾 অর্ডার গ্রহণ
+            </h3>
+
+            <p class="text-xs sm:text-sm text-gray-500 mt-1">
+                পণ্যের মূল্য যাচাই করে অর্ডারটি গ্রহণ করুন
+            </p>
+
+        </div>
+
 
         <button
             type="button"
             onclick="closeModal()"
-            class="absolute top-2 right-2 text-gray-600 text-xl">
-            ✖
+            class="w-9 h-9 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-600 text-gray-500 flex items-center justify-center transition"
+        >
+            ✕
         </button>
 
-        <h3 class="text-xl font-bold mb-4">
-            🧾 অর্ডার গ্রহণ
-        </h3>
+    </div>
 
-        <div id="modalItems" class="space-y-3"></div>
+
+    <!-- Body -->
+    <div class="overflow-y-auto px-4 sm:px-5 py-5">
+
+
+        <!-- Product Section -->
+        <div class="border border-gray-200 rounded-xl overflow-hidden">
+
+            <div
+                class="bg-gray-50 px-4 py-3 flex items-center justify-between border-b"
+            >
+
+                <div>
+
+                    <h4 class="font-bold text-gray-800">
+                        📦 অর্ডারের পণ্য
+                    </h4>
+
+                    <p class="text-xs text-gray-500 mt-0.5">
+                        প্রয়োজন হলে Rider Price পরিবর্তন করুন
+                    </p>
+
+                </div>
+
+
+                <span
+                    id="modalProductCount"
+                    class="text-xs font-semibold bg-green-100 text-green-700 px-3 py-1 rounded-full"
+                >
+                    0 টি
+                </span>
+
+            </div>
+
+
+            <!-- Product List -->
+            <div
+                id="modalItems"
+                class="divide-y divide-gray-100"
+            >
+            </div>
+
+        </div>
 
 
         <!-- Delivery Time -->
-        <div class="w-full text-left mt-5">
+        <div
+            class="mt-5 border border-blue-100 bg-blue-50/50 rounded-xl p-4"
+        >
 
-            <label class="block font-semibold text-gray-700 mb-2">
-                ডেলিভারি সময় সেট করুন (মিনিট):
-            </label>
+            <div class="flex items-center gap-2 mb-3">
 
-            <input
-                type="number"
-                id="delivery_time"
-                min="1"
-                class="border p-2 w-full rounded"
-                placeholder="যেমন: 30"
-                required
-            >
+                <div
+                    class="w-9 h-9 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"
+                >
+                    🚚
+                </div>
+
+                <div>
+
+                    <h4 class="font-bold text-gray-800">
+                        ডেলিভারি সময়
+                    </h4>
+
+                    <p class="text-xs text-gray-500">
+                        আনুমানিক কত মিনিটে পৌঁছাতে পারবেন?
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="relative">
+
+                <input
+                    type="text"
+                    id="delivery_time"
+                    inputmode="numeric"
+                    min="1"
+                    class="w-full border border-gray-300 bg-white rounded-xl px-4 py-3 pr-16 font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="যেমন: 30"
+                    required
+                >
+
+                <span
+                    class="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400"
+                >
+                    মিনিট
+                </span>
+
+            </div>
 
         </div>
 
 
-        <!-- Total -->
-        <div class="flex justify-between mt-6 border-t pt-4">
+        <!-- Total Summary -->
+        <div
+            class="mt-5 rounded-xl border border-gray-200 bg-gray-50 p-4"
+        >
 
-            <p class="font-bold text-lg">
-                মোট:
-            </p>
+            <div class="flex justify-between items-center">
 
-            <p id="modalTotal"
-               class="font-bold text-lg text-green-600">
-                ৳0
-            </p>
+                <div>
+
+                    <p class="text-sm text-gray-500">
+                        অর্ডারের মোট
+                    </p>
+
+                    <p
+                        id="modalTotal"
+                        class="text-2xl font-extrabold text-green-600 mt-1"
+                    >
+                        ৳0
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-2xl"
+                >
+                    💰
+                </div>
+
+            </div>
 
         </div>
 
+    </div>
+
+
+    <!-- Footer -->
+    <div
+        class="px-4 sm:px-5 py-4 border-t bg-white"
+    >
 
         <button
             type="button"
             id="confirmAccept"
-            class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded mt-4 w-full font-semibold">
+            class="w-full bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-3.5 rounded-xl font-bold shadow-sm transition flex items-center justify-center gap-2"
+        >
 
-            ✅ অর্ডার গ্রহণ করলাম
+            <span>
+                ✅
+            </span>
+
+            <span>
+                অর্ডার গ্রহণ করলাম
+            </span>
 
         </button>
 
     </div>
 
 </div>
+ 
+
+</div>
+
 
 
 @endsection
@@ -570,7 +701,7 @@ function renderPackageOrder(order) {
             const quantity =
                 parseFloat(item.quantity) || 0;
 
-            const product_img_url = "{{ url('uploads/products/') }}";
+            const product_img_url = "{{ url('uploads/products') }}";
             const image = product_img_url+'/'+getProductImage(product);
  
             return `
@@ -834,7 +965,25 @@ function renderPackageOrder(order) {
     `;
 }
 
+function hasPendingCustomProduct(order) {
 
+    return (order.custom_products || []).some(item => {
+
+        const unit =
+            (item.unit || '').trim();
+
+        // unit = টাকা হলে Price অবশ্যই 0-এর বেশি হতে হবে
+      
+
+            const price =
+                parseFloat(item.price) || 0;
+
+            return price <= 0;
+        
+
+        
+    });
+}
 /*
 |--------------------------------------------------------------------------
 | Render Normal Order
@@ -842,6 +991,47 @@ function renderPackageOrder(order) {
 */
 
 function renderNormalOrder(order) {
+
+
+const hasPendingCustomPrice =
+    hasPendingCustomProduct(order);
+
+const hasDeliveryCharge =
+    order.delivery_charge !== null &&
+    order.delivery_charge !== undefined &&
+    order.delivery_charge !== '';
+
+const readyToDelivery =
+    !hasPendingCustomPrice &&
+    hasDeliveryCharge;
+
+const acceptButton = readyToDelivery
+    ? `
+        <button
+            type="button"
+            class="acceptBtn bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg transition w-full md:w-auto"
+            data-id="${order.id}"
+            data-type="normal"
+        >
+            ✅ গ্রহণ করুন
+        </button>
+    `
+    : `
+        <button
+            type="button"
+            class="acceptBtn bg-gray-400 text-white font-semibold px-6 py-2 rounded-lg cursor-not-allowed opacity-70 w-full md:w-auto"
+            data-id="${order.id}"
+            data-type="normal"
+            disabled
+        >
+            🔒 Ready to Delivery হয়নি
+        </button>
+    `;
+ 
+
+
+
+
 
     const totalText =
         getNormalOrderTotalText(order);
@@ -941,16 +1131,7 @@ function renderNormalOrder(order) {
                     </p>
 
 
-                    <button
-                        type="button"
-                        class="acceptBtn bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg transition w-full md:w-auto"
-                        data-id="${order.id}"
-                        data-type="normal"
-                    >
-
-                        ✅ গ্রহণ করুন
-
-                    </button>
+${acceptButton}
 
                 </div>
 
@@ -1210,153 +1391,343 @@ $(document).on('click', '.acceptBtn', function() {
 |--------------------------------------------------------------------------
 */
 
-function openNormalAcceptModal(order) {
+ function openNormalAcceptModal(order) {
 
-    const items =
-        Array.isArray(order.items)
-            ? order.items
-            : [];
+const items =
+    Array.isArray(order.items)
+        ? order.items
+        : [];
 
-
-    if (!items.length) {
-
-        alert('এই অর্ডারে কোনো পণ্য পাওয়া যায়নি।');
-
-        return;
-
-    }
+const customProducts =
+    Array.isArray(order.custom_products)
+        ? order.custom_products
+        : [];
 
 
-    $('#modalItems').html(
+if (!items.length && !customProducts.length) {
 
-        items.map(function(item) {
+    alert('এই অর্ডারে কোনো পণ্য পাওয়া যায়নি।');
 
-            const qty =
-                parseFloat(item.quantity) || 0;
-
-            const price =
-                parseFloat(
-                    item.rider_price ??
-                    item.price
-                ) || 0;
-
-            const product =
-                item.product || {};
-
-            const productName =
-                product.name ||
-                'অজানা পণ্য';
-
-            const unit =
-                product.unit ||
-                '';
-
-            const image =
-                getProductImage(product);
+    return;
+}
 
 
-            return `
+let html = '';
 
-                <div
-                    class="flex justify-between items-center border p-3 rounded-xl modal-item gap-3"
-                    data-id="${item.id}"
-                >
+let productCount = 0;
 
-                    <!-- Product -->
 
-                    <div class="flex items-center gap-2 flex-1">
+// ==========================================
+// Normal Products
+// ==========================================
 
-                        ${
-                            image
-                            ?
-                            `
-                            <img
-                                src="${escapeHtml(image)}"
-                                class="w-12 h-12 rounded object-cover"
-                                alt="${escapeHtml(productName)}"
-                            >
-                            `
-                            :
-                            `
-                            <div class="w-12 h-12 rounded bg-gray-100 flex items-center justify-center">
-                                📦
-                            </div>
-                            `
-                        }
+items.forEach(function(item) {
 
-                        <div>
+    productCount++;
 
-                            <p class="font-semibold">
-                                ${escapeHtml(productName)}
-                            </p>
 
-                            <p class="text-sm text-gray-500">
+    const qty =
+        parseFloat(item.quantity) || 0;
 
-                                Qty:
-                                <span class="itemQty">
-                                    ${numberFormat(qty)}
-                                </span>
 
-                                ${escapeHtml(unit)}
+    const price =
+        parseFloat(
+            item.rider_price ?? item.price
+        ) || 0;
 
-                            </p>
 
-                        </div>
+    const product =
+        item.product || {};
 
+
+    const productName =
+        product.name ||
+        'অজানা পণ্য';
+
+
+    const unit =
+        product.unit ||
+        '';
+
+            const product_img_url = "{{ url('uploads/products') }}";
+            const image = product_img_url+'/'+getProductImage(product);
+
+  
+
+    html += `
+
+        <div
+            class="modal-item bg-white border border-gray-200 rounded-xl p-3 sm:p-4"
+            data-id="${item.id}"
+            data-custom="0"
+        >
+
+            <div class="flex items-center gap-3">
+
+                ${
+                    image
+                    ?
+                    `
+                    <img
+                        src="${escapeHtml(image)}"
+                        class="w-14 h-14 rounded-xl object-cover border"
+                        alt="${escapeHtml(productName)}"
+                    >
+                    `
+                    :
+                    `
+                    <div
+                        class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-xl shrink-0"
+                    >
+                        📦
                     </div>
+                    `
+                }
 
 
-                    <!-- Price -->
+                <div class="flex-1 min-w-0">
 
-                    <div class="text-center">
+                    <p class="font-bold text-gray-800">
+                        ${escapeHtml(productName)}
+                    </p>
+
+                    <p class="text-sm text-gray-500 mt-1">
+
+                        পরিমাণ:
+                        <strong class="text-gray-700">
+                            ${numberFormat(qty)}
+                        </strong>
+
+                        ${escapeHtml(unit)}
+
+                    </p>
+
+                </div>
+
+
+                <div class="w-28 sm:w-32">
+
+                  
+                    <label class="block text-xs text-gray-500 mb-1">
+                        ${item.product.unit}
+                    </label>
+                    <div class="relative">
+
+                        <span
+                            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold"
+                        >
+                            ৳
+                        </span>
 
                         <input
-                            type="number"
-                            readonly
+                            type="text"
+                            inputmode="decimal"
                             value="${price}"
-                            class="priceInput border p-1 w-24 rounded text-center"
+                            class="priceInput w-full border border-gray-300 rounded-lg pl-7 pr-2 py-2 text-right font-semibold focus:ring-2 focus:ring-green-500 focus:border-green-500"
                             data-id="${item.id}"
-                            data-qty="${qty}"
+                            data-qty="${qty}" readonly
                         >
-
-                    </div>
-
-
-                    <!-- Subtotal -->
-
-                    <div class="text-right">
-
-                        <span class="itemSubtotal text-green-700 font-semibold">
-
-                            ৳${numberFormat(qty * price)}
-
-                        </span>
 
                     </div>
 
                 </div>
 
-            `;
 
-        }).join('')
+                <div class="w-24 sm:w-28 text-right">
 
-    );
+                    <p class="text-xs text-gray-500 mb-1">
+                        মোট
+                    </p>
+
+                    <span
+                        class="itemSubtotal text-green-700 font-bold"
+                    >
+                        ৳${numberFormat(qty * price)}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+});
 
 
-    updateModalTotal();
+// ==========================================
+// Custom Products
+// ==========================================
+
+customProducts.forEach(function(item) {
+
+    productCount++;
 
 
-    $('#acceptModal')
-        .data('id', order.id)
-        .data('type', 'normal')
-        .removeClass('hidden');
+    const qty =
+        parseFloat(item.quantity) || 0;
 
 
-    $('#delivery_time')
-        .val('');
+    const price =
+        parseFloat(
+            item.rider_price ?? item.price
+        ) || 0;
+
+
+    const name =
+        item.name ||
+        'অতিরিক্ত পণ্য';
+
+
+    const unit =
+        (item.unit || '').trim();
+
+
+    const isMoney =
+        unit === 'টাকা';
+
+
+    const displayQuantity =
+        qty > 0
+        ? `${numberFormat(qty)} ${escapeHtml(unit)}`
+        : escapeHtml(unit);
+
+
+    html += `
+
+        <div
+            class="modal-item bg-orange-50 border border-orange-200 rounded-xl p-3 sm:p-4"
+            data-id="${item.id}"
+            data-custom="1"
+        >
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center text-xl shrink-0"
+                >
+                    🧩
+                </div>
+
+
+                <div class="flex-1 min-w-0">
+
+                    <div class="flex items-center gap-2 flex-wrap">
+
+                        <p class="font-bold text-gray-800">
+                            ${escapeHtml(name)}
+                        </p>
+
+                        <span
+                            class="text-xs font-bold bg-orange-200 text-orange-700 px-2 py-0.5 rounded-full"
+                        >
+                            Custom
+                        </span>
+
+                    </div>
+
+
+                    <p class="text-sm text-gray-500 mt-1">
+
+                        ${
+                            isMoney
+                            ?
+                            `
+                            <span class="text-orange-700 font-semibold">
+                                ${escapeHtml(unit)}
+                            </span>
+                            `
+                            :
+                            `
+                            পরিমাণ:
+                            <strong class="text-gray-700">
+                                ${displayQuantity}
+                            </strong>
+                            `
+                        }
+
+                    </p>
+
+                </div>
+
+
+                <div class="w-28 sm:w-32">
+
+                    <label class="block text-xs text-gray-500 mb-1">
+                        ${item.unit}
+                    </label>
+
+                    <div class="relative">
+
+                        <span
+                            class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold"
+                        >
+                            ৳
+                        </span>
+
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            value="${price}"
+                            class="priceInput customPriceInput w-full border border-orange-300 rounded-lg pl-7 pr-2 py-2 text-right font-semibold bg-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400"
+                            data-id="${item.id}"
+                            data-qty="${qty}"
+                            data-money="${isMoney ? '1' : '0'}" readonly
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="w-24 sm:w-28 text-right">
+
+                    <p class="text-xs text-gray-500 mb-1">
+                        মোট
+                    </p>
+
+                    <span
+                        class="itemSubtotal text-green-700 font-bold"
+                    >
+                        ৳${
+                            isMoney
+                            ? numberFormat(price)
+                            : numberFormat(qty * price)
+                        }
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+});
+
+
+$('#modalItems').html(html);
+
+
+$('#modalProductCount').text(
+    `${productCount} টি`
+);
+
+
+updateModalTotal();
+
+
+$('#acceptModal')
+    .data('id', order.id)
+    .data('type', 'normal')
+    .removeClass('hidden');
+
+
+$('#delivery_time')
+    .val('');
+
 
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -1500,38 +1871,58 @@ function openPackageAcceptModal(order) {
 
 function updateModalTotal() {
 
-    let total = 0;
+ 
+let total = 0;
 
 
-    $('#modalItems .modal-item').each(function() {
+$('#modalItems .modal-item').each(function() {
 
-        const qty =
-            parseFloat(
-                $(this)
-                    .find('.priceInput')
-                    .data('qty')
-            ) || 0;
+    const qty =
+        parseFloat(
+            $(this)
+                .find('.priceInput')
+                .data('qty')
+        ) || 0;
 
 
-        const price =
-            parseFloat(
-                $(this)
-                    .find('.priceInput')
-                    .val()
-            ) || 0;
+    const price =
+        parseFloat(
+            $(this)
+                .find('.priceInput')
+                .val()
+        ) || 0;
 
+
+    const isMoney =
+        $(this)
+            .find('.priceInput')
+            .data('money') === 1 ||
+        String(
+            $(this)
+                .find('.priceInput')
+                .data('money')
+        ) === '1';
+
+
+    if (isMoney) {
+
+        total += price;
+
+    } else {
 
         total += qty * price;
 
-    });
+    }
+
+});
 
 
-    $('#modalTotal').text(
-        `৳${numberFormat(total)}`
-    );
+$('#modalTotal').text(
+    `৳${numberFormat(total)}`
+);
+ 
 
 }
-
 
 /*
 |--------------------------------------------------------------------------
@@ -1540,32 +1931,44 @@ function updateModalTotal() {
 */
 
 $(document).on('input', '.priceInput', function() {
-
-    const row =
-        $(this).closest('.modal-item');
-
-
-    const qty =
-        parseFloat(
-            $(this).data('qty')
-        ) || 0;
+ 
+const row =
+    $(this).closest('.modal-item');
 
 
-    const price =
-        parseFloat(
-            $(this).val()
-        ) || 0;
+const qty =
+    parseFloat(
+        $(this).data('qty')
+    ) || 0;
 
 
-    row.find('.itemSubtotal').text(
-        `৳${numberFormat(qty * price)}`
-    );
+const price =
+    parseFloat(
+        $(this).val()
+    ) || 0;
 
 
-    updateModalTotal();
+const isMoney =
+    String(
+        $(this).data('money')
+    ) === '1';
+
+
+const subtotal =
+    isMoney
+    ? price
+    : qty * price;
+
+
+row.find('.itemSubtotal').text(
+    `৳${numberFormat(subtotal)}`
+);
+
+
+updateModalTotal();
+ 
 
 });
-
 
 /*
 |--------------------------------------------------------------------------
@@ -1786,7 +2189,12 @@ function closeModal() {
     $('#modalTotal').text('৳0');
 
 }
+ 
 
+ 
+
+  
+ 
 </script>
 
 @endsection
