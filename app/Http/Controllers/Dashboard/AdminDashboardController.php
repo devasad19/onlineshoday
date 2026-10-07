@@ -8,7 +8,10 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Bazar;
 use App\Models\Rider;
+use Carbon\Carbon;
 use App\Models\Order;
+use App\Models\Package;
+use App\Models\User;
 use App\Models\DeliveryChargeRule;
 use App\Models\CustomProduct;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +19,171 @@ use Illuminate\Support\Facades\DB;
 class AdminDashboardController extends Controller
 {
 
-    public function adminDashboard(){
-        
-        return view('backend.admin-dashboard.index');
+    
+
+    public function adminDashboard()
+    {
+        $today = Carbon::today();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Orders
+        |--------------------------------------------------------------------------
+        */
+
+        $deliveredOrders = Order::where(function ($query) {
+            $query->where('status', 'delivered')
+                ->orWhere('delivered_status', 'delivered');
+        });
+
+        $totalOrders = Order::count();
+
+        $todayOrders = Order::whereDate(
+            'created_at',
+            $today
+        )->count();
+
+        $pendingOrders = Order::whereNotIn(
+            'status',
+            ['delivered', 'canceled', 'cancelled']
+        )->count();
+
+        $cancelOrders = Order::whereIn(
+            'status',
+            ['canceled', 'cancelled']
+        )->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sales
+        |--------------------------------------------------------------------------
+        */
+
+        $totalSell = (clone $deliveredOrders)
+            ->sum('total_amount');
+
+
+        $todayPendingAmount = Order::whereDate(
+            'created_at',
+            $today
+        )
+        ->whereNotIn(
+            'status',
+            ['delivered', 'canceled', 'cancelled']
+        )
+        ->sum('total_amount');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delivery Charge
+        |--------------------------------------------------------------------------
+        */
+
+        $totalDeliveryCharge = (clone $deliveredOrders)
+            ->sum('delivery_charge');
+
+
+        $todayDeliveryCharge = (clone $deliveredOrders)
+            ->whereDate(
+                'delivered_at',
+                $today
+            )
+            ->sum('delivery_charge');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Products
+        |--------------------------------------------------------------------------
+        */
+
+        $totalProducts = Product::count();
+
+        $inactiveProducts = Product::where(
+            'status',
+            '!=',
+            1
+        )->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Customers
+        |--------------------------------------------------------------------------
+        |
+        | আপনার users table-এ status = 1 active user হিসেবে ধরা হয়েছে।
+        | Customer ID থাকা user-দের customer হিসেবে count করা হয়েছে।
+        |
+        */
+
+        $totalCustomers = User::whereNotNull(
+            'customer_id'
+        )->count();
+
+        $todayCustomers = User::whereNotNull(
+            'customer_id'
+        )
+        ->whereDate(
+            'created_at',
+            $today
+        )
+        ->count();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Packages
+        |--------------------------------------------------------------------------
+        */
+
+        $totalPackages = Package::count();
+
+        $activePackages = Package::where(
+            'status',
+            1
+        )
+        ->where(
+            'availability',
+            1
+        )
+        ->count();
+
+        $inactivePackages = Package::where(function ($query) {
+            $query->where('status', '!=', 1)
+                ->orWhere('availability', '!=', 1);
+        })->count();
+
+
+        return view(
+            'backend.admin-dashboard.index',
+            compact(
+                'totalSell',
+                'todayPendingAmount',
+
+                'totalOrders',
+                'todayOrders',
+                'pendingOrders',
+                'cancelOrders',
+
+                'totalDeliveryCharge',
+                'todayDeliveryCharge',
+
+                'totalProducts',
+                'inactiveProducts',
+
+                'totalCustomers',
+                'todayCustomers',
+
+                'totalPackages',
+                'activePackages',
+                'inactivePackages'
+            )
+        );
     }
+    
+
 
 
 

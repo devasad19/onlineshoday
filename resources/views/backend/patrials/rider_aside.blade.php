@@ -2,7 +2,7 @@
     <div class="p-6">
         <h2 class="text-2xl font-bold text-green-600 mb-6">রাইডার প্যানেল</h2>
         <div class="flex items-center gap-3 mb-6">
-            <img src="{{ auth()->user()->photo ? url('uploads/users/' . auth()->user()->photo) : url('public/default/user.jpg') }}" alt="User" class="w-12 h-12 rounded-full object-cover">
+            <img src="{{ url('uploads/riders/' . auth()->user()->photo) ?? url('public/default/user.jpg') }}" alt="User" class="w-12 h-12 rounded-full object-cover">
             <div>
                 <h4 class="font-semibold text-gray-800">{{ Auth::user()->name ?? 'নাম পাওয়া যায় নাই' }}</h4>
                 <p class="text-xs text-gray-500">রাইডার</p>

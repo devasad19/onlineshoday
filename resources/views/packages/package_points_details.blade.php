@@ -66,10 +66,10 @@
 
         <div class="bg-white border border-green-100
                     rounded-2xl p-5 shadow-sm text-center">
-            <div class="w-12 h-12 mx-auto rounded-full
+            <div class="w-16 h-16 mx-auto rounded-full
                         bg-green-100 flex items-center
                         justify-center text-2xl">
-                🛒
+                <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/combo_list.png') }}" alt="">
             </div>
 
             <h3 class="font-bold text-gray-800 mt-3">
@@ -85,10 +85,10 @@
 
         <div class="bg-white border border-orange-100
                     rounded-2xl p-5 shadow-sm text-center">
-            <div class="w-12 h-12 mx-auto rounded-full
-                        bg-orange-100 flex items-center
+            <div class="w-16 h-16 mx-auto rounded-full
+                        bg-green-100 flex items-center
                         justify-center text-2xl">
-                🎁
+                <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/pkg_buy_help.png') }}" alt="">
             </div>
 
             <h3 class="font-bold text-gray-800 mt-3">
@@ -104,10 +104,10 @@
 
         <div class="bg-white border border-blue-100
                     rounded-2xl p-5 shadow-sm text-center">
-            <div class="w-12 h-12 mx-auto rounded-full
-                        bg-blue-100 flex items-center
+            <div class="w-16 h-16 mx-auto rounded-full
+                        bg-green-100 flex items-center
                         justify-center text-2xl">
-                ⭐
+                <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/shopping_by_points.png') }}" alt="">
             </div>
 
             <h3 class="font-bold text-gray-800 mt-3">
@@ -153,11 +153,11 @@
                 <div class="bg-green-600 text-white px-5 py-4">
 
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl
+                        <div class="w-16 h-16 rounded-xl
                                     bg-white/20
                                     flex items-center justify-center
                                     text-2xl">
-                            🛒
+                            <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/combo.png') }}" alt="">
                         </div>
 
                         <div>
@@ -276,11 +276,11 @@
                 <div class="bg-orange-500 text-white px-5 py-4">
 
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl
+                        <div class="w-16 h-16 rounded-xl
                                     bg-white/20
                                     flex items-center justify-center
                                     text-2xl">
-                            🎁
+                            <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/package_advantage.png') }}" alt="">
                         </div>
 
                         <div>
@@ -399,17 +399,30 @@
 <!-- ================= POINT EXAMPLE ================= -->
 <section class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
-    <div class="text-center mb-7">
+ 
+<div class="text-center mb-7">
 
-        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">
-            ⭐ সহজ একটি উদাহরণ
-        </h2>
+    <h2 class="flex items-center justify-center gap-2 text-2xl sm:text-2xl font-bold text-green-700">
 
-        <p class="text-sm text-gray-500 mt-2">
-            পয়েন্ট কীভাবে জমতে পারে—একটি সহজ ধারণা
-        </p>
+        <img
+            class="w-12 h-12 sm:w-14 sm:h-14 object-contain flex-shrink-0"
+            src="{{ url('public/default/combo-icons/package_advantage.png') }}"
+            alt="কম্বো প্যাক"
+        >
 
-    </div>
+        <span>
+            সহজ একটি উদাহরণ
+        </span>
+
+    </h2>
+
+    <p class="text-sm text-gray-500 mt-2">
+        পয়েন্ট কীভাবে জমতে পারে—একটি সহজ ধারণা
+    </p>
+
+</div>
+ 
+
 
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

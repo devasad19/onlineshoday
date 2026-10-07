@@ -382,12 +382,22 @@
     <div class="flex flex-col sm:flex-row justify-between items-center
                 mb-6 sm:mb-8 gap-3">
 
-        <h3 class="text-xl sm:text-2xl font-bold text-green-700
-                   text-center sm:text-left">
+ 
+<h3 class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-green-700 text-center sm:text-left">
 
-            <span class="text-green-600 mr-1">🛒</span>
-            কম্বো প্যাক — প্রয়োজনীয় পণ্য, সাশ্রয়ী প্যাকেজে
-        </h3>
+    <img
+        class="w-12 h-12 sm:w-14 sm:h-14 object-contain flex-shrink-0"
+        src="{{ url('public/default/combo-icons/combo.png') }}"
+        alt="কম্বো প্যাক"
+    >
+
+    <span>
+        কম্বো প্যাক — প্রয়োজনীয় পণ্য, সাশ্রয়ী প্যাকেজে
+    </span>
+
+</h3>
+ 
+
 
         <div class="flex items-center gap-2
                     bg-green-50
@@ -397,7 +407,7 @@
                     text-sm
                     font-medium">
 
-            <span class="text-base">🌿</span>
+            <span class="text-base">📦</span>
     <a href="{{ route('home.package.all') }}" class="text-sm text-green-600 hover:underline">
             <span>সব কম্বো প্যাক</span>
             </a>
@@ -546,7 +556,7 @@
                                      text-green-600
                                      text-lg">
 
-                            📦
+                           📦
 
                         </span>
 
@@ -621,7 +631,7 @@
 
     <span class="text-lg leading-none">🛒</span>
 
-    <span>প্যাকেজ কিনুন 2</span>
+    <span>প্যাকেজ কিনুন</span>
 
 </a>
 
@@ -975,7 +985,7 @@
                               transition
                               hover:-translate-y-0.5">
 
-                        🛒 কম্বো প্যাক দেখুন
+                        <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/combo.png') }}" alt=""> কম্বো প্যাক দেখুন
 
                     </a>
 

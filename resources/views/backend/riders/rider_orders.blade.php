@@ -137,8 +137,44 @@
             </div>
 
 
+            <!-- Bulk Print Toolbar -->
+            <div
+                id="bulkPrintToolbar"
+                class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 mb-4 flex flex-wrap items-center justify-between gap-3 no-print">
+
+                <div class="flex items-center gap-3">
+
+                    <label class="flex items-center gap-2 cursor-pointer">
+
+                        <input
+                            type="checkbox"
+                            id="selectAllOrders"
+                            class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+
+                        <span class="font-semibold text-gray-700">
+                            সব নির্বাচন
+                        </span>
+
+                    </label>
+
+                    <span id="selectedOrderCount" class="text-sm text-gray-500">
+                        0 টি নির্বাচিত
+                    </span>
+
+                </div>
+
+                <button
+                    type="button"
+                    id="bulkPrintBtn"
+                    disabled
+                    class="bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold px-5 py-2 rounded-lg transition">
+                    🖨️ নির্বাচিত অর্ডার প্রিন্ট
+                </button>
+
+            </div>
+
             <!-- Orders -->
-            <div  id="ordersList" class="overflow-x-auto">
+            <div id="ordersList" class="overflow-x-auto">
 
                 @if($orders->count() > 0)
 
@@ -156,6 +192,116 @@
                                 ($order->type ?? null) === 'package'
                                 || !empty($order->package_id)
                                 || !empty($order->package);
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Total Product Count
+                            |--------------------------------------------------------------------------
+                            */
+
+                            if ($isPackageOrder) {
+
+                                $normalProductCount =
+                                    ($order->package && $order->package->items)
+                                        ? $order->package->items->count()
+                                        : 0;
+
+                            } else {
+
+                                $normalProductCount =
+                                    is_countable($order->items ?? null)
+                                        ? count($order->items ?? [])
+                                        : 0;
+                            }
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Custom Product Data
+                            |--------------------------------------------------------------------------
+                            */
+
+                            $customProductData = [];
+
+                            if (!empty($order->custom_products)) {
+
+                                if (is_string($order->custom_products)) {
+
+                                    $decoded = json_decode($order->custom_products, true);
+
+                                    $customProductData =
+                                        is_array($decoded) ? $decoded : [];
+
+                                } elseif (is_array($order->custom_products)) {
+
+                                    $customProductData = $order->custom_products;
+
+                                } elseif ($order->custom_products instanceof \Illuminate\Support\Collection) {
+
+                                    $customProductData = $order->custom_products->toArray();
+                                }
+                            }
+
+                            $customProductCount = count($customProductData);
+
+                            $totalProductCount =
+                                $normalProductCount + $customProductCount;
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Delivery Time Calculation
+                            |--------------------------------------------------------------------------
+                            */
+
+                            $deliveryDeadline = null;
+                            $deliveryStatusText = null;
+                            $deliveryStatusClass = 'text-gray-500';
+
+                            if (!empty($order->accepted_at) && !empty($order->delivery_time)) {
+
+                                try {
+
+                                    $acceptedAt = \Carbon\Carbon::parse($order->accepted_at);
+
+                                    $deliveryDeadline =
+                                        $acceptedAt->copy()->addMinutes((int) $order->delivery_time);
+
+                                    if ($order->status === 'delivered' && !empty($order->delivered_at)) {
+
+                                        $deliveredAt = \Carbon\Carbon::parse($order->delivered_at);
+
+                                        $lateMinutes = $deliveryDeadline->diffInMinutes($deliveredAt);
+
+                                        if ($deliveredAt->lte($deliveryDeadline)) {
+                                            $deliveryStatusText = 'সময়মতো ডেলিভারি';
+                                            $deliveryStatusClass = 'text-green-600';
+                                        } else {
+                                            $deliveryStatusText = 'দেরিতে ডেলিভারি — ' . $lateMinutes . ' মিনিট late';
+                                            $deliveryStatusClass = 'text-red-600';
+                                        }
+
+                                    } else {
+
+                                        $now = now();
+
+                                        if ($now->lte($deliveryDeadline)) {
+                                            $remainingMinutes = $now->diffInMinutes($deliveryDeadline);
+                                            $deliveryStatusText = 'সময় বাকি — ' . $remainingMinutes . ' মিনিট';
+                                            $deliveryStatusClass = 'text-green-600';
+                                        } else {
+                                            $lateMinutes = $deliveryDeadline->diffInMinutes($now);
+                                            $deliveryStatusText = 'ডেলিভারি সময় পার — ' . $lateMinutes . ' মিনিট late';
+                                            $deliveryStatusClass = 'text-red-600';
+                                        }
+                                    }
+
+                                } catch (\Throwable $e) {
+                                    $deliveryDeadline = null;
+                                    $deliveryStatusText = null;
+                                }
+                            }
 
 
                             /*
@@ -211,9 +357,9 @@
                             |--------------------------------------------------------------------------
                             */
 
-                            if (!empty($order->custom_products)) {
+                            if (!empty($customProductData)) {
 
-                                foreach ($order->custom_products as $cp) {
+                                foreach ($customProductData as $cp) {
 
                                     /*
                                     | custom_products may be array or object
@@ -311,7 +457,31 @@
                             <div
                                 class="relative bg-white p-5 mt-2 rounded-2xl shadow-md
                                 hover:shadow-lg transition
-                                order-item border border-gray-100 w-full">
+                                order-item border border-gray-100 w-full"
+                                data-order-id="{{ $order->id }}">
+
+                                <!-- Print Checkbox -->
+<!-- Print Button -->
+
+<div class="absolute -top-3 right-4 no-print z-10">
+    <label
+        class="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-2 py-1 rounded-lg cursor-pointer transition shadow-sm"
+    >
+        <input
+            type="checkbox"
+            class="orderPrintCheckbox w-4 h-4 rounded border-white text-indigo-600 focus:ring-white"
+            value="{{ $order->id }}"
+        >
+
+ 
+    <span>
+        🖨️ প্রিন্ট
+    </span>
+</label>
+ 
+
+</div>
+
 
 
                                 <!-- Order ID -->
@@ -401,169 +571,120 @@
                                         @if($isPackageOrder)
 
                                             <p>
-                                                <strong>
-                                                    অর্ডারের ধরনঃ
-                                                </strong>
-
-                                                <span
-                                                    class="text-purple-700
-                                                    font-semibold">
-
+                                                <strong>অর্ডারের ধরনঃ</strong>
+                                                <span class="text-purple-700 font-semibold">
                                                     📦 প্যাকেজ
-
                                                 </span>
                                             </p>
 
                                             <p>
-
-                                                <strong>
-                                                    মোটঃ
-                                                </strong>
-
-                                                <span
-                                                    class="text-green-700
-                                                    font-semibold">
-
-                                                    ৳ {{ $order->total_amount }}
-
-                                                </span>
-
+                                                <strong>পণ্যঃ</strong>
+                                                {{ $totalProductCount }} টি
                                             </p>
 
                                         @else
 
                                             <p>
-                                                <strong>
-                                                    পণ্যঃ
-                                                </strong>
-
-                                                {{ count($order->items ?? []) }}
-                                                টি
-                                            </p>
-
-                                            <p>
-
-                                                <strong>
-                                                    মোটঃ
-                                                </strong>
-
-                                                <span
-                                                    class="text-green-700
-                                                    font-semibold">
-
-                                                    ৳ {{ $order->total_amount }}
-
-                                                </span>
-
+                                                <strong>পণ্যঃ</strong>
+                                                {{ $totalProductCount }} টি
                                             </p>
 
                                         @endif
 
+                                        <p>
+                                            <strong>মোটঃ</strong>
+                                            <span class="text-green-700 font-semibold">
+                                                ৳ {{ $order->total_amount }}
+                                            </span>
+                                        </p>
 
                                         <p>
-
-                                            <strong>
-                                                ঠিকানাঃ
-                                            </strong>
-
+                                            <strong>ঠিকানাঃ</strong>
                                             {{ $order->delivery_address ?? '-' }}
-
                                         </p>
 
                                     </div>
 
 
                                     <!-- Time & Action -->
-                                    <div
-                                        class="flex flex-col justify-between
-                                        text-left md:text-right">
+                                    <div class="flex flex-col justify-between text-left md:text-right">
 
-
-                                        <p
-                                            class="text-sm text-gray-500 mb-3">
-
-                                            <strong>
-                                                অর্ডার সময়ঃ
-                                            </strong>
-
+                                        <p class="text-sm text-gray-500 mb-2">
+                                            <strong>অর্ডার সময়ঃ</strong>
                                             {{ $order->created_at }}
-
-                                            <br>
-
-                                            @if($order->status == 'delivered')
-
-                                                <strong class="text-red-600">
-
-                                                    ডেলিভারি হয়েছেঃ
-
-                                                </strong>
-
-                                                {{ $order->delivered_at }}
-
-                                            @endif
-
                                         </p>
 
+                                        @if(!empty($order->accepted_at))
+                                            <p class="text-sm text-gray-500 mb-2">
+                                                <strong>গ্রহণ সময়ঃ</strong>
+                                                {{ \Carbon\Carbon::parse($order->accepted_at)->format('d-m-Y h:i A') }}
+                                            </p>
+                                        @endif
 
-                                        @if ($order->status == 'accepted')
+                                        @if($deliveryDeadline)
+                                            <p class="text-sm text-gray-600 mb-2">
+                                                <strong>ডেলিভারি সময়সীমাঃ</strong>
+                                                {{ $deliveryDeadline->format('d-m-Y h:i A') }}
+                                            </p>
+                                        @endif
 
-                                            <button
-                                                type="button"
-                                                class="deliverBtn
-                                                bg-green-600 hover:bg-green-700
-                                                text-white font-semibold
-                                                px-6 py-2 rounded-lg transition
-                                                w-full md:w-auto"
-                                                data-id="{{ $order->id }}">
+                                        @if($deliveryStatusText)
+                                            <p class="text-sm font-semibold {{ $deliveryStatusClass }} mb-3">
+                                                🚚 {{ $deliveryStatusText }}
+                                            </p>
+                                        @endif
 
-                                                ✅ ডেলিভারি সম্পন্ন করুন
+                                        @if($order->status == 'delivered' && !empty($order->delivered_at))
+                                            <p class="text-sm text-gray-600 mb-3">
+                                                <strong>ডেলিভারি সময়ঃ</strong>
+                                                {{ \Carbon\Carbon::parse($order->delivered_at)->format('d-m-Y h:i A') }}
+                                            </p>
+                                        @endif
 
-                                            </button>
+                                        <div class="flex flex-wrap gap-2 no-print md:justify-end">
 
+                                            @if ($order->status == 'accepted')
 
-                                            @if(!empty($order->delivery_time))
+                                                <button
+                                                    type="button"
+                                                    class="deliverBtn bg-green-600 hover:bg-green-700 text-white font-semibold px-5 py-2 rounded-lg transition w-full md:w-auto"
+                                                    data-id="{{ $order->id }}">
+                                                    ✅ ডেলিভারি সম্পন্ন করুন
+                                                </button>
 
-                                                <p class="text-xs p-3">
+                                                @if(!empty($order->delivery_time))
+                                                    <p class="w-full text-xs bg-blue-50 text-blue-700 p-3 rounded-lg">
+                                                        ⏱️ এস্টিমেট ডেলিভারি সময়ঃ {{ $order->delivery_time }} মিনিট
+                                                    </p>
+                                                @endif
 
-                                                    এস্টিমেট ডেলিভারি সময়ঃ
-                                                    {{ $order->delivery_time }}
-                                                    মিনিট
+                                            @elseif($order->status == 'rider_modified_accepted')
 
-                                                </p>
+                                                <button
+                                                    type="button"
+                                                    class="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-5 py-2 rounded-lg transition w-full md:w-auto">
+                                                    ⏳ মুল্য বর্ধিত পাঠানো হয়েছে
+                                                </button>
+
+                                            @elseif($order->status == 'delivered')
+
+                                                <span class="inline-flex items-center bg-green-100 text-green-700 px-4 py-2 rounded-lg font-semibold">
+                                                    ✅ ডেলিভারি সম্পন্ন হয়েছে
+                                                </span>
 
                                             @endif
 
+                                         
 
-                                        @elseif($order->status == 'rider_modified_accepted')
+                                                    <a
+            href="{{ url('/admin/orders') }}/{{$order->id}}/print"
+            target="_blank"
+            class="singlePrintBtn bg-gray-700 hover:bg-gray-800 text-white font-semibold px-5 py-2 rounded-lg transition"
+        >
+            🖨 Invoice Print
+        </a>
 
-                                            <button
-                                                type="button"
-                                                class="bg-yellow-600
-                                                hover:bg-yellow-700
-                                                text-white font-semibold
-                                                px-6 py-2 rounded-lg transition
-                                                w-full md:w-auto">
-
-                                                ✅ মুল্য বর্ধিত পাঠানো হয়েছে
-
-                                            </button>
-
-
-                                        @elseif($order->status == 'delivered')
-
-                                            <button
-                                                type="button"
-                                                class="bg-gray-600
-                                                hover:bg-gray-700
-                                                text-white font-semibold
-                                                px-6 py-2 rounded-lg transition
-                                                w-full md:w-auto">
-
-                                                ✅ ডেলিভারি সম্পন্ন হয়েছে
-
-                                            </button>
-
-                                        @endif
+                                        </div>
 
                                     </div>
 
@@ -949,193 +1070,318 @@
 
 @section('scripts')
 
-<script>
-  $(document).on('click', '.deliverBtn', function () {
-
-    const btn = $(this);
-    const orderId = btn.data('id');
-
-    btn
-        .prop('disabled', true)
-        .text('⏳ প্রসেস হচ্ছে...');
-
-
-    $.ajax({
-
-        url: "{{ route('rider.orders.deliver', ':id') }}"
-            .replace(':id', orderId),
-
-        method: "POST",
-
-        data: {
-            _token: "{{ csrf_token() }}"
-        },
-
-
-        success: function (res) {
-
-            if (res.success) {
-
-                Swal.fire({
-
-                    icon: 'success',
-
-                    title: 'সফল!',
-
-                    text: res.message ||
-                        'ডেলিভারি সফলভাবে সম্পন্ন হয়েছে।',
-
-                    confirmButtonColor: '#16a34a',
-
-                    confirmButtonText: 'ঠিক আছে'
-
-                }).then(function () {
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | পুরো page reload হবে না
-                    | শুধু order list আবার render হবে
-                    |--------------------------------------------------------------------------
-                    */
-
-                    refreshOrdersList();
-
-                });
-
-
-            } else {
-
-                Swal.fire({
-
-                    icon: 'warning',
-
-                    title: 'সতর্কতা',
-
-                    text: res.message ||
-                        'কিছু ভুল হয়েছে!',
-
-                    confirmButtonColor: '#f59e0b'
-
-                });
-
-
-                btn
-                    .prop('disabled', false)
-                    .text('✅ ডেলিভারি সম্পন্ন করুন');
-
-            }
-
-        },
-
-
-        error: function (xhr) {
-
-            let message =
-                'সার্ভারে সমস্যা হয়েছে, আবার চেষ্টা করুন।';
-
-
-            if (
-                xhr.responseJSON &&
-                xhr.responseJSON.message
-            ) {
-
-                message = xhr.responseJSON.message;
-
-            }
-
-
-            Swal.fire({
-
-                icon: 'error',
-
-                title: 'ত্রুটি!',
-
-                text: message,
-
-                confirmButtonColor: '#dc2626'
-
-            });
-
-
-            btn
-                .prop('disabled', false)
-                .text('✅ ডেলিভারি সম্পন্ন করুন');
-
+<style>
+    @media print {
+        body * {
+            visibility: hidden !important;
         }
 
+        #ordersList,
+        #ordersList * {
+            visibility: visible !important;
+        }
+
+        #ordersList {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            overflow: visible !important;
+        }
+
+        #ordersList .no-print,
+        .no-print {
+            display: none !important;
+        }
+
+        .print-hide {
+            display: none !important;
+        }
+
+        .order-item {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            box-shadow: none !important;
+            margin-bottom: 20px !important;
+        }
+    }
+</style>
+
+<script>
+
+$(document).ready(function () {
+
+    function updateSelectedCount() {
+
+        const selectedCount =
+            $('.orderPrintCheckbox:checked').length;
+
+        $('#selectedOrderCount')
+            .text(selectedCount + ' টি নির্বাচিত');
+
+        $('#bulkPrintBtn')
+            .prop('disabled', selectedCount === 0);
+
+        const totalCount =
+            $('.orderPrintCheckbox').length;
+
+        $('#selectAllOrders')
+            .prop(
+                'checked',
+                totalCount > 0 && selectedCount === totalCount
+            );
+    }
+
+
+    $(document).on('change', '.orderPrintCheckbox', function () {
+        updateSelectedCount();
     });
+
+
+    $(document).on('change', '#selectAllOrders', function () {
+
+        const checked = $(this).is(':checked');
+
+        $('.orderPrintCheckbox')
+            .prop('checked', checked);
+
+        updateSelectedCount();
+    });
+
+
+    function printOrders(orderIds) {
+
+        if (!orderIds || orderIds.length === 0) {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'কোনো অর্ডার নির্বাচন করা হয়নি',
+                text: 'প্রিন্ট করার জন্য অন্তত একটি অর্ডার নির্বাচন করুন।'
+            });
+
+            return;
+        }
+
+
+        $('.order-item').each(function () {
+
+            const orderId =
+                String($(this).data('order-id'));
+
+            if (!orderIds.includes(orderId)) {
+                $(this).addClass('print-hide');
+            }
+        });
+
+
+        let restored = false;
+
+        const restoreOrders = function () {
+
+            if (restored) {
+                return;
+            }
+
+            restored = true;
+
+            $('.order-item')
+                .removeClass('print-hide');
+        };
+
+
+        $(window)
+            .off('afterprint.orderPrint')
+            .on('afterprint.orderPrint', restoreOrders);
+
+
+        setTimeout(function () {
+            window.print();
+        }, 100);
+
+
+        setTimeout(function () {
+            restoreOrders();
+        }, 1000);
+    }
+
+
+  
+
+ 
+    
+// ==========================================
+// Bulk Print
+// ==========================================
+
+$("#bulkPrintBtn").on("click", function(){
+
+    if(selectedOrders.size === 0){
+        return;
+    }
+
+    const form = $("<form>", {
+        method: "POST",
+        action: "{{ route('admin.orders.bulkPrint') }}",
+        target: "_blank"
+    });
+
+    form.append(
+        $("<input>", {
+            type: "hidden",
+            name: "_token",
+            value: "{{ csrf_token() }}"
+        })
+    );
+
+
+    selectedOrders.forEach(function(id){
+
+        form.append(
+            $("<input>", {
+                type: "hidden",
+                name: "order_ids[]",
+                value: id
+            })
+        );
+
+    });
+
+
+    $("body").append(form);
+
+    form.submit();
+
+    form.remove();
 
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| Refresh Only Order List
-|--------------------------------------------------------------------------
-*/
 
-function refreshOrdersList() {
+    $(document).on('click', '.deliverBtn', function () {
 
-    const currentUrl = window.location.href;
+        const btn = $(this);
+        const orderId = btn.data('id');
 
+        btn
+            .prop('disabled', true)
+            .text('⏳ প্রসেস হচ্ছে...');
 
-    $('#ordersList').addClass('opacity-50');
+        $.ajax({
 
+            url: "{{ route('rider.orders.deliver', ':id') }}"
+                .replace(':id', orderId),
 
-    $.ajax({
+            method: "POST",
 
-        url: currentUrl,
+            data: {
+                _token: "{{ csrf_token() }}"
+            },
 
-        method: 'GET',
+            success: function (res) {
 
-        cache: false,
+                if (res.success) {
 
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'সফল!',
+                        text: res.message ||
+                            'ডেলিভারি সফলভাবে সম্পন্ন হয়েছে।',
+                        confirmButtonColor: '#16a34a',
+                        confirmButtonText: 'ঠিক আছে'
+                    }).then(function () {
+                        refreshOrdersList();
+                    });
 
-        success: function (html) {
+                } else {
 
-            /*
-            |--------------------------------------------------------------------------
-            | নতুন page থেকে শুধু #ordersList বের করা
-            |--------------------------------------------------------------------------
-            */
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'সতর্কতা',
+                        text: res.message ||
+                            'কিছু ভুল হয়েছে!',
+                        confirmButtonColor: '#f59e0b'
+                    });
 
-            const newOrdersList =
-                $(html).find('#ordersList').html();
+                    btn
+                        .prop('disabled', false)
+                        .text('✅ ডেলিভারি সম্পন্ন করুন');
+                }
+            },
 
+            error: function (xhr) {
 
-            if (newOrdersList !== undefined) {
+                let message =
+                    'সার্ভারে সমস্যা হয়েছে, আবার চেষ্টা করুন।';
 
-                $('#ordersList').html(newOrdersList);
+                if (
+                    xhr.responseJSON &&
+                    xhr.responseJSON.message
+                ) {
+                    message = xhr.responseJSON.message;
+                }
 
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ত্রুটি!',
+                    text: message,
+                    confirmButtonColor: '#dc2626'
+                });
+
+                btn
+                    .prop('disabled', false)
+                    .text('✅ ডেলিভারি সম্পন্ন করুন');
             }
-
-
-            $('#ordersList').removeClass('opacity-50');
-
-        },
-
-
-        error: function () {
-
-            $('#ordersList').removeClass('opacity-50');
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | যদি partial render fail করে,
-            | তখন fallback হিসেবে পুরো page reload
-            |--------------------------------------------------------------------------
-            */
-
-            window.location.reload();
-
-        }
-
+        });
     });
 
-}
+
+    window.refreshOrdersList = function () {
+
+        const currentUrl = window.location.href;
+
+        $('#ordersList')
+            .addClass('opacity-50');
+
+        $.ajax({
+
+            url: currentUrl,
+            method: 'GET',
+            cache: false,
+
+            success: function (html) {
+
+                const newOrdersList =
+                    $(html).find('#ordersList').html();
+
+                if (newOrdersList !== undefined) {
+                    $('#ordersList').html(newOrdersList);
+                }
+
+                $('#ordersList')
+                    .removeClass('opacity-50');
+
+                $('#selectAllOrders')
+                    .prop('checked', false);
+
+                updateSelectedCount();
+            },
+
+            error: function () {
+
+                $('#ordersList')
+                    .removeClass('opacity-50');
+
+                window.location.reload();
+            }
+        });
+    };
+
+
+    updateSelectedCount();
+
+});
 
 </script>
 
 @endsection
- 
+

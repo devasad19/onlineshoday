@@ -17,41 +17,44 @@
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
  
 <h1 class="text-2xl font-bold text-gray-700">
-    🛒 নিত্যপ্রয়োজনীয় পণ্য 
+    🛒 ই-কমার্স পণ্য 
 </h1>
 
 <a
-    href="{{ route('rider.custom.products') }}"
+    href="{{ route('rider.products') }}"
     class="inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm transition"
 >
-    🧩 ই-কমার্স পণ্য তালিকা
+    🧩 নিত্যপ্রয়োজনীয় পণ্য তালিকা
 </a>
  
 
 </div>
 
-
+ 
 
         {{-- =========================================================
-            REGULAR PRODUCTS
+            CUSTOM PRODUCTS
         ========================================================== --}}
 
-        <div class="bg-white border border-gray-200 shadow-sm rounded-xl p-5 mb-10">
+        <div class="bg-white border border-orange-200 shadow-sm rounded-xl p-5">
 
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
 
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-800">
-                        🛍️ নিত্যপ্রয়োজনীয় পণ্য তালিকা
+
+                    <h2 class="text-xl font-semibold text-orange-700">
+                        🧩 Custom Products
                     </h2>
 
                     <p class="text-sm text-gray-500 mt-1">
-                        পণ্যের বিস্তারিত তথ্য দেখুন
+                        কাস্টম পণ্যগুলোর বিস্তারিত তথ্য
                     </p>
+
                 </div>
 
+
                 <div class="text-sm text-gray-500">
-                    মোট {{ $products->total() }} টি পণ্য
+                    মোট {{ $custom_products->total() }} টি কাস্টম পণ্য
                 </div>
 
             </div>
@@ -61,7 +64,7 @@
 
                 <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
 
-                    <thead class="bg-gray-100 text-gray-700">
+                    <thead class="bg-orange-50 text-gray-700">
 
                         <tr>
                             <th class="p-3 text-left whitespace-nowrap">#</th>
@@ -79,7 +82,7 @@
 
                     <tbody class="bg-white">
 
-                        @forelse($products as $key => $product)
+                        @forelse($custom_products as $key => $product)
 
                             @php
                                 $discount = (float) ($product->discount ?? 0);
@@ -90,11 +93,12 @@
                                     : $originalPrice;
                             @endphp
 
-                            <tr class="border-t hover:bg-gray-50 transition">
+
+                            <tr class="border-t hover:bg-orange-50 transition">
 
                                 {{-- Serial --}}
                                 <td class="p-3 align-top">
-                                    {{ $products->firstItem() + $key }}
+                                    {{ $custom_products->firstItem() + $key }}
                                 </td>
 
 
@@ -113,8 +117,8 @@
 
                                         @else
 
-                                            <div class="w-14 h-14 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 text-xl">
-                                                📦
+                                            <div class="w-14 h-14 rounded-lg bg-orange-50 border border-orange-200 flex items-center justify-center text-orange-400 text-xl">
+                                                🧩
                                             </div>
 
                                         @endif
@@ -125,6 +129,10 @@
                                             <div class="font-semibold text-gray-800">
                                                 {{ $product->name }}
                                             </div>
+
+                                            <span class="inline-flex mt-1 px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 text-xs font-medium">
+                                                Custom Product
+                                            </span>
 
                                             @if(!empty($product->description))
 
@@ -253,7 +261,7 @@
 
                                     <a
                                         href="{{ route('home.product.details', $product->id) }}"
-                                        class="inline-block bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition"
+                                        class="inline-block bg-orange-600 hover:bg-orange-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition"
                                     >
                                         বিস্তারিত
                                     </a>
@@ -262,12 +270,13 @@
 
                             </tr>
 
+
                         @empty
 
                             <tr>
 
                                 <td colspan="8" class="p-8 text-center text-gray-500">
-                                    কোনো পণ্য পাওয়া যায়নি।
+                                    কোনো Custom Product পাওয়া যায়নি।
                                 </td>
 
                             </tr>
@@ -281,19 +290,17 @@
             </div>
 
 
-            {{-- Regular Product Pagination --}}
-            @if($products->hasPages())
+            {{-- Custom Product Pagination --}}
+            @if($custom_products->hasPages())
 
                 <div class="mt-6">
-                    {{ $products->appends(request()->except('products_page'))->links() }}
+                    {{ $custom_products->appends(request()->except('custom_products_page'))->links() }}
                 </div>
 
             @endif
 
         </div>
-
-
- 
+        
 
     </div>
 

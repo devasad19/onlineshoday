@@ -16,7 +16,7 @@
 
                 <img
                     src="{{ $rider->user->photo
-                        ? asset('uploads/riders/' . $rider->user->photo)
+                        ? asset('uploads/users/' . $rider->user->photo)
                         : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}"
                     alt="User"
                     class="w-10 h-10 rounded-full object-cover"
@@ -34,7 +34,7 @@
 
                     <div>
                         <h2 class="text-2xl font-bold text-green-700">
-                            স্বাগতম, {{ $rider->name ?? 'রাইডার' }} 👋
+                            স্বাগতম, {{ $rider->user->name ?? 'রাইডার' }} 👋
                         </h2>
 
                         <p class="text-gray-600 mt-1">
@@ -46,7 +46,7 @@
 
                         <img
                             src="{{ $rider->user->photo
-                                ? asset('uploads/riders/' . $rider->user->photo)
+                                ? asset('uploads/users/' . $rider->user->photo)
                                 : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}"
                             class="w-16 h-16 rounded-full border-2 border-green-500 object-cover"
                             alt="Rider Photo"

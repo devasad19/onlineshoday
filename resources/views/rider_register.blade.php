@@ -16,12 +16,12 @@
 
         <!-- Rider Registration Form -->
         <div class="bg-white shadow-lg rounded-2xl p-8 border border-gray-200">
-        <section class="bg-white p-8 m-6 rounded-2xl shadow border border-gray-200">
-            
-        @include('alerts.alert')
+            <section class="bg-white p-8 m-6 rounded-2xl shadow border border-gray-200">
+                
+                @include('alerts.alert')
     
         <h2 class="text-2xl font-semibold text-green-700 mb-6">📝 রাইডার রেজিস্ট্রেশন ফর্ম</h2>
-         <form id="riderRegisterForm" action="{{ route('admin.riders.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+         <form id="riderRegisterForm" action="{{ route('new.rider.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             @csrf
 
             <!-- Full Name -->

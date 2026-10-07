@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Bazar;
+use Illuminate\Validation\Rule;
 use App\Models\OrderItem;
 use App\Models\CustomProduct;
 use App\Models\RiderProduct;
@@ -71,18 +72,67 @@ class RiderController extends Controller
     }
 
 
-    public function riderProducts()
-    {
-        $data['riders'] = Rider::orderBy('id', 'desc')->get();
-        
-        $data['products'] = Product::all();
-        $data['riderProducts'] = RiderProduct::with('product')
-        ->where('user_id', auth()->id())
-        ->get();
-        
-        return view('backend.riders.my_products', $data);
-    }
+public function riderProducts()
+{
+$data['riders'] = Rider::orderBy('id', 'desc')->get();
+ 
+/*
+|--------------------------------------------------------------------------
+| Regular Products
+|--------------------------------------------------------------------------
+*/
+$data['products'] = Product::with('category')
+    ->orderBy('id', 'desc')
+    ->paginate(
+        15,
+        ['*'],
+        'products_page'
+    );
 
+/*
+|--------------------------------------------------------------------------
+| Custom Products
+|--------------------------------------------------------------------------
+*/
+$data['custom_products'] = Product::with('category')
+    ->where('ecom', 1)
+    ->orderBy('id', 'desc')
+    ->paginate(
+        15,
+        ['*'],
+        'custom_products_page'
+    );
+
+/*
+|--------------------------------------------------------------------------
+| Rider Products
+|--------------------------------------------------------------------------
+| Rider এখন price update করবে না।
+| শুধু existing relation থাকলে জানা যাবে।
+|--------------------------------------------------------------------------
+*/
+$data['riderProducts'] = RiderProduct::with('product')
+    ->where('user_id', auth()->id())
+    ->get();
+
+return view('backend.riders.my_products', $data);
+ 
+
+}
+
+
+public function riderCustomProducts()
+{
+$data['custom_products'] = Product::with('category')
+->where('ecom', 1)
+->orderBy('id', 'desc')
+->paginate(15);
+
+ 
+return view('backend.riders.custom_products', $data);
+ 
+
+}
 
 
  
@@ -124,7 +174,7 @@ public function productdestroy($id)
 
     public function riderRegForm()
     {
-        
+      
         $data['bazars'] = Bazar::where('status', 'Active')->get();
         return view('rider_register', $data);
     }
@@ -134,6 +184,7 @@ public function productdestroy($id)
      */
     public function riderStore(Request $request)
     {
+        
         $request->validate([
             'name'              => 'required|string|max:100',
             'father_name'       => 'required|string|max:100',
@@ -157,10 +208,9 @@ public function productdestroy($id)
         }
 
         if ($request->hasFile('photo')) {
-            $photoPath = fileUpload($request->file('photo'), 'uploads/riders');
+            $photoPath = fileUpload($request->file('photo'), 'uploads/users');
         }
-
-
+ 
 
         $role = Role::where('name', 'rider')->first();
 
@@ -205,6 +255,35 @@ public function productdestroy($id)
         return response()->json(['success' => true, 'message' => 'Rider deleted successfully']);
     }
 
+public function riderPrintInvoice(Order $order)
+{
+    $order->load([
+        'user',
+        'rider',
+        'items.product',
+    ]);
+
+    return view('backend.orders.print', compact('order'));
+}
+public function riderBulkPrint(Request $request)
+{
+    $orderIds = $request->input('order_ids', []);
+
+    if (empty($orderIds)) {
+        return back()->with('error', 'কোনো অর্ডার নির্বাচন করা হয়নি।');
+    }
+
+    $orders = Order::with([
+        'user',
+        'rider',
+        'items.product',
+    ])
+    ->whereIn('id', $orderIds)
+    ->orderBy('id')
+    ->get();
+
+    return view('backend.orders.bulk_print', compact('orders'));
+}
 
     public function markAsDelivered($id)
     {
@@ -373,6 +452,7 @@ public function pendingOrders()
     | Only these orders can be accepted
     |--------------------------------------------------------------------------
     */
+    
 
     if (!in_array($order->status, [
         'pending',
@@ -447,6 +527,7 @@ public function pendingOrders()
 
             $order->status = 'accepted';
 
+            $order->accepted_at=Carbon::now('Asia/Dhaka');
             $order->delivery_time = $request->delivery_time;
 
             $order->save();
@@ -546,6 +627,7 @@ public function pendingOrders()
 
         $order->status = 'accepted';
 
+            $order->accepted_at=Carbon::now('Asia/Dhaka');
         $order->delivery_time = $request->delivery_time;
 
         $order->save();
@@ -639,6 +721,133 @@ public function pending()
         'orders' => $orders,
     ]);
 }
+
+
+
+
+
+public function riderSettings()
+{
+$user = User::findOrFail(auth()->id());
+
+ 
+$rider = Rider::where('user_id', $user->id)->first();
+
+return view('backend.riders.settings', compact('user', 'rider'));
+ 
+
+}
+
+/**
+
+* Rider Profile Update
+  */
+  public function updateRiderProfile(Request $request)
+  {
+  $user = User::findOrFail(auth()->id());
+
+  $rider = Rider::where('user_id', $user->id)->first();
+
+  $request->validate([
+  'name' => 'required|string|max:100',
+  'father_name' => 'required|string|max:100',
+  'phone' => [
+  'required',
+  'string',
+  'max:15',
+  Rule::unique('users', 'phone')->ignore($user->id),
+  ],
+  'father_phone' => 'required|string|max:15',
+  'age' => 'required|integer|min:18|max:70',
+  'edu_qualification' => 'required|string|max:100',
+  'institute' => 'nullable|string|max:255',
+  'vehicle_type' => 'required|string|max:50',
+  'address' => 'required|string|max:500',
+  'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+  ]);
+ 
+
+  $user->name = $request->name;
+  $user->father_name = $request->father_name;
+  $user->phone = $request->phone;
+  $user->father_phone = $request->father_phone;
+  $user->address = $request->address;
+
+                                                                        
+
+  if ($request->hasFile('photo')) {
+
+  
+   $photoPath = fileUpload(
+       $request->file('photo'),
+       'uploads/users'
+   );
+
+   $user->photo = $photoPath;
+  
+
+  }
+
+  $user->save();
+
+                                                          
+
+  if ($rider) {
+
+  
+   $rider->age = $request->age;
+   $rider->edu_qualification = $request->edu_qualification;
+   $rider->institute = $request->institute;
+   $rider->vehicle_type = $request->vehicle_type;
+
+   $rider->save();
+  
+
+  }
+
+  return redirect()
+  ->route('rider.settings')
+  ->with('success', '✅ আপনার প্রোফাইল সফলভাবে আপডেট হয়েছে।');
+  }
+
+/**
+
+* Rider Password Update
+  */
+  public function updateRiderPassword(Request $request)
+  {
+  $request->validate([
+  'old_password' => 'required|string',
+  'password' => 'required|string|min:6|confirmed',
+  ]);
+
+  $user = User::findOrFail(auth()->id());
+
+ 
+
+  if (!Hash::check($request->old_password, $user->password)) {
+ 
+   return redirect()
+       ->route('rider.settings')
+       ->withErrors([
+           'old_password' => '❌ পুরোনো পাসওয়ার্ড সঠিক নয়।',
+       ]);
+  
+
+  }
+
+ 
+
+  $user->password = Hash::make($request->password);
+
+  $user->save();
+
+  return redirect()
+  ->route('rider.settings')
+  ->with('success', '✅ পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে।');
+  }
+
+
 
 
 

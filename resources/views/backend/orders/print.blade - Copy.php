@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="bn">
 
@@ -9,11 +10,13 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
     <style>
 
         * {
             box-sizing: border-box;
         }
+
 
         body {
             margin: 0;
@@ -22,6 +25,112 @@
             background: #f3f4f6;
             color: #111827;
         }
+        
+@media print {
+
+    @page {
+        size: A4 portrait;
+        margin: 8mm;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+        font-size: 10px !important;
+    }
+
+    .print-button {
+        display: none !important;
+    }
+
+    .invoice {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 8px !important;
+
+        /* ২টি invoice এক A4-তে */
+        height: 138mm;
+
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    .header {
+        padding-bottom: 5px !important;
+        margin-bottom: 8px !important;
+        border-bottom-width: 1px !important;
+    }
+
+    .company {
+        font-size: 17px !important;
+    }
+
+    .invoice-title {
+        font-size: 15px !important;
+    }
+
+    .customer {
+        line-height: 1.35 !important;
+        margin-bottom: 8px !important;
+        font-size: 10px !important;
+    }
+
+    table {
+        margin-top: 5px !important;
+        font-size: 9px !important;
+    }
+
+    th,
+    td {
+        padding: 4px 5px !important;
+        line-height: 1.2 !important;
+    }
+
+    th {
+        font-size: 9px !important;
+    }
+
+    .summary {
+        margin-top: 8px !important;
+        max-width: 330px !important;
+        font-size: 9px !important;
+    }
+
+    .summary-row {
+        padding: 3px 0 !important;
+        gap: 10px !important;
+    }
+
+    .delivery-total {
+        margin-top: 3px !important;
+        padding-top: 4px !important;
+    }
+
+    .summary-total {
+        margin-top: 4px !important;
+        padding-top: 5px !important;
+        font-size: 13px !important;
+    }
+
+    .footer {
+        margin-top: 8px !important;
+        padding-top: 5px !important;
+        font-size: 8px !important;
+    }
+
+    /* প্রতিটি invoice-এর পর জায়গা */
+    .invoice + .invoice {
+        margin-top: 4mm !important;
+        border-top: 1px dashed #999;
+        padding-top: 6px !important;
+    }
+}
 
         .invoice {
             width: 100%;
@@ -31,12 +140,14 @@
             padding: 25px;
         }
 
+
         /* PRINT BUTTON */
 
         .print-button {
             text-align: center;
             margin-bottom: 20px;
         }
+
 
         .print-button button {
             background: #111827;
@@ -48,26 +159,33 @@
             font-size: 15px;
         }
 
+
         /* HEADER */
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             border-bottom: 2px solid #111827;
+
             padding-bottom: 12px;
+
             margin-bottom: 20px;
         }
+
 
         .company {
             font-size: 24px;
             font-weight: bold;
         }
 
+
         .invoice-title {
             font-size: 20px;
             font-weight: bold;
         }
+
 
         /* CUSTOMER */
 
@@ -75,6 +193,7 @@
             line-height: 1.8;
             margin-bottom: 20px;
         }
+
 
         /* PRODUCT TABLE */
 
@@ -84,27 +203,32 @@
             margin-top: 10px;
         }
 
+
         th,
         td {
             border: 1px solid #d1d5db;
             padding: 8px;
         }
 
+
         th {
             background: #f3f4f6;
             text-align: left;
         }
+
 
         td:first-child {
             width: 45px;
             text-align: center;
         }
 
+
         td:nth-child(3),
         td:nth-child(4),
         td:nth-child(5) {
             text-align: right;
         }
+
 
         /* SUMMARY */
 
@@ -115,162 +239,104 @@
             margin-left: auto;
         }
 
+
         .summary-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
+
             padding: 7px 0;
+
             gap: 20px;
         }
+
 
         .summary-row span:first-child {
             text-align: left;
         }
+
 
         .summary-row span:last-child {
             text-align: right;
             white-space: nowrap;
         }
 
+
         .delivery-row {
             color: #374151;
         }
 
+
         .delivery-total {
             border-top: 1px solid #d1d5db;
+
             margin-top: 5px;
+
             padding-top: 9px;
+
             font-weight: bold;
         }
+
 
         .summary-total {
             display: flex;
             justify-content: space-between;
+
             border-top: 2px solid #111827;
+
             margin-top: 8px;
+
             padding-top: 12px;
+
             font-size: 20px;
+
             font-weight: bold;
         }
+
 
         /* FOOTER */
 
         .footer {
             text-align: center;
+
             margin-top: 25px;
+
             padding-top: 12px;
+
             border-top: 1px solid #d1d5db;
+
             font-size: 13px;
+
             color: #6b7280;
         }
+
 
         /* PRINT */
 
         @media print {
 
-            @page {
-                size: A4 portrait;
-                margin: 8mm;
-            }
-
-            * {
-                box-sizing: border-box;
-            }
-
             body {
-                margin: 0 !important;
-                padding: 0 !important;
-                background: #fff !important;
-                font-size: 10px !important;
+                background: #ffffff;
+                padding: 0;
             }
+
 
             .print-button {
-                display: none !important;
+                display: none;
             }
+
 
             .invoice {
-                width: 100% !important;
-                max-width: none !important;
-                margin: 0 !important;
-                padding: 8px !important;
-                height: 138mm;
-                page-break-inside: avoid;
-                break-inside: avoid;
+                max-width: none;
+                padding: 10px;
             }
 
-            .header {
-                padding-bottom: 5px !important;
-                margin-bottom: 8px !important;
-                border-bottom-width: 1px !important;
-            }
-
-            .company {
-                font-size: 17px !important;
-            }
-
-            .invoice-title {
-                font-size: 15px !important;
-            }
-
-            .customer {
-                line-height: 1.35 !important;
-                margin-bottom: 8px !important;
-                font-size: 10px !important;
-            }
-
-            table {
-                margin-top: 5px !important;
-                font-size: 9px !important;
-            }
-
-            th,
-            td {
-                padding: 4px 5px !important;
-                line-height: 1.2 !important;
-            }
-
-            th {
-                font-size: 9px !important;
-            }
-
-            .summary {
-                margin-top: 8px !important;
-                max-width: 330px !important;
-                font-size: 9px !important;
-            }
-
-            .summary-row {
-                padding: 3px 0 !important;
-                gap: 10px !important;
-            }
-
-            .delivery-total {
-                margin-top: 3px !important;
-                padding-top: 4px !important;
-            }
-
-            .summary-total {
-                margin-top: 4px !important;
-                padding-top: 5px !important;
-                font-size: 13px !important;
-            }
-
-            .footer {
-                margin-top: 8px !important;
-                padding-top: 5px !important;
-                font-size: 8px !important;
-            }
-
-            .invoice + .invoice {
-                margin-top: 4mm !important;
-                border-top: 1px dashed #999;
-                padding-top: 6px !important;
-            }
         }
 
     </style>
 
 </head>
+
 
 <body>
 
@@ -280,11 +346,9 @@
 ========================================================= --}}
 
 <div class="print-button">
-
     <button type="button" id="printInvoiceBtn">
         🖨 Print Invoice
     </button>
-
 </div>
 
 
@@ -299,11 +363,16 @@
     <div class="header">
 
         <div class="company">
+
             অনলাইন সদায়
+
         </div>
 
+
         <div class="invoice-title">
+
             INVOICE #{{ $order->id }}
+
         </div>
 
     </div>
@@ -317,21 +386,28 @@
     <div class="customer">
 
         <strong>Customer:</strong>
+
         {{ $order->user->name ?? 'N/A' }}
 
         <br>
 
+
         <strong>Phone:</strong>
+
         {{ $order->user->phone ?? '-' }}
 
         <br>
 
+
         <strong>Address:</strong>
+
         {{ $order->delivery_address ?? '-' }}
 
         <br>
 
+
         <strong>Order Date:</strong>
+
         {{ $order->created_at?->format('d-m-Y h:i A') }}
 
     </div>
@@ -339,7 +415,7 @@
 
 
     {{-- =========================================================
-         INITIAL VARIABLES
+         INITIAL TOTAL VARIABLES
     ========================================================= --}}
 
     @php
@@ -353,11 +429,18 @@
 
         /*
         |--------------------------------------------------------------------------
-        | TOTAL QUANTITY BY UNIT TYPE
+        | KG / LITER TOTAL QUANTITY
         |--------------------------------------------------------------------------
         */
 
         $kgLiterQuantity = 0;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PIECE / DOZEN / PACKET QUANTITY
+        |--------------------------------------------------------------------------
+        */
 
         $pieceQuantity = 0;
 
@@ -407,11 +490,14 @@
 
                     $itemNumber++;
 
+
                     $qty = (float) $item->quantity;
 
                     $price = (float) $item->price;
 
+
                     $lineTotal = $qty * $price;
+
 
                     $productTotal += $lineTotal;
 
@@ -518,12 +604,18 @@
                 <tr>
 
                     <td>
+
                         {{ $itemNumber }}
+
                     </td>
 
+
                     <td>
+
                         {{ $item->product->name ?? 'Product' }}
+
                     </td>
+
 
                     <td>
 
@@ -533,12 +625,18 @@
 
                     </td>
 
-                    <td>
-                        ৳{{ number_format($price, 2) }}
-                    </td>
 
                     <td>
+
+                        ৳{{ number_format($price, 2) }}
+
+                    </td>
+
+
+                    <td>
+
                         ৳{{ number_format($lineTotal, 2) }}
+
                     </td>
 
                 </tr>
@@ -557,6 +655,7 @@
 
                     $itemNumber++;
 
+
                     $qty = (float) $item->quantity;
 
                     $price = (float) $item->price;
@@ -566,14 +665,12 @@
                     |--------------------------------------------------------------------------
                     | CUSTOM PRODUCT TOTAL
                     |--------------------------------------------------------------------------
-                    |
-                    | unit = টাকা হলে price-টাই total।
-                    | অন্য unit হলে quantity × price।
-                    |
                     */
 
                     $lineTotal = $item->unit === 'টাকা'
+
                         ? $price
+
                         : $qty * $price;
 
 
@@ -682,12 +779,18 @@
                 <tr>
 
                     <td>
+
                         {{ $itemNumber }}
+
                     </td>
 
+
                     <td>
+
                         {{ $item->name ?? 'Custom Product' }}
+
                     </td>
+
 
                     <td>
 
@@ -705,12 +808,18 @@
 
                     </td>
 
-                    <td>
-                        ৳{{ number_format($price, 2) }}
-                    </td>
 
                     <td>
+
+                        ৳{{ number_format($price, 2) }}
+
+                    </td>
+
+
+                    <td>
+
                         ৳{{ number_format($lineTotal, 2) }}
+
                     </td>
 
                 </tr>
@@ -727,126 +836,95 @@
     {{-- =========================================================
          DELIVERY CHARGE
     ========================================================= --}}
+@php
 
-    @php
+    /*
+    |--------------------------------------------------------------------------
+    | PRODUCT GRAND TOTAL
+    |--------------------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------------------
-        | PRODUCT GRAND TOTAL
-        |--------------------------------------------------------------------------
-        */
-
-        $productGrandTotal =
-            $productTotal +
-            $customTotal;
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | KG / LITER DELIVERY CHARGE
-        |--------------------------------------------------------------------------
-        |
-        | এখানে কোনো static amount নেই।
-        |
-        | DeliveryChargeRule table থেকে quantity অনুযায়ী
-        | active rule বের হবে।
-        |
-        */
-
-        $kgLiterCharge = 0;
+    $productGrandTotal =
+        $productTotal +
+        $customTotal;
 
 
-        if ($kgLiterQuantity > 0) {
+    /*
+    |--------------------------------------------------------------------------
+    | SAVED DELIVERY CHARGE
+    |--------------------------------------------------------------------------
+    |
+    | Admin/Rider থেকে delivery charge already save করা থাকলে
+    | সেটাই invoice-এ ব্যবহার হবে।
+    |
+    */
 
-            $kgLiterRule = \App\Models\DeliveryChargeRule::where(
-                'unit_type',
-                'kg_liter'
-            )
-            ->where('status', 1)
-            ->where('min_quantity', '<=', $kgLiterQuantity)
-            ->where(function ($query) use ($kgLiterQuantity) {
-
-                $query->whereNull('max_quantity')
-                    ->orWhere(
-                        'max_quantity',
-                        '>=',
-                        $kgLiterQuantity
-                    );
-
-            })
-            ->first();
+    $savedDeliveryCharge = (float) ($order->delivery_charge ?? 0);
 
 
-            if ($kgLiterRule) {
+    /*
+    |--------------------------------------------------------------------------
+    | CALCULATED DELIVERY CHARGE
+    |--------------------------------------------------------------------------
+    */
 
-                $kgLiterCharge =
-                    (float) $kgLiterRule->charge;
+    $kgLiterCharge = 0;
 
-            }
+    if ($kgLiterQuantity > 0) {
+        $kgLiterCharge = 10;
+    }
 
-        }
+
+    $pieceCharge = 0;
+
+    if (
+        $pieceQuantity > 0 ||
+        $dozenQuantity > 0 ||
+        $packetQuantity > 0
+    ) {
+        $pieceCharge = 20;
+    }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | ORDER DELIVERY CHARGE
-        |--------------------------------------------------------------------------
-        |
-        | Piece / Dozen / Packet-এর charge Order-এর
-        | saved delivery_charge থেকে আসবে।
-        |
-        */
+    $calculatedDeliveryCharge =
+        $kgLiterCharge +
+        $pieceCharge;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FINAL DELIVERY CHARGE
+    |--------------------------------------------------------------------------
+    |
+    | Saved charge থাকলে saved charge।
+    | না থাকলে calculated charge।
+    |
+    */
+
+    if ($savedDeliveryCharge > 0) {
 
         $totalDeliveryCharge =
-            (float) ($order->delivery_charge ?? 0);
+            $savedDeliveryCharge;
+
+    } else {
+
+        $totalDeliveryCharge =
+            $calculatedDeliveryCharge;
+
+    }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | PIECE / DOZEN / PACKET CHARGE
-        |--------------------------------------------------------------------------
-        |
-        | যদি Piece / Dozen / Packet থাকে এবং KG/Liter-ও থাকে,
-        | তাহলে Order-এর total delivery charge থেকে KG/Liter
-        | charge বাদ দিলে এই অংশ পাওয়া যাবে।
-        |
-        | যদি শুধু Piece / Dozen / Packet থাকে,
-        | তাহলে Order-এর সম্পূর্ণ delivery_charge এই অংশ।
-        |
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | FINAL GRAND TOTAL
+    |--------------------------------------------------------------------------
+    */
 
-        $pieceCharge = 0;
+    $grandTotal =
+        $productGrandTotal +
+        $totalDeliveryCharge;
 
-
-        if (
-            $pieceQuantity > 0 ||
-            $dozenQuantity > 0 ||
-            $packetQuantity > 0
-        ) {
-
-            $pieceCharge =
-                max(
-                    0,
-                    $totalDeliveryCharge - $kgLiterCharge
-                );
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | FINAL GRAND TOTAL
-        |--------------------------------------------------------------------------
-        |
-        | order->total_amount ব্যবহার করা হচ্ছে না।
-        |
-        */
-
-        $grandTotal =
-            $productGrandTotal ;
-
-    @endphp
-
+@endphp
 
 
     {{-- =========================================================
@@ -855,159 +933,124 @@
 
     <div class="summary">
 
-{{-- =====================================================
-     PRODUCT TOTAL
-===================================================== --}}
 
-<div class="summary-row">
+        {{-- PRODUCT TOTAL --}}
 
-    <span>
-        <strong>
-            পণ্যের মোট মূল্য
-        </strong>
-    </span>
+        <div class="summary-row">
 
-    <span>
-        ৳{{ number_format($productGrandTotal, 2) }}
-    </span>
+            <span>
 
-</div>
+                <strong>
+                    পণ্যের মোট মূল্য
+                </strong>
+
+            </span>
 
 
+            <span>
 
-{{-- =====================================================
-     KG / LITER DELIVERY
-===================================================== --}}
+                ৳{{ number_format($productGrandTotal, 2) }}
 
-@if($kgLiterQuantity > 0)
+            </span>
 
-    <div class="summary-row delivery-row">
-
-        <span>
-
-            {{ rtrim(rtrim(number_format($kgLiterQuantity, 2), '0'), '.') }}
-            কেজি/লিটার (চার্জ)
-
-        </span>
-
-        <span>
-            ৳{{ number_format($kgLiterCharge, 2) }}
-        </span>
-
-    </div>
-
-@endif
+        </div>
 
 
 
-{{-- =====================================================
-     PIECE / DOZEN / PACKET DELIVERY
-===================================================== --}}
+        {{-- =====================================================
+             KG / LITER DELIVERY
+        ===================================================== --}}
 
-@if(
-    $pieceQuantity > 0 ||
-    $dozenQuantity > 0 ||
-    $packetQuantity > 0
-)
+        <div class="summary-row delivery-row">
 
-    <div class="summary-row delivery-row">
+            <span>
 
-        <span>
+                মোট
+                {{ rtrim(rtrim(number_format($kgLiterQuantity, 2), '0'), '.') }}
+                কেজি/লিটার
 
-            @if($pieceQuantity > 0)
+            </span>
+
+
+            <span>
+
+                ৳{{ number_format($kgLiterCharge, 2) }}
+
+            </span>
+
+        </div>
+
+
+
+        {{-- =====================================================
+             PIECE / DOZEN / PACKET DELIVERY
+        ===================================================== --}}
+
+        <div class="summary-row delivery-row">
+
+            <span>
+
                 পিস:
                 {{ rtrim(rtrim(number_format($pieceQuantity, 2), '0'), '.') }}
-            @endif
 
-            @if($dozenQuantity > 0)
-
-                @if($pieceQuantity > 0)
-                    |
-                @endif
+                |
 
                 ডজন:
                 {{ rtrim(rtrim(number_format($dozenQuantity, 2), '0'), '.') }}
 
-            @endif
-
-            @if($packetQuantity > 0)
-
-                @if(
-                    $pieceQuantity > 0 ||
-                    $dozenQuantity > 0
-                )
-                    |
-                @endif
+                |
 
                 প্যাকেট:
                 {{ rtrim(rtrim(number_format($packetQuantity, 2), '0'), '.') }}
 
-            @endif
+            </span>
 
-            (চার্জ)
 
-        </span>
+            <span>
 
-        <span>
-            ৳{{ number_format($pieceCharge, 2) }}
-        </span>
+                ৳{{ number_format($pieceCharge, 2) }}
 
-    </div>
+            </span>
 
-@endif
-
-<div class="summary-row delivery-row">
-
-    <span>
-         
-            ডেলিভারি চার্জ
-        
-    </span>
-
-    <span>
-        ৳{{ number_format($totalDeliveryCharge, 2) }}
-    </span>
-
-</div>
-
-@php
-$grand_delivery_charge = number_format($totalDeliveryCharge + $kgLiterCharge + $pieceCharge, 2);
-@endphp
-
-{{-- =====================================================
-     TOTAL DELIVERY CHARGE
-===================================================== --}}
-
-<div class="summary-row delivery-total">
-
-    <span>
-        <strong>
-            মোট ডেলিভারি চার্জ
-        </strong>
-    </span>
-
-    <span>
-        ৳{{ $grand_delivery_charge }}
-    </span>
-
-</div>
+        </div>
 
 
 
-{{-- =====================================================
-     GRAND TOTAL
-===================================================== --}}
+        {{-- =====================================================
+             TOTAL DELIVERY CHARGE
+        ===================================================== --}}
+
+        <div class="summary-row delivery-total">
+
+            <span>
+
+                মোট ডেলিভারি চার্জ
+
+            </span>
+
+
+            <span>
+
+                ৳{{ number_format($totalDeliveryCharge, 2) }}
+
+            </span>
+
+        </div>
+
+
+
+        {{-- =====================================================
+             GRAND TOTAL
+        ===================================================== --}}
 
 <div class="summary-total">
-
     <span>
         সর্বমোট
     </span>
 
     <span>
-        ৳{{ number_format($grandTotal + $grand_delivery_charge, 2) }}
+        ৳{{ number_format($grandTotal, 2) }}
     </span>
-
 </div>
 
 
@@ -1028,27 +1071,19 @@ $grand_delivery_charge = number_format($totalDeliveryCharge + $kgLiterCharge + $
 
 </div>
 
-
-
 <script>
+document.getElementById('printInvoiceBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-document
-    .getElementById('printInvoiceBtn')
-    .addEventListener('click', function (e) {
+    window.print();
 
-        e.preventDefault();
-
-        e.stopPropagation();
-
-        window.print();
-
-        return false;
-
-    });
-
+    return false;
+});
 </script>
 
 
 </body>
 
 </html>
+

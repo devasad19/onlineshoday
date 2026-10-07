@@ -394,7 +394,7 @@
         class="relative -mt-8 flex flex-col items-center group transition-all duration-300">
   <div class="w-16 h-16 flex items-center justify-center rounded-full bg-white text-white border-4 border-green-200 shadow-lg group-hover:bg-green-200">
     <!-- 🛍️ SVG Bag Icon -->
-            <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/bag.svg') }}" alt="">
+            <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/bag.png') }}" alt="">
   </div>
   <span class="text-xs mt-1 text-green-600 font-semibold">ব্যাগ</span>
   <span id="cartCountBottom" 

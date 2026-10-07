@@ -318,9 +318,25 @@
     <div class="flex items-center justify-between mb-4">
 
         <div>
-            <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
-                📦 প্যাকেজে যা যা থাকছে
-            </h2>
+
+
+<h3 class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-green-700 text-center sm:text-left">
+
+    <img
+        class="w-12 h-12 sm:w-14 sm:h-14 object-contain flex-shrink-0"
+        src="{{ url('public/default/combo-icons/combo_list.png') }}"
+        alt="কম্বো প্যাক"
+    >
+
+    <span>
+        প্যাকেজে যা যা থাকছে
+    </span>
+
+</h3>
+
+
+
+     
 
             <p class="text-sm text-gray-500 mt-1">
                 এই প্যাকেজের সম্পূর্ণ পণ্য তালিকা
@@ -661,9 +677,23 @@
 <div class="mt-8 sm:mt-10">
 
     <div class="mb-4">
-        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">
-            💚 এই প্যাকেজের সুবিধা
-        </h2>
+
+ 
+<h3 class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-green-700 text-center sm:text-left">
+
+    <img
+        class="w-12 h-12 sm:w-14 sm:h-14 object-contain flex-shrink-0"
+        src="{{ url('public/default/combo-icons/package_advantage.png') }}"
+        alt="কম্বো প্যাক"
+    >
+
+    <span>
+        এই প্যাকেজের সুবিধা
+    </span>
+
+</h3>
+ 
+ 
 
         <p class="text-sm text-gray-500 mt-1">
             একসাথে প্যাকেজ নিলে যেসব সুবিধা পাবেন
@@ -680,11 +710,11 @@
                     hover:shadow-md
                     transition">
 
-            <div class="w-10 h-10 rounded-full
+            <div class="w-16 h-16 rounded-full
                         bg-green-50
                         flex items-center justify-center
                         text-xl mb-3">
-                🛒
+                <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/package_cart.png') }}" alt="">
             </div>
 
             <h3 class="font-semibold text-gray-800 text-sm sm:text-base">
@@ -705,11 +735,11 @@
                     hover:shadow-md
                     transition">
 
-            <div class="w-10 h-10 rounded-full
-                        bg-orange-50
+            <div class="w-16 h-16 rounded-full
+                        bg-green-50
                         flex items-center justify-center
                         text-xl mb-3">
-                💰
+                <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/buy_with_discount.png') }}" alt="">
             </div>
 
             <h3 class="font-semibold text-gray-800 text-sm sm:text-base">
@@ -730,11 +760,11 @@
                     hover:shadow-md
                     transition">
 
-            <div class="w-10 h-10 rounded-full
-                        bg-blue-50
+            <div class="w-16 h-16 rounded-full
+                        bg-green-50
                         flex items-center justify-center
                         text-xl mb-3">
-                📦
+                <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/combo_list.png') }}" alt="">
             </div>
 
             <h3 class="font-semibold text-gray-800 text-sm sm:text-base">
@@ -755,11 +785,11 @@
                     hover:shadow-md
                     transition">
 
-            <div class="w-10 h-10 rounded-full
-                        bg-purple-50
+            <div class="w-16 h-16 rounded-full
+                        bg-green-50
                         flex items-center justify-center
                         text-xl mb-3">
-                🏠
+                <img class="w-16 h-16 p-3 items-center group transition-all" src="{{ url('public/default/combo-icons/pkg_home_order.png') }}" alt="">
             </div>
 
             <h3 class="font-semibold text-gray-800 text-sm sm:text-base">
@@ -788,13 +818,25 @@
     <div class="flex flex-col sm:flex-row justify-between items-center
                 mb-6 sm:mb-8 gap-3">
 
-        <h3 class="text-xl sm:text-2xl font-bold text-green-700
-                   text-center sm:text-left">
 
-            <span class="text-green-600 mr-1">🛒</span>
-            আরো বিশেষ কম্বো প্যাক — একসাথে নিন, সাশ্রয় করুন
+ 
+<h3 class="flex items-center gap-2 text-xl sm:text-2xl font-bold text-green-700 text-center sm:text-left">
 
-        </h3>
+    <img
+        class="w-12 h-12 sm:w-14 sm:h-14 object-contain flex-shrink-0"
+        src="{{ url('public/default/combo-icons/combo.png') }}"
+        alt="কম্বো প্যাক"
+    >
+
+    <span>
+        আরো বিশেষ কম্বো প্যাক — একসাথে নিন, সাশ্রয় করুন
+    </span>
+
+</h3>
+ 
+
+
+ 
 
         <div class="flex items-center gap-2
                     bg-green-50

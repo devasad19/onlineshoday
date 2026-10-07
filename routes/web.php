@@ -65,10 +65,32 @@ Route::prefix('rider')->middleware(['auth','role:rider'])->group(function () {
     Route::get('dashboard', [RiderController::class, 'riderDashboard'])->name('rider.dashboard');
     Route::get('orders', [RiderController::class, 'riderOrders'])->name('rider.orders');
     Route::get('products', [RiderController::class, 'riderProducts'])->name('rider.products');
+ 
+
+Route::get(
+'rider/custom-products',
+[RiderController::class, 'riderCustomProducts']
+)->name('rider.custom.products');
+
     Route::post('products/store', [RiderController::class, 'riderProductStore'])->name('rider.products.store');
     Route::get('earnings', [RiderController::class, 'riderEarnings'])->name('rider.earnings');
     Route::get('support', [RiderController::class, 'riderSupport'])->name('rider.support');
-    Route::get('settings', [RiderController::class, 'riderSettings'])->name('rider.settings');
+
+Route::get(
+'settings',
+[RiderController::class, 'riderSettings']
+)->name('rider.settings');
+
+Route::post(
+'settings/profile',
+[RiderController::class, 'updateRiderProfile']
+)->name('rider.settings.profile.update');
+
+Route::post(
+'settings/password',
+[RiderController::class, 'updateRiderPassword']
+)->name('rider.settings.password.update');
+
  
     // Rider pending order list (for auto-load)
     Route::get('orders/pending', [RiderController::class, 'pendingOrders'])->name('rider.orders.pending');
@@ -78,6 +100,7 @@ Route::prefix('rider')->middleware(['auth','role:rider'])->group(function () {
     // routes/web.php
     Route::post('orders/deliver/{id}', [RiderController::class, 'markAsDelivered'])->name('rider.orders.deliver');
 });
+
 
 
 Route::get('/register-user', [RegisterController::class, 'create'])->name('user.register');
@@ -95,9 +118,15 @@ Route::get('rider/{id}', [HomeController::class, 'riderProfile'])->name('riders.
 Route::get('place-order', [HomeController::class, 'homePlaceOrder'])->name('home.place.order');
 Route::get('order-success', [HomeController::class, 'homeOrderDone'])->name('home.order.done');
 
-Route::get('/become-rider', [RiderController::class, 'riderRegForm'])->name('rider.register');
-Route::post('/become-rider', [RiderController::class, 'reiderStore'])->name('rider.register.store');
+Route::get('/rider-register', [RiderController::class, 'riderRegForm'])->name('rider.register');
+Route::post('/riders/store', [RiderController::class, 'riderStore'])->name('new.rider.store');
 
+
+    Route::get('/admin/orders/{order}/print', [AdminDashboardController::class, 'printInvoice'])
+        ->name('admin.order.print');
+
+    Route::post('/admin/orders/bulk-print', [AdminDashboardController::class, 'bulkPrint'])
+        ->name('admin.orders.bulkPrint');
 
 
 Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
@@ -120,11 +149,7 @@ Route::prefix('admin')->middleware(['auth','role:admin'])->group(function () {
     Route::get('live/orders', [AdminDashboardController::class, 'adminLiveOrders'])->name('admin.orders.live');
 
 
-    Route::get('/orders/{order}/print', [AdminDashboardController::class, 'printInvoice'])
-        ->name('admin.order.print');
 
-    Route::post('/orders/bulk-print', [AdminDashboardController::class, 'bulkPrint'])
-        ->name('admin.orders.bulkPrint');
 
 Route::post('/orders/{order}/custom-price-update', [AdminDashboardController::class, 'updateCustomPrices'])
     ->name('admin.orders.customPriceUpdate');
@@ -134,6 +159,8 @@ Route::post('/orders/{order}/custom-price-update', [AdminDashboardController::cl
     '/admin/orders/set-delivery-charge',
     [AdminDashboardController::class, 'setDeliveryCharge']
 )->name('admin.orders.setDeliveryCharge');
+
+
 
 
 
@@ -169,7 +196,7 @@ Route::post('/orders/{order}/custom-price-update', [AdminDashboardController::cl
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
 
     Route::get('/riders', [RiderController::class, 'index'])->name('admin.riders.index');
-    Route::post('/riders', [RiderController::class, 'riderStore'])->name('admin.riders.store');
+    
     Route::delete('/riders/{id}', [RiderController::class, 'destroy'])->name('admin.riders.destroy');
 
     Route::post('/product/update-price',[ProductController::class,'updatePrice'])->name('admin.product.updatePrice');
