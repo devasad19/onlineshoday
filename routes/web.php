@@ -14,6 +14,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DeliveryChargeRuleController;
 use App\Http\Controllers\Dashboard\RiderController;
+use App\Http\Controllers\AdvertisementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -170,7 +171,7 @@ Route::post('/orders/{order}/custom-price-update', [AdminDashboardController::cl
     Route::post('/bazars/store', [BazarController::class, 'store'])->name('admin.bazars.store');
     Route::get('/bazars/{id}/edit', [BazarController::class, 'edit'])->name('admin.bazars.edit');
     Route::post('/bazars/update', [BazarController::class, 'bazarUpdate'])->name('admin.bazars.update');
-    Route::get('/bazars/{id}', [BazarController::class, 'destroy'])->name('bazar.delete');
+    Route::get('/bazar/delete/{id}', [BazarController::class, 'destroy'])->name('bazar.delete');
 
     Route::post('/bazar/areas', [BazarController::class, 'getAreas'])->name('admin.bazar.areas');
     Route::post('/bazars/areas/store', [BazarController::class, 'bazarAreastore'])->name('admin.bazar.areas.store');
@@ -188,6 +189,7 @@ Route::post('/orders/{order}/custom-price-update', [AdminDashboardController::cl
 
 
 
+        
 
     Route::get('/products', [ProductController::class, 'index'])->name('manage_products');
     Route::post('/products/store', [ProductController::class, 'store'])->name('admin.products.store');
@@ -259,6 +261,40 @@ Route::prefix('user')->middleware(['auth','role:user'])->group(function () {
 
 
 });
+
+Route::get('/advertisements', [AdvertisementController::class, 'advertisements'])
+    ->name('advertisements.index');
+Route::get('/advertisement/{slug}', [AdvertisementController::class, 'show'])
+    ->name('advertisement.show');
+
+ 
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+
+        Route::resource(
+            'advertisements',
+            AdvertisementController::class
+        )->except(['show']);
+
+        Route::post(
+            'advertisements/{advertisement}/approve',
+            [AdvertisementController::class, 'approve']
+        )->name('advertisements.approve');
+
+        Route::post(
+            'advertisements/{advertisement}/reject',
+            [AdvertisementController::class, 'reject']
+        )->name('advertisements.reject');
+Route::post(
+    '/advertisements/submit',
+    [AdvertisementController::class, 'submit']
+)->middleware('throttle:5,1')
+ ->name('advertisements.submit');
+
+
+    });
 
 
 

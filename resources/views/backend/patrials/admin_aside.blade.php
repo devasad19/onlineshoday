@@ -138,6 +138,12 @@
                 <span>ম্যানেজ অর্ডারস</span>
             </a>
 
+            <a href="{{ route('admin.advertisements.index') }}"
+   class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-green-50">
+    <i class="fas fa-bullhorn"></i>
+    <span>বিজ্ঞাপন ম্যানেজমেন্ট</span>
+</a>
+
             <a href="{{ route('admin.rider_list') }}" 
                class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                {{ request()->routeIs('admin.rider_list') ? 'bg-green-100 font-semibold text-green-700' : 'hover:bg-green-100' }}">

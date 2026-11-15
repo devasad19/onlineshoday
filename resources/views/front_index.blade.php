@@ -46,9 +46,7 @@
                       leading-6 sm:leading-7
                       max-w-xl mx-auto md:mx-0">
 
-                বাজারের প্রয়োজনীয় পণ্য সহজেই অর্ডার করুন।
-                আমরা আপনার অর্ডার সংগ্রহ করে
-                আপনার ঠিকানায় পৌঁছে দেব।
+                বাজারের প্রায় সব প্রয়োজনীয় পণ্য সহজেই অর্ডার করুন। আমরা পৌঁছে দেব আপনার ঠিকানায়, ইনশাআল্লাহ্‌।
 
             </p>
 
@@ -260,6 +258,9 @@
         <span></span>
 
         <span>🤝 বিশ্বস্ত সেবা</span>
+                <span></span>
+
+        <span>📦 পয়েন্ট পেতে কম্বো প্যাক কিনুন</span>
 
     </div>
 
@@ -320,7 +321,7 @@
              class="border px-3 py-2 rounded-lg w-full focus:ring-2 focus:ring-green-400 text-sm">
 
       <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition text-sm sm:col-span-2 md:col-span-1">
-        বাছাই করুন
+        পণ্য দেখুন
       </button>
     </form>
   </div>
@@ -374,6 +375,311 @@
     @endforelse
   </div>
 </section>
+
+
+
+
+
+ 
+
+<section class="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
+
+    {{-- Section Header --}}
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-3 text-center sm:text-left">
+
+        <div>
+            <h3 class="text-2xl font-bold text-green-700">
+                <i class="fas fa-store"></i> স্থানীয় সেবা ও বিজ্ঞাপন
+            </h3>
+            <p class="text-sm text-gray-500 mt-1">
+                আপনার এলাকার প্রয়োজনীয় সেবা ও বিজ্ঞাপন খুঁজুন।
+            </p>
+        </div>
+
+<a href="{{ route('advertisements.index') }}"
+   class="text-sm font-semibold text-green-600 hover:text-green-800 hover:underline">
+    সব বিজ্ঞাপন দেখুন →
+</a>
+    </div>
+
+
+    {{-- Category Tabs --}}
+    @php
+        $categories = [
+            'নাগরিক সেবা',
+            'বাসা ও মেরামত',
+            'খাবার ও মিল',
+            'ডিজিটাল ও আইটি',
+            'স্থানীয় বিজ্ঞাপন',
+        ];
+    @endphp
+
+ 
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+
+    @foreach($categories as $index => $category)
+
+        <button
+            type="button"
+            onclick="showAdTab('{{ $index }}')"
+            id="ad-tab-{{ $index }}"
+            class="ad-tab group flex flex-col sm:flex-row items-center justify-center gap-2
+            px-3 py-4 sm:py-3 rounded-2xl border text-center
+            transition-all duration-200
+            {{ $index == 0
+                ? 'bg-green-600 text-white border-green-600 shadow-md'
+                : 'bg-white text-gray-600 border-gray-200 hover:border-green-500 hover:bg-green-50 hover:text-green-700' }}">
+
+            <span class="text-2xl sm:text-xl">
+                @if($index == 0)
+                    📄
+                @elseif($index == 1)
+                    🔧
+                @elseif($index == 2)
+                    🍱
+                @elseif($index == 3)
+                    💻
+                @else
+                    📢
+                @endif
+            </span>
+
+            <span class="text-xs sm:text-sm font-semibold leading-5">
+                {{ $category }}
+            </span>
+
+        </button>
+
+    @endforeach
+
+</div>
+
+
+
+    {{-- Advertisement Cards --}}
+    @foreach($categories as $index => $category)
+
+        @php
+            $ads = $advertisements->get($category, collect());
+        @endphp
+
+        <div id="ad-content-{{ $index }}"
+             class="ad-content {{ $index == 0 ? '' : 'hidden' }}">
+
+            @if($ads->isNotEmpty())
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
+
+                    @foreach($ads as $ad)
+
+                        <div class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+
+                            {{-- Image --}}
+                            <div class="relative h-48 bg-gray-100 overflow-hidden">
+
+                                @if($ad->image)
+
+                                    <img
+                                        src="{{ asset('uploads/advertisements/'.$ad->image) }}"
+                                        alt="{{ $ad->title }}"
+                                        loading="lazy"
+                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+
+                                @else
+
+                                    <div class="w-full h-full flex items-center justify-center text-5xl">
+                                        📢
+                                    </div>
+
+                                @endif
+
+
+                                {{-- Provider Badge --}}
+                                <div class="absolute top-3 left-3">
+
+                                    @if($ad->ad_type == 'own_service')
+
+                                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                                            নিজস্ব সেবা
+                                        </span>
+
+                                    @elseif($ad->ad_type == 'partner_service')
+
+                                        <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                                            পার্টনার সেবা
+                                        </span>
+
+                                    @else
+
+                                        <span class="bg-purple-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                                            বিজ্ঞাপন
+                                        </span>
+
+                                    @endif
+
+                                </div>
+
+
+                                {{-- Featured Badge --}}
+                                @if($ad->is_featured)
+                                    <div class="absolute top-3 right-3">
+                                        <span class="bg-yellow-400 text-gray-900 text-xs font-bold px-2.5 py-1.5 rounded-full shadow">
+                                            ⭐ Featured
+                                        </span>
+                                    </div>
+                                @endif
+
+                            </div>
+
+
+                            {{-- Card Content --}}
+                            <div class="p-4">
+
+                                {{-- Title --}}
+                                <h4 class="text-lg font-bold text-gray-800 line-clamp-1 group-hover:text-green-700">
+                                    {{ $ad->title }}
+                                </h4>
+
+
+                                {{-- Description --}}
+                                <p class="text-sm text-gray-500 mt-2 line-clamp-2 min-h-[40px]">
+                                    {{ $ad->short_description }}
+                                </p>
+
+
+                                {{-- Provider --}}
+                                @if($ad->provider_name)
+                                    <div class="flex items-center gap-2 mt-3 text-sm text-gray-600">
+                                        <span>👤</span>
+                                        <span class="line-clamp-1">
+                                            {{ $ad->provider_name }}
+                                        </span>
+                                    </div>
+                                @endif
+
+
+                                {{-- Location --}}
+                                @if($ad->location)
+                                    <div class="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                                        <span>📍</span>
+                                        <span class="line-clamp-1">
+                                            {{ $ad->location }}
+                                        </span>
+                                    </div>
+                                @endif
+
+
+                                {{-- Price --}}
+                                <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+
+                                    <span class="text-xs text-gray-400">
+                                        সেবা / মূল্য
+                                    </span>
+
+                                    <span class="text-sm font-bold text-green-700">
+                                        {{ $ad->price_label ?: 'যোগাযোগ করুন' }}
+                                    </span>
+
+                                </div>
+
+
+                                {{-- Details Button --}}
+                                <a href="{{ route('advertisement.show', $ad->slug) }}"
+                                   class="mt-4 flex items-center justify-center gap-2 w-full bg-green-50 text-green-700 hover:bg-green-600 hover:text-white font-semibold text-sm py-2.5 rounded-xl transition duration-200">
+
+                                    বিস্তারিত দেখুন
+
+                                    <span>→</span>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    @endforeach
+
+                </div>
+
+            @else
+
+                {{-- Empty State --}}
+                <div class="bg-gray-50 border border-dashed border-gray-300 rounded-2xl py-12 text-center">
+
+                    <div class="text-4xl mb-3">📭</div>
+
+                    <h4 class="text-lg font-semibold text-gray-700">
+                        এই বিভাগে এখনো কোনো বিজ্ঞাপন নেই।
+                    </h4>
+
+                    <p class="text-sm text-gray-500 mt-2">
+                        নতুন বিজ্ঞাপন যুক্ত হলে এখানে দেখা যাবে।
+                    </p>
+
+                </div>
+
+            @endif
+
+        </div>
+
+    @endforeach
+
+</section>
+
+
+{{-- Tab Switching Script --}}
+<script>
+    function showAdTab(index) {
+
+        // Hide all advertisement contents
+        document.querySelectorAll('.ad-content').forEach(content => {
+            content.classList.add('hidden');
+        });
+
+        // Reset all tabs
+        document.querySelectorAll('.ad-tab').forEach(tab => {
+            tab.classList.remove(
+                'bg-green-600',
+                'text-white',
+                'border-green-600',
+                'shadow-md'
+            );
+
+            tab.classList.add(
+                'bg-white',
+                'text-gray-600',
+                'border-gray-200'
+            );
+        });
+
+        // Show selected content
+        document.getElementById('ad-content-' + index)
+            .classList.remove('hidden');
+
+        // Activate selected tab
+        const activeTab = document.getElementById('ad-tab-' + index);
+
+        activeTab.classList.remove(
+            'bg-white',
+            'text-gray-600',
+            'border-gray-200'
+        );
+
+        activeTab.classList.add(
+            'bg-green-600',
+            'text-white',
+            'border-green-600',
+            'shadow-md'
+        );
+
+    }
+</script>
+
+
+
+
+
+
 
  <!-- 🛍️ Package Section -->
 <section id="packages" class="max-w-7xl mx-auto px-4 sm:px-6 pb-14 sm:pb-16">
@@ -1384,29 +1690,31 @@
 <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14 sm:py-16 bg-green-50 rounded-2xl mt-8 sm:mt-10 shadow-sm">
   <div class="flex flex-col md:flex-row justify-between items-center gap-8 text-center md:text-left">
 
-    <!-- Text Section -->
-    <div class="md:w-1/2">
-      <h3 class="text-2xl sm:text-3xl font-bold text-green-800 mb-4">📱 আমাদের অ্যান্ড্রয়েড অ্যাপ ডাউনলোড করুন</h3>
-      <p class="text-gray-700 leading-relaxed mb-6 text-sm sm:text-base">
-        আরও দ্রুত ও সহজভাবে পণ্য অর্ডার করতে এখনই আমাদের অফিশিয়াল 
-        <span class="font-semibold text-green-700">"Online Shoday.com"</span> অ্যান্ড্রয়েড অ্যাপটি ডাউনলোড করুন।  
-        ঘরে বসে কেনাকাটা করুন, অর্ডার ট্র্যাক করুন, আর পান এক্সক্লুসিভ অফার ও ছাড়!
-      </p>
+ 
+<!-- Text Section -->
+<div class="md:w-1/2">
+    <h3 class="text-2xl sm:text-3xl font-bold text-green-800 mb-4">
+        📱 অনলাইন সদায় অ্যাপ ইন্সটল করুন
+    </h3>
 
-      <!-- Download Button -->
-      <div class="flex justify-center md:justify-start">
-        <!-- <a href="#" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-3 rounded-lg shadow-md transition transform hover:scale-105">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.477 2 2 6.485 2 12.017 2 17.522 6.477 22 12 22s10-4.478 10-9.983C22 6.485 17.523 2 12 2zm0 18.193a8.2 8.2 0 1 1 0-16.386 8.2 8.2 0 0 1 0 16.386zM11 7h2v6h-2zm0 8h2v2h-2z"/>
-          </svg>
-          📲 অ্যান্ড্রয়েড অ্যাপ ডাউনলোড করুন
-        </a> -->
+    <p class="text-gray-700 leading-relaxed mb-6 text-sm sm:text-base">
+        আপনার প্রয়োজনীয় সদায় এখন আরও সহজে অর্ডার করুন
+        <span class="font-semibold text-green-700">অনলাইন সদায়</span>
+        অ্যাপের মাধ্যমে। ঘরে বসেই কিনুন মাছ, মাংস, শাকসবজি,
+        চাল, ডাল, তেলসহ নিত্যপ্রয়োজনীয় পণ্য।
+        সহজে অর্ডার করুন, অর্ডারের আপডেট জানুন এবং
+        উপভোগ করুন সুবিধাজনক কেনাকাটার অভিজ্ঞতা।
+    </p>
+
+    <!-- Install Button -->
+    <div class="flex justify-center md:justify-start">
         <button id="installApp"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg ">
-          📲 অ্যাপ ইন্সটল করুন
-      </button>
-      </div>
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+            📲 অ্যাপ ইন্সটল করুন
+        </button>
     </div>
+</div>
+ 
 
     <!-- Android App Preview -->
     <div class="md:w-1/2 flex justify-center">

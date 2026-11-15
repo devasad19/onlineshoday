@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\CartItem;
 use App\Models\Contact;
 use App\Models\RiderProduct;
+use App\Models\Advertisement;
 use Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -86,7 +87,11 @@ class HomeController extends Controller
                                     ->latest()
                                     ->take(12)
                                     ->get();
-
+$data['advertisements'] = Advertisement::published()
+    ->orderByDesc('is_featured')
+    ->latest()
+    ->get()
+    ->groupBy('category');
         // Session::flush();
         // Auth::logout();
         // return redirect('/login');
