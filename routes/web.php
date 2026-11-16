@@ -15,6 +15,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Dashboard\DeliveryChargeRuleController;
 use App\Http\Controllers\Dashboard\RiderController;
 use App\Http\Controllers\AdvertisementController;
+use App\Http\Controllers\UserAdvertisementController;
+use App\Http\Controllers\AdvertisementCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -294,9 +296,35 @@ Route::post(
  ->name('advertisements.submit');
 
 
+
+
+        Route::resource(
+            'advertisement-categories',
+            AdvertisementCategoryController::class
+        )->except(['show']);
+
+        Route::patch(
+            'advertisement-categories/{advertisement_category}/toggle-status',
+            [AdvertisementCategoryController::class, 'toggleStatus']
+        )->name('advertisement-categories.toggle-status');
+
+
     });
 
 
+
+    // User Dashboard Advertisement Routes
+Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+
+    Route::get('/advertisements', [UserAdvertisementController::class, 'index'])
+        ->name('advertisements.index');
+
+    Route::get('/advertisements/create', [UserAdvertisementController::class, 'create'])
+        ->name('advertisements.create');
+
+    Route::post('/advertisements', [UserAdvertisementController::class, 'store'])
+        ->name('advertisements.store');
+});
 
 
 Auth::routes();

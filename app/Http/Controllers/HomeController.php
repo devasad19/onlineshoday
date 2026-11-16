@@ -14,6 +14,7 @@ use App\Models\User;
 use App\Models\CartItem;
 use App\Models\Contact;
 use App\Models\RiderProduct;
+use App\Models\AdvertisementCategory;
 use App\Models\Advertisement;
 use Auth;
 use Illuminate\Support\Facades\Hash;
@@ -87,6 +88,18 @@ class HomeController extends Controller
                                     ->latest()
                                     ->take(12)
                                     ->get();
+ 
+$data['categories'] = AdvertisementCategory::where('is_active', true)
+    ->orderBy('sort_order')
+    ->orderBy('name')
+    ->get();
+
+$data['advertisements'] = Advertisement::published()
+    ->orderByDesc('is_featured')
+    ->latest()
+    ->get()
+    ->groupBy('category');
+    
 $data['advertisements'] = Advertisement::published()
     ->orderByDesc('is_featured')
     ->latest()

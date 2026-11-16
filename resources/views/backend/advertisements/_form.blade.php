@@ -13,26 +13,20 @@
     </div>
 
     {{-- Category --}}
-    <div>
-        <label class="block font-medium mb-2">ক্যাটাগরি *</label>
+<select name="category" required>
+    <option value="">ক্যাটাগরি নির্বাচন করুন</option>
 
-        <select name="category" required class="w-full border rounded-lg p-3">
-            @foreach([
-                'নাগরিক সেবা',
-                'বাসা ও মেরামত',
-                'খাবার ও মিল',
-                'ডিজিটাল ও আইটি',
-                'স্থানীয় বিজ্ঞাপন'
-            ] as $category)
-
-                <option value="{{ $category }}"
-                    @selected(old('category', $advertisement->category ?? '') == $category)>
-                    {{ $category }}
-                </option>
-
-            @endforeach
-        </select>
-    </div>
+    @foreach(
+        \App\Models\AdvertisementCategory::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get() as $category
+    )
+        <option value="{{ $category->name }}"
+            {{ old('category', $advertisement->category ?? '') == $category->name ? 'selected' : '' }}>
+            {{ $category->icon }} {{ $category->name }}
+        </option>
+    @endforeach
+</select>
 
     {{-- Advertisement Type --}}
     <div>
@@ -103,7 +97,7 @@
                class="w-full border rounded-lg p-3">
 
         @if(isset($advertisement) && $advertisement->image)
-            <img src="{{ asset('storage/'.$advertisement->image) }}"
+            <img src="{{ asset('uploads/advertisements/'.$advertisement->image) }}"
                  class="w-24 h-20 object-cover mt-2 rounded">
         @endif
     </div>

@@ -30,6 +30,8 @@ class Advertisement extends Model
         'expires_at',
     ];
 
+
+
     protected $casts = [
         'is_featured' => 'boolean',
         'approved_at' => 'datetime',

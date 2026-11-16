@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Advertisement;
+use App\Models\AdvertisementCategory;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -149,9 +151,14 @@ public function advertisements(\Illuminate\Http\Request $request)
             'rejected' => Advertisement::where('status', 'rejected')->count(),
         ];
 
+        $categories = AdvertisementCategory::where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->pluck('name');
+
         return view(
             'backend.advertisements.index',
-            compact('advertisements', 'counts')
+            compact('advertisements', 'counts', 'categories')
         );
     }
 
@@ -166,7 +173,12 @@ public function advertisements(\Illuminate\Http\Request $request)
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'category' => 'required|string|max:100',
+            'category' => [
+                'required',
+                'string',
+                Rule::exists('advertisement_categories', 'name')
+                    ->where('is_active', true),
+            ],
 
             'ad_type' => 'required|in:own_service,partner_service,general_ad',
 

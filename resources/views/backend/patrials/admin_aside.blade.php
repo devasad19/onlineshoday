@@ -93,7 +93,13 @@
                 🛒 <span>আমার বাজার ব্যাগ</span>
 
             </a>
+<a href="{{ route('user.advertisements.index') }}"
+   class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-50 hover:text-green-700">
 
+    <i class="fas fa-bullhorn"></i>
+    <span>আমার বিজ্ঞাপন</span>
+
+</a>
             <a href="{{ route('user.settings') }}"
                @click="sidebarOpen=false"
                class="flex items-center gap-3 px-3 py-2 rounded-lg transition
@@ -137,6 +143,15 @@
                 <i class="fa-solid fa-clipboard-list w-5 text-green-600"></i>
                 <span>ম্যানেজ অর্ডারস</span>
             </a>
+
+<a href="{{ route('admin.advertisement-categories.index') }}"
+   class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-green-50 hover:text-green-700 transition">
+
+    <i class="fas fa-layer-group"></i>
+
+    <span>বিজ্ঞাপন ক্যাটাগরি</span>
+
+</a>
 
             <a href="{{ route('admin.advertisements.index') }}"
    class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-green-50">

@@ -71,11 +71,16 @@
                 <select name="category"
                         class="border rounded-lg px-3 py-2">
                     <option value="">সব ক্যাটাগরি</option>
-                    <option value="নাগরিক সেবা">নাগরিক সেবা</option>
-                    <option value="বাসা ও মেরামত">বাসা ও মেরামত</option>
-                    <option value="খাবার ও মিল">খাবার ও মিল</option>
-                    <option value="ডিজিটাল ও আইটি">ডিজিটাল ও আইটি</option>
-                    <option value="স্থানীয় বিজ্ঞাপন">স্থানীয় বিজ্ঞাপন</option>
+                         @foreach(
+        \App\Models\AdvertisementCategory::where('is_active', true)
+            ->orderBy('sort_order')
+            ->get() as $category
+    )
+        <option value="{{ $category->name }}"
+            {{ old('category', $advertisement->category ?? '') == $category->name ? 'selected' : '' }}>
+            {{ $category->icon }} {{ $category->name }}
+        </option>
+    @endforeach
                 </select>
 
                 <select name="status"

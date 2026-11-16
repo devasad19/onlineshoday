@@ -404,17 +404,8 @@
 
 
     {{-- Category Tabs --}}
-    @php
-        $categories = [
-            'নাগরিক সেবা',
-            'বাসা ও মেরামত',
-            'খাবার ও মিল',
-            'ডিজিটাল ও আইটি',
-            'স্থানীয় বিজ্ঞাপন',
-        ];
-    @endphp
-
  
+{{-- Category Tabs --}}
 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
 
     @foreach($categories as $index => $category)
@@ -431,21 +422,11 @@
                 : 'bg-white text-gray-600 border-gray-200 hover:border-green-500 hover:bg-green-50 hover:text-green-700' }}">
 
             <span class="text-2xl sm:text-xl">
-                @if($index == 0)
-                    📄
-                @elseif($index == 1)
-                    🔧
-                @elseif($index == 2)
-                    🍱
-                @elseif($index == 3)
-                    💻
-                @else
-                    📢
-                @endif
+                {{ $category->icon ?: '📢' }}
             </span>
 
             <span class="text-xs sm:text-sm font-semibold leading-5">
-                {{ $category }}
+                {{ $category->name }}
             </span>
 
         </button>
@@ -455,225 +436,169 @@
 </div>
 
 
+ 
+{{-- Advertisement Cards --}}
+@foreach($categories as $index => $category)
 
-    {{-- Advertisement Cards --}}
-    @foreach($categories as $index => $category)
+    @php
+        $ads = $advertisements->get($category->name, collect());
+    @endphp
 
-        @php
-            $ads = $advertisements->get($category, collect());
-        @endphp
+    <div id="ad-content-{{ $index }}"
+         class="ad-content {{ $index == 0 ? '' : 'hidden' }}">
 
-        <div id="ad-content-{{ $index }}"
-             class="ad-content {{ $index == 0 ? '' : 'hidden' }}">
+        @if($ads->isNotEmpty())
 
-            @if($ads->isNotEmpty())
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-6">
+                @foreach($ads as $ad)
 
-                    @foreach($ads as $ad)
+                    <div class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden">
 
-                        <div class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                        {{-- Image --}}
+                        <div class="relative h-48 bg-gray-100 overflow-hidden">
 
-                            {{-- Image --}}
-                            <div class="relative h-48 bg-gray-100 overflow-hidden">
+                            @if($ad->image)
 
-                                @if($ad->image)
+                                <img
+                                    src="{{ asset('uploads/advertisements/'.$ad->image) }}"
+                                    alt="{{ $ad->title }}"
+                                    loading="lazy"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
-                                    <img
-                                        src="{{ asset('uploads/advertisements/'.$ad->image) }}"
-                                        alt="{{ $ad->title }}"
-                                        loading="lazy"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            @else
+
+                                <div class="w-full h-full flex items-center justify-center text-5xl">
+                                    {{ $category->icon ?: '📢' }}
+                                </div>
+
+                            @endif
+
+                            {{-- Provider Badge --}}
+                            <div class="absolute top-3 left-3">
+
+                                @if($ad->ad_type == 'own_service')
+
+                                    <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                                        নিজস্ব সেবা
+                                    </span>
+
+                                @elseif($ad->ad_type == 'partner_service')
+
+                                    <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                                        পার্টনার সেবা
+                                    </span>
 
                                 @else
 
-                                    <div class="w-full h-full flex items-center justify-center text-5xl">
-                                        📢
-                                    </div>
+                                    <span class="bg-purple-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                                        বিজ্ঞাপন
+                                    </span>
 
-                                @endif
-
-
-                                {{-- Provider Badge --}}
-                                <div class="absolute top-3 left-3">
-
-                                    @if($ad->ad_type == 'own_service')
-
-                                        <span class="bg-green-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
-                                            নিজস্ব সেবা
-                                        </span>
-
-                                    @elseif($ad->ad_type == 'partner_service')
-
-                                        <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
-                                            পার্টনার সেবা
-                                        </span>
-
-                                    @else
-
-                                        <span class="bg-purple-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
-                                            বিজ্ঞাপন
-                                        </span>
-
-                                    @endif
-
-                                </div>
-
-
-                                {{-- Featured Badge --}}
-                                @if($ad->is_featured)
-                                    <div class="absolute top-3 right-3">
-                                        <span class="bg-yellow-400 text-gray-900 text-xs font-bold px-2.5 py-1.5 rounded-full shadow">
-                                            ⭐ Featured
-                                        </span>
-                                    </div>
                                 @endif
 
                             </div>
 
-
-                            {{-- Card Content --}}
-                            <div class="p-4">
-
-                                {{-- Title --}}
-                                <h4 class="text-lg font-bold text-gray-800 line-clamp-1 group-hover:text-green-700">
-                                    {{ $ad->title }}
-                                </h4>
-
-
-                                {{-- Description --}}
-                                <p class="text-sm text-gray-500 mt-2 line-clamp-2 min-h-[40px]">
-                                    {{ $ad->short_description }}
-                                </p>
-
-
-                                {{-- Provider --}}
-                                @if($ad->provider_name)
-                                    <div class="flex items-center gap-2 mt-3 text-sm text-gray-600">
-                                        <span>👤</span>
-                                        <span class="line-clamp-1">
-                                            {{ $ad->provider_name }}
-                                        </span>
-                                    </div>
-                                @endif
-
-
-                                {{-- Location --}}
-                                @if($ad->location)
-                                    <div class="flex items-center gap-2 mt-2 text-sm text-gray-500">
-                                        <span>📍</span>
-                                        <span class="line-clamp-1">
-                                            {{ $ad->location }}
-                                        </span>
-                                    </div>
-                                @endif
-
-
-                                {{-- Price --}}
-                                <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-
-                                    <span class="text-xs text-gray-400">
-                                        সেবা / মূল্য
+                            {{-- Featured Badge --}}
+                            @if($ad->is_featured)
+                                <div class="absolute top-3 right-3">
+                                    <span class="bg-yellow-400 text-gray-900 text-xs font-bold px-2.5 py-1.5 rounded-full shadow">
+                                        ⭐ Featured
                                     </span>
-
-                                    <span class="text-sm font-bold text-green-700">
-                                        {{ $ad->price_label ?: 'যোগাযোগ করুন' }}
-                                    </span>
-
                                 </div>
-
-
-                                {{-- Details Button --}}
-                                <a href="{{ route('advertisement.show', $ad->slug) }}"
-                                   class="mt-4 flex items-center justify-center gap-2 w-full bg-green-50 text-green-700 hover:bg-green-600 hover:text-white font-semibold text-sm py-2.5 rounded-xl transition duration-200">
-
-                                    বিস্তারিত দেখুন
-
-                                    <span>→</span>
-
-                                </a>
-
-                            </div>
+                            @endif
 
                         </div>
 
-                    @endforeach
+                        {{-- Card Content --}}
+                        <div class="p-4">
 
+                            {{-- Title --}}
+                            <h4 class="text-lg font-bold text-gray-800 line-clamp-1 group-hover:text-green-700">
+                                {{ $ad->title }}
+                            </h4>
+
+                            {{-- Description --}}
+                            <p class="text-sm text-gray-500 mt-2 line-clamp-2 min-h-[40px]">
+                                {{ $ad->short_description }}
+                            </p>
+
+                            {{-- Provider --}}
+                            @if($ad->provider_name)
+                                <div class="flex items-center gap-2 mt-3 text-sm text-gray-600">
+                                    <span>👤</span>
+                                    <span class="line-clamp-1">
+                                        {{ $ad->provider_name }}
+                                    </span>
+                                </div>
+                            @endif
+
+                            {{-- Location --}}
+                            @if($ad->location)
+                                <div class="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                                    <span>📍</span>
+                                    <span class="line-clamp-1">
+                                        {{ $ad->location }}
+                                    </span>
+                                </div>
+                            @endif
+
+                            {{-- Price --}}
+                            <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+
+                                <span class="text-xs text-gray-400">
+                                    সেবা / মূল্য
+                                </span>
+
+                                <span class="text-sm font-bold text-green-700">
+                                    {{ $ad->price_label ?: 'যোগাযোগ করুন' }}
+                                </span>
+
+                            </div>
+
+                            {{-- Details Button --}}
+                            <a href="{{ route('advertisement.show', $ad->slug) }}"
+                               class="mt-4 flex items-center justify-center gap-2 w-full bg-green-50 text-green-700 hover:bg-green-600 hover:text-white font-semibold text-sm py-2.5 rounded-xl transition duration-200">
+
+                                বিস্তারিত দেখুন
+                                <span>→</span>
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            </div>
+
+        @else
+
+            {{-- Empty State --}}
+            <div class="bg-gray-50 border border-dashed border-gray-300 rounded-2xl py-12 text-center">
+
+                <div class="text-4xl mb-3">
+                    📭
                 </div>
 
-            @else
+                <h4 class="text-lg font-semibold text-gray-700">
+                    এই বিভাগে এখনো কোনো বিজ্ঞাপন নেই।
+                </h4>
 
-                {{-- Empty State --}}
-                <div class="bg-gray-50 border border-dashed border-gray-300 rounded-2xl py-12 text-center">
+                <p class="text-sm text-gray-500 mt-2">
+                    নতুন বিজ্ঞাপন যুক্ত হলে এখানে দেখা যাবে।
+                </p>
 
-                    <div class="text-4xl mb-3">📭</div>
+            </div>
 
-                    <h4 class="text-lg font-semibold text-gray-700">
-                        এই বিভাগে এখনো কোনো বিজ্ঞাপন নেই।
-                    </h4>
+        @endif
 
-                    <p class="text-sm text-gray-500 mt-2">
-                        নতুন বিজ্ঞাপন যুক্ত হলে এখানে দেখা যাবে।
-                    </p>
+    </div>
 
-                </div>
-
-            @endif
-
-        </div>
-
-    @endforeach
-
-</section>
+@endforeach
 
 
-{{-- Tab Switching Script --}}
-<script>
-    function showAdTab(index) {
-
-        // Hide all advertisement contents
-        document.querySelectorAll('.ad-content').forEach(content => {
-            content.classList.add('hidden');
-        });
-
-        // Reset all tabs
-        document.querySelectorAll('.ad-tab').forEach(tab => {
-            tab.classList.remove(
-                'bg-green-600',
-                'text-white',
-                'border-green-600',
-                'shadow-md'
-            );
-
-            tab.classList.add(
-                'bg-white',
-                'text-gray-600',
-                'border-gray-200'
-            );
-        });
-
-        // Show selected content
-        document.getElementById('ad-content-' + index)
-            .classList.remove('hidden');
-
-        // Activate selected tab
-        const activeTab = document.getElementById('ad-tab-' + index);
-
-        activeTab.classList.remove(
-            'bg-white',
-            'text-gray-600',
-            'border-gray-200'
-        );
-
-        activeTab.classList.add(
-            'bg-green-600',
-            'text-white',
-            'border-green-600',
-            'shadow-md'
-        );
-
-    }
-</script>
 
 
 
@@ -1773,5 +1698,61 @@ document
 });
 </script>
 
+</section>
+
+
+{{-- Tab Switching Script --}}
+<script>
+    
+function showAdTab(index) {
+
+    // Hide all advertisement contents
+    document.querySelectorAll('.ad-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+
+    // Reset all tabs
+    document.querySelectorAll('.ad-tab').forEach(tab => {
+        tab.classList.remove(
+            'bg-green-600',
+            'text-white',
+            'border-green-600',
+            'shadow-md'
+        );
+
+        tab.classList.add(
+            'bg-white',
+            'text-gray-600',
+            'border-gray-200'
+        );
+    });
+
+    // Show selected content
+    const selectedContent = document.getElementById('ad-content-' + index);
+
+    if (selectedContent) {
+        selectedContent.classList.remove('hidden');
+    }
+
+    // Activate selected tab
+    const selectedTab = document.getElementById('ad-tab-' + index);
+
+    if (selectedTab) {
+        selectedTab.classList.remove(
+            'bg-white',
+            'text-gray-600',
+            'border-gray-200'
+        );
+
+        selectedTab.classList.add(
+            'bg-green-600',
+            'text-white',
+            'border-green-600',
+            'shadow-md'
+        );
+    }
+}
+
+</script>
 
 @endsection
