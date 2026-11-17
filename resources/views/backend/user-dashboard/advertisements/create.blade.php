@@ -65,24 +65,18 @@
                 বিজ্ঞাপনের ক্যাটাগরি *
             </label>
 
-            <select name="category" required
-                    class="w-full border rounded-xl px-4 py-3 bg-white focus:ring-2 focus:ring-green-500 outline-none">
+            <select name="category" required class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                <option value="">নির্বাচন করুন</option>
 
-                <option value="">ক্যাটাগরি নির্বাচন করুন</option>
-
-                @foreach([
-                    'নাগরিক সেবা',
-                    'বাসা ও মেরামত',
-                    'খাবার ও মিল',
-                    'ডিজিটাল ও আইটি',
-                    'স্থানীয় বিজ্ঞাপন'
-                ] as $category)
-
-                    <option value="{{ $category }}"
-                        {{ old('category') == $category ? 'selected' : '' }}>
-                        {{ $category }}
+                @foreach(
+                    \App\Models\AdvertisementCategory::where('is_active', true)
+                        ->orderBy('sort_order')
+                        ->get() as $category
+                )
+                    <option value="{{ $category->name }}"
+                        {{ old('category', $advertisement->category ?? '') == $category->name ? 'selected' : '' }}>
+                        {{ $category->icon }} {{ $category->name }}
                     </option>
-
                 @endforeach
             </select>
         </div>
@@ -153,7 +147,7 @@
                        name="provider_type"
                        value="{{ old('provider_type') }}"
                        placeholder="যেমন: দোকান, ব্যক্তিগত সেবা"
-                       class="w-full border rounded-xl px-4 py-3">
+                       class="w-full border rounded-xl px-4 py-3" required>
             </div>
 
         </div>
@@ -169,7 +163,7 @@
                       maxlength="300"
                       required
                       placeholder="বিজ্ঞাপন সম্পর্কে সংক্ষেপে লিখুন"
-                      class="w-full border rounded-xl px-4 py-3">{{ old('short_description') }}</textarea>
+                      class="w-full border rounded-xl px-4 py-3" required>{{ old('short_description') }}</textarea>
 
             <p class="text-xs text-gray-400 mt-1">
                 সর্বোচ্চ ৩০০ অক্ষর।
@@ -186,19 +180,19 @@
                       rows="6"
                       required
                       placeholder="আপনার পণ্য বা সেবা সম্পর্কে বিস্তারিত লিখুন..."
-                      class="w-full border rounded-xl px-4 py-3">{{ old('description') }}</textarea>
+                      class="w-full border rounded-xl px-4 py-3" required>{{ old('description') }}</textarea>
         </div>
 
         {{-- Image --}}
         <div>
             <label class="block font-semibold text-gray-700 mb-2">
-                বিজ্ঞাপনের ছবি
+                বিজ্ঞাপনের ছবি *
             </label>
 
             <input type="file"
                    name="image"
                    accept="image/jpeg,image/png,image/webp"
-                   class="w-full border rounded-xl px-4 py-3">
+                   class="w-full border rounded-xl px-4 py-3" required>
 
             <p class="text-xs text-gray-500 mt-2">
                 JPG, PNG অথবা WEBP। সর্বোচ্চ ২ MB।
@@ -244,7 +238,7 @@
 
             <input type="text"
                    name="price_label"
-                   value="{{ old('price_label') }}"
+                   value="কাজ অনুযায়ী আলোচনা করে নির্ধারণ।"
                    placeholder="যেমন: ৫০০ টাকা / আলোচনা সাপেক্ষে / ফ্রি"
                    class="w-full border rounded-xl px-4 py-3">
         </div>

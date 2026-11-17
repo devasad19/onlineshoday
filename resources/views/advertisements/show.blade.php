@@ -182,8 +182,37 @@
 
                         </div>
 
+
+                        
+{{-- Complaint Button --}}
+@if(auth()->check())
+
+    <a href="{{ route('dashboard.advertisement-complaints.create', [
+        'advertisement_id' => $advertisement->id
+    ]) }}"
+       class="inline-flex items-center justify-center mt-5 gap-2 w-full sm:w-auto px-5 py-3 rounded-xl border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 font-semibold text-sm transition">
+
+        <span>⚠️</span>
+        অভিযোগ করুন
+
+    </a>
+
+@else
+
+    <a href="{{ route('login') }}"
+       class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 py-3 rounded-xl border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 font-semibold text-sm transition">
+
+        <span>⚠️</span>
+        অভিযোগ করতে লগইন করুন
+
+    </a>
+
+@endif
+
                     </div>
+                    
                 </div>
+                
 
             </div>
 

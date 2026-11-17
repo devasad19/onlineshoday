@@ -89,7 +89,7 @@ class HomeController extends Controller
                                     ->take(12)
                                     ->get();
  
-$data['categories'] = AdvertisementCategory::where('is_active', true)
+$data['adsCategories'] = AdvertisementCategory::where('is_active', true)
     ->orderBy('sort_order')
     ->orderBy('name')
     ->get();

@@ -81,9 +81,19 @@ class User extends Authenticatable
             'product_id'           // Local key on RiderProduct
         );
     }
-public function points()
-{
-    return $this->hasMany(Point::class);
-}
+    public function points()
+    {
+        return $this->hasMany(Point::class);
+    }
+
+
+    public function advertisementComplaints()
+    {
+        return $this->hasMany(
+            AdvertisementComplaint::class,
+            'user_id'
+        );
+    }
+
 
 }

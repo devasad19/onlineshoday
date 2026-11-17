@@ -408,7 +408,7 @@
 {{-- Category Tabs --}}
 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
 
-    @foreach($categories as $index => $category)
+    @foreach($adsCategories as $index => $category)
 
         <button
             type="button"
@@ -438,7 +438,7 @@
 
  
 {{-- Advertisement Cards --}}
-@foreach($categories as $index => $category)
+@foreach($adsCategories as $index => $category)
 
     @php
         $ads = $advertisements->get($category->name, collect());

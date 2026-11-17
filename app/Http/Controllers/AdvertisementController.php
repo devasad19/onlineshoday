@@ -182,7 +182,7 @@ public function advertisements(\Illuminate\Http\Request $request)
 
             'ad_type' => 'required|in:own_service,partner_service,general_ad',
 
-            'provider_name' => 'nullable|string|max:255',
+            'provider_name' => 'required|string|max:255',
             'provider_type' => 'nullable|string|max:100',
 
             'short_description' => 'nullable|string|max:500',

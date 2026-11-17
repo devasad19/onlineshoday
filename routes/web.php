@@ -17,6 +17,7 @@ use App\Http\Controllers\Dashboard\RiderController;
 use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\UserAdvertisementController;
 use App\Http\Controllers\AdvertisementCategoryController;
+use App\Http\Controllers\ProductCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -289,11 +290,11 @@ Route::middleware(['auth', 'role:admin'])
             'advertisements/{advertisement}/reject',
             [AdvertisementController::class, 'reject']
         )->name('advertisements.reject');
-Route::post(
-    '/advertisements/submit',
-    [AdvertisementController::class, 'submit']
-)->middleware('throttle:5,1')
- ->name('advertisements.submit');
+        Route::post(
+            '/advertisements/submit',
+            [AdvertisementController::class, 'submit']
+        )->middleware('throttle:5,1')
+        ->name('advertisements.submit');
 
 
 
@@ -309,7 +310,53 @@ Route::post(
         )->name('advertisement-categories.toggle-status');
 
 
+        Route::resource(
+            'product-categories',
+            ProductCategoryController::class
+        )->except(['show']);
+
+
+
+
+
+});
+
+
+
+
+// Customer Advertisement Complaints
+Route::middleware(['auth'])
+    ->prefix('dashboard')
+    ->name('dashboard.')
+    ->group(function () {
+
+        Route::get(
+            '/advertisement-complaints',
+            [UserAdvertisementController::class, 'complaintindex']
+        )->name('advertisement-complaints.index');
+
+        Route::get(
+            '/advertisement-complaints/create',
+            [UserAdvertisementController::class, 'complaintcreate']
+        )->name('advertisement-complaints.create');
+
+        Route::post(
+            '/advertisement-complaints',
+            [UserAdvertisementController::class, 'complaintstore']
+        )
+        ->middleware('throttle:5,1')
+        ->name('advertisement-complaints.store');
+
+        Route::get(
+            '/advertisement-complaints/{id}',
+            [UserAdvertisementController::class, 'complaintshow']
+        )->whereNumber('id')
+        ->name('advertisement-complaints.show');
+
     });
+
+
+
 
 
 

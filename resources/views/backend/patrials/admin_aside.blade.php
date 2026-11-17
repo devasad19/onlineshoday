@@ -100,6 +100,19 @@
     <span>আমার বিজ্ঞাপন</span>
 
 </a>
+
+<a href="{{ route('dashboard.advertisement-complaints.index') }}"
+   class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-700 transition">
+
+    <span class="text-lg">🛡️</span>
+
+    <span class="font-medium">
+        আমার অভিযোগ
+    </span>
+
+</a>
+
+
             <a href="{{ route('user.settings') }}"
                @click="sidebarOpen=false"
                class="flex items-center gap-3 px-3 py-2 rounded-lg transition
@@ -122,6 +135,12 @@
                 <i class="fa-solid fa-store w-5 text-green-600"></i>
                 <span>ম্যানেজ বাজার তালিকা</span>
             </a>
+
+<a href="{{ route('admin.product-categories.index') }}"
+   class="flex items-center gap-2 px-4 py-3 rounded-lg hover:bg-green-50">
+    <span>📦</span>
+    <span>পণ্যের ক্যাটাগরি</span>
+</a>
 
             <a href="{{ route('admin.manage_products') }}" 
                class="flex items-center gap-3 px-3 py-2 rounded-lg transition
